@@ -702,6 +702,34 @@
       opacity: 1;
     }
 
+    .video-card-play-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .video-card:hover .video-card-play-badge {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .video-card-play-badge svg {
+      margin-left: 3px;
+    }
+
     .video-card-duration {
       position: absolute;
       right: 8px;
@@ -2352,6 +2380,294 @@
       font-size: 12px;
       color: var(--text-secondary);
     }
+
+    /* ===== ПОЛНОЭКРАННЫЙ ПЛЕЕР ВЕРТИКАЛЬНЫХ ВИДЕО ===== */
+    .video-player-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 2000;
+      background: #000;
+    }
+    .video-player-modal.open { display: block; }
+
+    .vp-frame {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 100%;
+      height: 100dvh;
+      margin: 0 auto;
+      overflow: hidden;
+      background: #000;
+      touch-action: none;
+    }
+
+    .vp-card {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      transition: transform .42s cubic-bezier(.25,.8,.3,1);
+      will-change: transform;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .vp-media {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .vp-poster {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity .45s ease;
+      background: #111;
+    }
+    .vp-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: transparent;
+    }
+    .vp-grad-top {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 30%;
+      background: linear-gradient(180deg, rgba(0,0,0,.6) 0%, rgba(0,0,0,0) 100%);
+      pointer-events: none;
+    }
+    .vp-grad-bottom {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 55%;
+      background: linear-gradient(0deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.35) 45%, rgba(0,0,0,0) 100%);
+      pointer-events: none;
+    }
+
+    /* Верхняя панель */
+    .vp-topbar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 14px 0;
+      z-index: 5;
+    }
+    .vp-top-btn {
+      width: 40px; height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0,0,0,.38);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color .2s ease, transform .2s ease;
+    }
+    .vp-top-btn svg { width: 24px; height: 24px; }
+    .vp-top-btn:active { background: rgba(0,0,0,.6); transform: scale(.92); }
+    .vp-counter {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,.92);
+      background: rgba(0,0,0,.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 7px 14px;
+      border-radius: 20px;
+      letter-spacing: .3px;
+    }
+
+    /* Правая колонка действий */
+    .vp-sidebar {
+      position: absolute;
+      right: 12px;
+      bottom: 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      z-index: 5;
+    }
+    .vp-side-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      border: none;
+      background: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 0;
+    }
+    .vp-side-btn .vp-side-circle {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.38);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color .2s ease, transform .2s ease;
+    }
+    .vp-side-btn .vp-side-circle svg { width: 24px; height: 24px; }
+    .vp-side-btn:active .vp-side-circle { background: rgba(0,0,0,.6); transform: scale(.9); }
+    .vp-side-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,.6);
+    }
+    .vp-heart.liked { fill: #ff2a55; stroke: #ff2a55; animation: vpHeartBeat .45s ease; }
+    @keyframes vpHeartBeat {
+      0% { transform: scale(.7); }
+      45% { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+
+    /* Нижний блок с автором */
+    .vp-bottom {
+      position: absolute;
+      left: 16px; right: 78px;
+      bottom: 46px;
+      z-index: 5;
+      color: #fff;
+      pointer-events: none;
+    }
+    .vp-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .vp-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-color, #ffb648);
+      background: #222;
+    }
+    .vp-author-name {
+      font-size: 16px;
+      font-weight: 700;
+      text-shadow: 0 1px 4px rgba(0,0,0,.7);
+    }
+    .vp-meta {
+      font-size: 12px;
+      color: rgba(255,255,255,.72);
+      margin-top: 2px;
+      text-shadow: 0 1px 3px rgba(0,0,0,.6);
+    }
+    .vp-title {
+      font-size: 14px;
+      line-height: 1.4;
+      color: rgba(255,255,255,.92);
+      text-shadow: 0 1px 4px rgba(0,0,0,.7);
+      max-height: 3.9em;
+      overflow: hidden;
+    }
+
+    /* Прогресс */
+    .vp-progress {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 3px;
+      background: rgba(255,255,255,.22);
+      z-index: 6;
+    }
+    .vp-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-color, #ffb648);
+    }
+
+    /* Оверлей воспроизведения */
+    .vp-play-overlay {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 74px; height: 74px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease;
+      z-index: 4;
+    }
+    .vp-play-overlay.show { opacity: 1; }
+    .vp-play-overlay svg { width: 34px; height: 34px; margin-left: 3px; }
+
+    /* Летающее сердечко при дабл-тапе */
+    .vp-float-heart {
+      position: absolute;
+      width: 96px; height: 96px;
+      z-index: 7;
+      pointer-events: none;
+      opacity: 0;
+      margin-left: -48px;
+      margin-top: -48px;
+    }
+    .vp-float-heart svg { width: 96px; height: 96px; filter: drop-shadow(0 4px 14px rgba(0,0,0,.45)); }
+    .vp-float-heart.show { animation: vpHeartFloat .95s cubic-bezier(.22,.61,.36,1) forwards; }
+    @keyframes vpHeartFloat {
+      0%   { opacity: 0; transform: scale(.35); }
+      18%  { opacity: .95; transform: scale(1.12); }
+      45%  { transform: scale(1); }
+      75%  { transform: scale(1); opacity: .9; }
+      100% { opacity: 0; transform: translateY(-56px) scale(.95); }
+    }
+
+    /* Подсказка свайпа */
+    .vp-hint {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 120px;
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 30px;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .5s ease;
+    }
+    .vp-hint.show { opacity: 1; }
+    .vp-hint svg { width: 18px; height: 18px; color: var(--accent-color, #ffb648); }
+    .vp-hint.fade-out { opacity: 0; transition: opacity .8s ease; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .vp-card { transition: none; }
+      .vp-float-heart.show { animation-duration: .01s; }
+    }
   </style>
 </head>
 <body>
@@ -3016,6 +3332,16 @@
     </div>
   </div>
 
+  <!-- ===== ПОЛНОЭКРАННЫЙ ПЛЕЕР ВЕРТИКАЛЬНЫХ ВИДЕО ===== -->
+  <div class="video-player-modal" id="videoPlayerModal" role="dialog" aria-modal="true" aria-label="Видеоплеер">
+    <div class="vp-frame" id="vpFrame">
+      <div class="vp-hint" id="vpHint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        Свайп, чтобы листать видео
+      </div>
+    </div>
+  </div>
+
   <script>
     let posts = [
       {
@@ -3299,12 +3625,12 @@
       if (!grid) return;
       document.getElementById('videosCount').textContent = videos.length + ' роликов';
 
-      grid.innerHTML = videos.map(v => {
+      grid.innerHTML = videos.map((v, i) => {
         const liked = videoLikes[v.id] || false;
         const ratio = v.ratio || 1.5;
         const height = Math.round(160 / ratio * 2.2);
         return `
-          <div class="video-card" onclick="toggleVideoLike(${v.id}, this)">
+          <div class="video-card" onclick="openVideoPlayer(${i})">
             <div class="video-card-cover" style="height: ${height + 140}px; overflow: hidden;">
               <img src="${v.img}" alt="${v.title}" loading="lazy" style="height: 100%; width: 100%; object-fit: cover;">
               <span class="video-card-duration">${v.duration}</span>
@@ -3313,6 +3639,9 @@
                 ${v.views}
               </span>
               <div class="video-card-gradient"></div>
+              <span class="video-card-play-badge">
+                <svg width="26" height="26" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </span>
               <div class="video-card-overlay">
                 <div class="video-card-author">
                   <img class="video-card-author-avatar" src="${v.avatar}" alt="">
@@ -3331,9 +3660,365 @@
     }
 
     function toggleVideoLike(id, btn) {
-      videoLikes[id] = !videoLikes[id];
+      const v = videos.find(x => x.id === id);
+      if (videoLikes[id]) {
+        delete videoLikes[id];
+        if (v) v.likes = Math.max(0, (v.likes || 0) - 1);
+      } else {
+        videoLikes[id] = true;
+        if (v) v.likes = (v.likes || 0) + 1;
+      }
       renderVideos();
     }
+
+    // ================= ПОЛНОЭКРАННЫЙ ПЛЕЕР ВЕРТИКАЛЬНЫХ ВИДЕО =================
+    const VIDEO_SOURCES = [
+      'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4',
+      'https://test-videos.co.uk/vids/sintel/mp4/h264/360/Sintel_360_10s_1MB.mp4',
+      'https://test-videos.co.uk/vids/jellyfish/mp4/h264/360/Jellyfish_360_10s_1MB.mp4',
+      'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'
+    ];
+    videos.forEach((v, i) => { v.src = VIDEO_SOURCES[i % VIDEO_SOURCES.length]; });
+
+    const VP_SVG = {
+      back: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>',
+      share: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>',
+      play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+      heart: '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>',
+      heartFilled: '<svg viewBox="0 0 24 24" fill="#ff2a55"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>',
+      soundOn: '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>',
+      soundOff: '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z"/>'
+    };
+
+    const vpModal = document.getElementById('videoPlayerModal');
+    const vpFrame = document.getElementById('vpFrame');
+    const vpHintEl = document.getElementById('vpHint');
+    let vpCards = [];
+    let vpIdx = 0;
+    let vpFront = 0;
+    let vpDir = 1;
+    let vpMuted = true;
+    let vpBusy = false;
+    let vpTouched = false, vpStartY = 0, vpStartX = 0, vpLastY = 0, vpLastT = 0, vpDeltaY = 0, vpVel = 0;
+    let vpLastTap = 0, vpTapX = 0, vpTapY = 0;
+    let vpWheelT = 0;
+    let vpHintShown = false;
+    let vpScrollY = 0;
+    let vpLikesChanged = false;
+    const vpReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function vpCardTemplate() {
+      return `
+        <div class="vp-card">
+          <div class="vp-media">
+            <img class="vp-poster" alt="">
+            <video class="vp-video" playsinline webkit-playsinline preload="auto" loop></video>
+            <div class="vp-grad-top"></div>
+            <div class="vp-grad-bottom"></div>
+          </div>
+          <div class="vp-topbar">
+            <button class="vp-top-btn" onclick="closeVideoPlayer()" aria-label="Закрыть">${VP_SVG.back}</button>
+            <div class="vp-counter"></div>
+            <button class="vp-top-btn" onclick="vpShare()" aria-label="Поделиться">${VP_SVG.share}</button>
+          </div>
+          <div class="vp-sidebar">
+            <button class="vp-side-btn" onclick="vpLike()" aria-label="Нравится">
+              <span class="vp-side-circle"><svg class="vp-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${VP_SVG.heart}</svg></span>
+              <span class="vp-side-label"></span>
+            </button>
+            <button class="vp-side-btn" onclick="vpToggleSound()" aria-label="Звук">
+              <span class="vp-side-circle"><svg class="vp-sound" viewBox="0 0 24 24" fill="currentColor">${VP_SVG.soundOn}</svg></span>
+            </button>
+          </div>
+          <div class="vp-bottom">
+            <div class="vp-author">
+              <img class="vp-avatar" alt="">
+              <div>
+                <div class="vp-author-name"></div>
+                <div class="vp-meta"></div>
+              </div>
+            </div>
+            <div class="vp-title"></div>
+          </div>
+          <div class="vp-progress"><div class="vp-progress-fill"></div></div>
+          <div class="vp-play-overlay">${VP_SVG.play}</div>
+          <div class="vp-float-heart">${VP_SVG.heartFilled}</div>
+        </div>`;
+    }
+
+    function vpMediaClick(e) {
+      const now = Date.now();
+      if (now - vpLastTap < 320 && Math.abs(e.clientX - vpTapX) < 60 && Math.abs(e.clientY - vpTapY) < 60) {
+        vpLastTap = 0;
+        vpFloatHeartAt(e.clientX, e.clientY);
+        vpToggleLike();
+        return;
+      }
+      vpLastTap = now;
+      vpTapX = e.clientX;
+      vpTapY = e.clientY;
+      const v = vpCards[vpFront].querySelector('video');
+      if (v.paused) { v.play().then(() => {}).catch(() => {}); }
+      else { v.pause(); }
+    }
+
+    function setVpLikeState(card, video) {
+      const liked = !!videoLikes[video.id];
+      card.querySelector('.vp-heart').classList.toggle('liked', liked);
+      card.querySelector('.vp-side-label').textContent = (video.likes || 0).toLocaleString('ru-RU');
+    }
+
+    function fillVpCard(card, video, idx) {
+      const poster = card.querySelector('.vp-poster');
+      poster.src = video.img;
+      poster.alt = video.title;
+      poster.style.opacity = '1';
+      const v = card.querySelector('.vp-video');
+      v.src = video.src;
+      v.muted = vpMuted;
+      v.currentTime = 0;
+      card.querySelector('.vp-sound').innerHTML = vpMuted ? VP_SVG.soundOff : VP_SVG.soundOn;
+      card.querySelector('.vp-avatar').src = video.avatar;
+      card.querySelector('.vp-author-name').textContent = video.author;
+      card.querySelector('.vp-title').textContent = video.title;
+      card.querySelector('.vp-meta').textContent = (video.views || '') + ' · ' + (video.duration || '');
+      card.querySelector('.vp-counter').textContent = (idx + 1) + ' / ' + videos.length;
+      card.querySelector('.vp-progress-fill').style.width = '0%';
+      const overlay = card.querySelector('.vp-play-overlay');
+      overlay.classList.remove('show');
+      setVpLikeState(card, video);
+      v.ontimeupdate = () => {
+        if (v.duration) {
+          card.querySelector('.vp-progress-fill').style.width = (v.currentTime / v.duration * 100).toFixed(1) + '%';
+        }
+      };
+      v.onplay = () => { poster.style.opacity = '0'; overlay.classList.remove('show'); };
+      v.onpause = () => { if (v.currentTime > 0) overlay.classList.add('show'); };
+      v.onerror = () => { poster.style.opacity = '1'; };
+      v.load();
+    }
+
+    function playVpFront() {
+      if (!vpCards.length) return;
+      vpCards[1 - vpFront].querySelector('video').pause();
+      const v = vpCards[vpFront].querySelector('video');
+      v.muted = vpMuted;
+      v.play().then(() => {
+        vpCards[vpFront].querySelector('.vp-poster').style.opacity = '0';
+      }).catch(() => {
+        vpCards[vpFront].querySelector('.vp-poster').style.opacity = '1';
+      });
+    }
+
+    function openVideoPlayer(i) {
+      if (vpModal.classList.contains('open')) return;
+      if (typeof i !== 'number' || isNaN(i)) i = 0;
+      vpIdx = Math.max(0, Math.min(videos.length - 1, i));
+      vpScrollY = window.scrollY;
+      document.body.style.overflow = 'hidden';
+      if (!vpCards.length) {
+        vpCards = [vpCardTemplate(), vpCardTemplate()].map(h => {
+          const holder = document.createElement('div');
+          holder.innerHTML = h;
+          const card = holder.firstElementChild;
+          vpFrame.appendChild(card);
+          card.querySelector('.vp-media').addEventListener('click', vpMediaClick);
+          return card;
+        });
+      }
+      vpDir = 1;
+      const backIdx = (vpIdx + 1) % videos.length;
+      fillVpCard(vpCards[0], videos[vpIdx], vpIdx);
+      fillVpCard(vpCards[1], videos[backIdx], backIdx);
+      const a = vpCards[0], b = vpCards[1];
+      a.style.zIndex = '2'; b.style.zIndex = '1';
+      a.style.transition = 'none'; b.style.transition = 'none';
+      a.style.transform = 'translateY(0)';
+      b.style.transform = 'translateY(100%)';
+      vpFront = 0;
+      vpModal.classList.add('open');
+      requestAnimationFrame(() => { a.style.transition = ''; b.style.transition = ''; });
+      playVpFront();
+      vpHintEl.classList.remove('fade-out');
+      if (!vpHintShown) {
+        vpHintShown = true;
+        vpHintEl.classList.add('show');
+        setTimeout(() => { vpHintEl.classList.add('fade-out'); }, 3200);
+      }
+    }
+
+    function closeVideoPlayer() {
+      if (!vpModal.classList.contains('open')) return;
+      vpModal.classList.remove('open');
+      document.body.style.overflow = '';
+      window.scrollTo(0, vpScrollY);
+      vpCards.forEach(c => {
+        const v = c.querySelector('video');
+        v.pause();
+        v.removeAttribute('src');
+        v.load();
+      });
+      if (vpLikesChanged) {
+        vpLikesChanged = false;
+        renderVideos();
+      }
+    }
+
+    function vpNavigate(dir) {
+      if (vpBusy || !vpModal.classList.contains('open') || videos.length < 2) return;
+      vpBusy = true;
+      const front = vpCards[vpFront];
+      const back = vpCards[1 - vpFront];
+      const nextIdx = (vpIdx + dir + videos.length) % videos.length;
+      if (dir !== vpDir || back._filledFor !== nextIdx) {
+        fillVpCard(back, videos[nextIdx], nextIdx);
+        back._filledFor = nextIdx;
+        back.style.transition = 'none';
+        back.style.transform = dir === 1 ? 'translateY(100%)' : 'translateY(-100%)';
+        void back.offsetHeight;
+        back.style.transition = '';
+      }
+      const bv = back.querySelector('video');
+      bv.muted = vpMuted;
+      bv.currentTime = 0;
+      const bp = bv.play();
+      if (bp && bp.catch) bp.catch(() => {});
+      front.style.transition = 'transform .42s cubic-bezier(.25,.8,.3,1)';
+      back.style.transition = 'transform .42s cubic-bezier(.25,.8,.3,1)';
+      front.style.zIndex = '1'; back.style.zIndex = '2';
+      front.style.transform = dir === 1 ? 'translateY(-100%)' : 'translateY(100%)';
+      back.style.transform = 'translateY(0)';
+      vpDir = dir;
+      vpIdx = nextIdx;
+      const oldFront = vpFront;
+      vpFront = 1 - vpFront;
+      const finish = () => {
+        const old = vpCards[oldFront];
+        old.querySelector('video').pause();
+        const neighbor = (vpIdx + vpDir + videos.length) % videos.length;
+        fillVpCard(old, videos[neighbor], neighbor);
+        old._filledFor = neighbor;
+        old.style.transition = 'none';
+        old.style.transform = vpDir === 1 ? 'translateY(100%)' : 'translateY(-100%)';
+        void old.offsetHeight;
+        old.style.transition = '';
+        vpBusy = false;
+      };
+      if (vpReduced) {
+        front.style.transition = 'none'; back.style.transition = 'none';
+        finish();
+      } else {
+        setTimeout(finish, 440);
+      }
+    }
+
+    function vpToggleLike() {
+      const v = videos[vpIdx];
+      if (videoLikes[v.id]) {
+        delete videoLikes[v.id];
+        v.likes = Math.max(0, (v.likes || 0) - 1);
+      } else {
+        videoLikes[v.id] = true;
+        v.likes = (v.likes || 0) + 1;
+        vpFloatHeart();
+      }
+      vpCards.forEach(c => setVpLikeState(c, v));
+      vpLikesChanged = true;
+    }
+
+    function vpLike() { vpToggleLike(); }
+
+    function vpFloatHeartAt(x, y) {
+      const rect = vpFrame.getBoundingClientRect();
+      const h = vpCards[vpFront].querySelector('.vp-float-heart');
+      h.style.left = (x - rect.left) + 'px';
+      h.style.top = (y - rect.top) + 'px';
+      h.classList.remove('show');
+      void h.offsetWidth;
+      h.classList.add('show');
+    }
+
+    function vpFloatHeart() {
+      const rect = vpFrame.getBoundingClientRect();
+      vpFloatHeartAt(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
+
+    function vpToggleSound() {
+      vpMuted = !vpMuted;
+      vpCards.forEach(c => {
+        c.querySelector('video').muted = vpMuted;
+        c.querySelector('.vp-sound').innerHTML = vpMuted ? VP_SVG.soundOff : VP_SVG.soundOn;
+      });
+    }
+
+    function vpShare() {
+      const v = videos[vpIdx];
+      if (navigator.share) {
+        navigator.share({ title: v.title, text: v.author + ' — ' + v.title, url: location.href }).catch(() => {});
+      }
+    }
+
+    // --- Жесты плеера ---
+    vpFrame.addEventListener('touchstart', (e) => {
+      if (vpBusy || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      vpTouched = true;
+      vpStartY = vpLastY = t.clientY;
+      vpStartX = t.clientX;
+      vpDeltaY = 0;
+      vpVel = 0;
+      vpLastT = performance.now();
+    }, { passive: true });
+
+    vpFrame.addEventListener('touchmove', (e) => {
+      if (!vpTouched || vpBusy) return;
+      const t = e.touches[0];
+      const dy = t.clientY - vpStartY;
+      const dx = Math.abs(t.clientX - vpStartX);
+      if (Math.abs(dy) < 8 && dx < 8) return;
+      if (dx > Math.abs(dy)) { vpTouched = false; return; }
+      e.preventDefault();
+      const now = performance.now();
+      vpVel = (t.clientY - vpLastY) / (now - vpLastT + 1);
+      vpLastY = t.clientY;
+      vpLastT = now;
+      vpDeltaY = dy;
+      const front = vpCards[vpFront];
+      front.style.transition = 'none';
+      front.style.transform = 'translateY(' + dy + 'px)';
+    }, { passive: false });
+
+    vpFrame.addEventListener('touchend', () => {
+      if (!vpTouched) return;
+      vpTouched = false;
+      if (vpBusy) return;
+      const front = vpCards[vpFront];
+      if (vpDeltaY < -70 || vpVel < -0.4) {
+        vpNavigate(1);
+      } else if (vpDeltaY > 70 || vpVel > 0.4) {
+        vpNavigate(-1);
+      } else {
+        front.style.transition = 'transform .3s cubic-bezier(.25,.8,.3,1)';
+        front.style.transform = 'translateY(0)';
+      }
+    });
+
+    vpFrame.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (vpBusy) return;
+      const now = Date.now();
+      if (now - vpWheelT < 550) return;
+      vpWheelT = now;
+      vpNavigate(e.deltaY > 0 ? 1 : -1);
+    }, { passive: false });
+
+    document.addEventListener('keydown', (e) => {
+      if (!vpModal.classList.contains('open')) return;
+      if (e.key === 'Escape') closeVideoPlayer();
+      else if (e.key === 'ArrowDown') vpNavigate(1);
+      else if (e.key === 'ArrowUp') vpNavigate(-1);
+    });
+
 
     // --- ФУНКЦИИ СТРАНИЦЫ ПОИСКА ---
     function openSearchPage(el) {
