@@ -1553,6 +1553,49 @@
       height: 80px;
     }
 
+    .post-type-switch {
+      display: flex;
+      gap: 6px;
+      padding: 4px;
+      background: var(--chip-bg);
+      border-radius: 50px;
+    }
+
+    .post-type-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 8px;
+      border: none;
+      border-radius: 50px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .post-type-btn:hover {
+      color: var(--text-color);
+    }
+
+    .post-type-btn.active {
+      background: var(--accent-color);
+      color: #1a1420;
+    }
+
+    .post-type-btn.active .post-type-btn-icon {
+      opacity: 1;
+    }
+
+    .post-type-btn-icon {
+      opacity: 0.65;
+      transition: opacity 0.2s ease;
+    }
+
     .btn-submit {
       background-color: var(--accent-color);
       color: #1a1420;
@@ -2661,12 +2704,22 @@
 
       <form onsubmit="handleCreatePost(event)">
         <div class="form-group">
-          <label>Тип публикаций</label>
-          <select class="form-control" id="postTypeSelect" onchange="toggleVideoInputs(this.value)" required>
-            <option value="post">Обычный пост</option>
-            <option value="video">Вертикальное видео</option>
-            <option value="vacancy">Вакансия (работа)</option>
-          </select>
+          <label>Тип публикации</label>
+          <div class="post-type-switch" id="postTypeSwitch">
+            <button type="button" class="post-type-btn active" data-type="post" onclick="setPostType('post')">
+              <svg class="post-type-btn-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/></svg>
+              Пост
+            </button>
+            <button type="button" class="post-type-btn" data-type="video" onclick="setPostType('video')">
+              <svg class="post-type-btn-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              Видео
+            </button>
+            <button type="button" class="post-type-btn" data-type="vacancy" onclick="setPostType('vacancy')">
+              <svg class="post-type-btn-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              Вакансия
+            </button>
+          </div>
+          <input type="hidden" id="postTypeSelect" value="post">
         </div>
 
         <div class="form-group" id="postCategoryGroup">
@@ -3666,11 +3719,18 @@
       document.getElementById('fabAddBtn').classList.remove('active');
     }
 
+    function setPostType(type) {
+      document.getElementById('postTypeSelect').value = type;
+      document.querySelectorAll('.post-type-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.type === type);
+      });
+      toggleVideoInputs(type);
+    }
+
     function quickCreate(type) {
       closeFabMenu();
       openCreateModal();
-      document.getElementById('postTypeSelect').value = type;
-      toggleVideoInputs(type);
+      setPostType(type);
     }
 
     function openCreateModal() {
@@ -3679,8 +3739,7 @@
 
     function closeCreateModal() {
       document.getElementById('createModal').classList.remove('active');
-      document.getElementById('postTypeSelect').value = 'post';
-      toggleVideoInputs('post');
+      setPostType('post');
     }
 
     function toggleVideoInputs(val) {
