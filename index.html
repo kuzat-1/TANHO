@@ -564,6 +564,261 @@
       padding: 0 16px;
     }
 
+    /* --- ВИДЕО-КАНАЛ (в стиле meigen.ai/videos) --- */
+    .video-channel-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #6d28d9, #1e1b4b);
+      padding: 20px 16px;
+      margin: 0 16px 16px;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .video-channel-hero:active {
+      transform: scale(0.98);
+    }
+
+    .video-channel-hero-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .video-channel-hero-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .video-channel-hero-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .video-channel-hero-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .video-channel-hero-sub {
+      font-size: 12px;
+      opacity: 0.8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .video-channel-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(8px);
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    .video-channel-hero-play {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.16);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      transition: background-color 0.2s ease;
+    }
+
+    .video-channel-hero:hover .video-channel-hero-play {
+      background: rgba(255,255,255,0.28);
+    }
+
+    .videos-tab-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px 4px;
+    }
+
+    .videos-masonry {
+      column-count: 2;
+      column-gap: 8px;
+      padding: 8px 16px 20px;
+    }
+
+    .video-card {
+      break-inside: avoid;
+      margin-bottom: 8px;
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--card-bg);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .video-card-cover {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .video-card-cover img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .video-card:hover .video-card-cover img {
+      transform: scale(1.04);
+    }
+
+    .video-card-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 45%, transparent 65%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .video-card:hover .video-card-gradient {
+      opacity: 1;
+    }
+
+    .video-card-duration {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      z-index: 2;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .video-card-views {
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .video-card-overlay {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      z-index: 2;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .video-card:hover .video-card-overlay {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .video-card-author {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .video-card-author-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #444;
+    }
+
+    .video-card-author-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+
+    .video-card-like {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255,255,255,0.14);
+      backdrop-filter: blur(8px);
+      border: none;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 9px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-variant-numeric: tabular-nums;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .video-card-like:hover {
+      background: rgba(255,255,255,0.26);
+    }
+
+    .video-card-like.liked {
+      background: rgba(255,182,72,0.85);
+      color: #1a1420;
+    }
+
+    .video-card-title {
+      padding: 8px 10px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-color);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
     .channel-item {
       display: flex;
       align-items: center;
@@ -2163,6 +2418,31 @@
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
 
+        <!-- ВХОД В ВИДЕО-КАНАЛ -->
+        <div class="video-channel-hero" onclick="openVideoChannel()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openVideoChannel()">
+          <svg class="video-channel-hero-bg" width="200" height="140" viewBox="0 0 200 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle cx="170" cy="30" r="50" fill="#a78bfa" opacity="0.5"/>
+            <circle cx="30" cy="110" r="40" fill="#38bdf8" opacity="0.4"/>
+            <rect x="140" y="90" width="70" height="70" rx="14" fill="#f472b6" opacity="0.35"/>
+            <rect x="-10" y="-20" width="60" height="60" rx="12" fill="#fb923c" opacity="0.3"/>
+          </svg>
+          <div class="video-channel-hero-content">
+            <div class="video-channel-hero-info">
+              <div class="video-channel-hero-title">Видео-канал</div>
+              <div class="video-channel-hero-sub">
+                <span class="video-channel-hero-badge">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                  Вертикальные видео
+                </span>
+                <span>12 роликов</span>
+              </div>
+            </div>
+            <div class="video-channel-hero-play">
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+          </div>
+        </div>
+
         <div class="channel-item">
           <div class="channel-info">
             <img class="channel-avatar" src="https://picsum.photos/id/1011/100/100" alt="Avatar">
@@ -2185,6 +2465,27 @@
           <button class="btn-sub">Читать</button>
         </div>
       </div>
+    </div>
+
+    <!-- ВИДЕО-КАНАЛ: ВЕРТИКАЛЬНЫЕ ВИДЕО (в стиле meigen.ai/videos) -->
+    <div class="tab-screen" id="tabVideos">
+      <div class="profile-title-bar">
+        <button class="settings-btn" onclick="switchTab('channels', document.getElementById('navChannelsBtn'))" aria-label="Назад">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <h1 class="page-title">Видео-канал</h1>
+        <span style="width: 24px;"></span>
+      </div>
+
+      <div class="videos-tab-header">
+        <span class="video-channel-hero-badge">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          Вертикальные видео
+        </span>
+        <span style="font-size: 12px; color: var(--text-secondary);" id="videosCount"></span>
+      </div>
+
+      <div class="videos-masonry" id="videosGrid"></div>
     </div>
 
     <!-- ВКЛАДКА 3: ВАКАНСИИ (теперь открывается из Каналов) -->
@@ -2777,6 +3078,141 @@
       }
     ];
 
+    let videos = [
+      {
+        id: 201,
+        title: 'Создание AI-аватара за 5 минут',
+        author: 'AI-Лаборатория',
+        avatar: 'https://i.pravatar.cc/100?img=12',
+        img: 'https://picsum.photos/id/1011/600/1000',
+        duration: '0:58',
+        views: '124K',
+        likes: 8940,
+        ratio: 1.7
+      },
+      {
+        id: 202,
+        title: 'Нейросети рисуют: город будущего',
+        author: 'Digital Art',
+        avatar: 'https://i.pravatar.cc/100?img=5',
+        img: 'https://picsum.photos/id/103/600/1000',
+        duration: '1:24',
+        views: '86K',
+        likes: 5210,
+        ratio: 1.5
+      },
+      {
+        id: 203,
+        title: 'Лучшие промпты для Midjourney',
+        author: 'AI-Лаборатория',
+        avatar: 'https://i.pravatar.cc/100?img=12',
+        img: 'https://picsum.photos/id/1043/600/1000',
+        duration: '2:05',
+        views: '310K',
+        likes: 12400,
+        ratio: 1.6
+      },
+      {
+        id: 204,
+        title: 'Как я сделал бота на Python за день',
+        author: 'Код с нуля',
+        avatar: 'https://i.pravatar.cc/100?img=32',
+        img: 'https://picsum.photos/id/1015/600/1000',
+        duration: '4:12',
+        views: '58K',
+        likes: 3300,
+        ratio: 1.4
+      },
+      {
+        id: 205,
+        title: 'Вертикальный формат: секреты монтажа',
+        author: 'VideoLab',
+        avatar: 'https://i.pravatar.cc/100?img=15',
+        img: 'https://picsum.photos/id/1084/600/1000',
+        duration: '3:47',
+        views: '42K',
+        likes: 2100,
+        ratio: 1.8
+      },
+      {
+        id: 206,
+        title: 'Топ-10 нейросетей 2026 года',
+        author: 'AI-Лаборатория',
+        avatar: 'https://i.pravatar.cc/100?img=12',
+        img: 'https://picsum.photos/id/106/600/1000',
+        duration: '1:15',
+        views: '205K',
+        likes: 9870,
+        ratio: 1.5
+      },
+      {
+        id: 207,
+        title: 'Дизайн-система: с чего начать?',
+        author: 'Design Hub',
+        avatar: 'https://i.pravatar.cc/100?img=47',
+        img: 'https://picsum.photos/id/1060/600/1000',
+        duration: '2:33',
+        views: '77K',
+        likes: 4560,
+        ratio: 1.6
+      },
+      {
+        id: 208,
+        title: 'Музыкальный клип в стиле synthwave',
+        author: 'MUZNAVO',
+        avatar: 'https://i.pravatar.cc/100?img=3',
+        img: 'https://picsum.photos/id/1082/600/1000',
+        duration: '0:44',
+        views: '560K',
+        likes: 23400,
+        ratio: 1.4
+      },
+      {
+        id: 209,
+        title: 'Урок: делаем короткие видео в CapCut',
+        author: 'VideoLab',
+        avatar: 'https://i.pravatar.cc/100?img=15',
+        img: 'https://picsum.photos/id/109/600/1000',
+        duration: '5:20',
+        views: '94K',
+        likes: 6100,
+        ratio: 1.7
+      },
+      {
+        id: 210,
+        title: 'Запуск нейросети на своём ПК',
+        author: 'Код с нуля',
+        avatar: 'https://i.pravatar.cc/100?img=32',
+        img: 'https://picsum.photos/id/110/600/1000',
+        duration: '6:02',
+        views: '38K',
+        likes: 1750,
+        ratio: 1.5
+      },
+      {
+        id: 211,
+        title: 'Эстетика dark mode в интерфейсах',
+        author: 'Design Hub',
+        avatar: 'https://i.pravatar.cc/100?img=47',
+        img: 'https://picsum.photos/id/1019/600/1000',
+        duration: '1:48',
+        views: '66K',
+        likes: 3820,
+        ratio: 1.8
+      },
+      {
+        id: 212,
+        title: 'Синтез речи: голоса, которые не отличить',
+        author: 'AI-Лаборатория',
+        avatar: 'https://i.pravatar.cc/100?img=12',
+        img: 'https://picsum.photos/id/1025/600/1000',
+        duration: '2:59',
+        views: '149K',
+        likes: 7450,
+        ratio: 1.4
+      }
+    ];
+
     let jobs = [
       {
         id: 101,
@@ -2824,6 +3260,10 @@
         document.getElementById('tabRadio').classList.add('active');
         radioInit();
       }
+      if (tabName === 'videos') {
+        document.getElementById('tabVideos').classList.add('active');
+        renderVideos();
+      }
       if (tabName === 'search') {
         document.getElementById('tabSearch').classList.add('active');
         searchPageRender();
@@ -2844,6 +3284,55 @@
     // Открыть раздел «Радио» из вкладки «Каналы»
     function openRadioSection() {
       switchTab('radio', document.getElementById('navChannelsBtn'));
+    }
+
+    // --- ФУНКЦИИ ВИДЕО-КАНАЛА (вертикальные видео) ---
+    let videoLikes = {};
+
+    function openVideoChannel() {
+      switchTab('videos', document.getElementById('navChannelsBtn'));
+      renderVideos();
+    }
+
+    function renderVideos() {
+      const grid = document.getElementById('videosGrid');
+      if (!grid) return;
+      document.getElementById('videosCount').textContent = videos.length + ' роликов';
+
+      grid.innerHTML = videos.map(v => {
+        const liked = videoLikes[v.id] || false;
+        const ratio = v.ratio || 1.5;
+        const height = Math.round(160 / ratio * 2.2);
+        return `
+          <div class="video-card" onclick="toggleVideoLike(${v.id}, this)">
+            <div class="video-card-cover" style="height: ${height + 140}px; overflow: hidden;">
+              <img src="${v.img}" alt="${v.title}" loading="lazy" style="height: 100%; width: 100%; object-fit: cover;">
+              <span class="video-card-duration">${v.duration}</span>
+              <span class="video-card-views">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                ${v.views}
+              </span>
+              <div class="video-card-gradient"></div>
+              <div class="video-card-overlay">
+                <div class="video-card-author">
+                  <img class="video-card-author-avatar" src="${v.avatar}" alt="">
+                  <span class="video-card-author-name">${v.author}</span>
+                </div>
+                <button class="video-card-like ${liked ? 'liked' : ''}" onclick="event.stopPropagation(); toggleVideoLike(${v.id}, this)">
+                  <svg width="13" height="13" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  ${v.likes.toLocaleString('ru-RU')}
+                </button>
+              </div>
+            </div>
+            <div class="video-card-title">${v.title}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleVideoLike(id, btn) {
+      videoLikes[id] = !videoLikes[id];
+      renderVideos();
     }
 
     // --- ФУНКЦИИ СТРАНИЦЫ ПОИСКА ---
