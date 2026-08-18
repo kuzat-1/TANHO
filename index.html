@@ -1092,89 +1092,6 @@
       transform: rotate(45deg);
     }
 
-    /* --- FAB SPEED-DIAL --- */
-    .fab-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 8, 14, 0.55);
-      z-index: 899;
-      display: none;
-    }
-
-    .fab-overlay.active {
-      display: block;
-    }
-
-    .fab-menu {
-      position: fixed;
-      bottom: calc(var(--nav-height) + 18px);
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 18px;
-      z-index: 950;
-      pointer-events: none;
-    }
-
-    .fab-menu.active {
-      pointer-events: auto;
-    }
-
-    .fab-mini-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      opacity: 0;
-      transform: translateY(16px) scale(0.85);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-
-    .fab-menu.active .fab-mini-btn {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-
-    .fab-menu.active .fab-mini-btn:nth-child(1) { transition-delay: 0.02s; }
-    .fab-menu.active .fab-mini-btn:nth-child(2) { transition-delay: 0.06s; }
-    .fab-menu.active .fab-mini-btn:nth-child(3) { transition-delay: 0.1s; }
-
-    .fab-mini-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #14121b;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    }
-
-    .fab-mini-btn.type-post .fab-mini-icon {
-      background: linear-gradient(135deg, var(--accent-color), #ff8a5b);
-    }
-
-    .fab-mini-btn.type-video .fab-mini-icon {
-      background: #d1a4ff;
-    }
-
-    .fab-mini-btn.type-vacancy .fab-mini-icon {
-      background: var(--jobs-color);
-    }
-
-    .fab-mini-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: #fff;
-      background: rgba(20, 18, 27, 0.9);
-      padding: 3px 9px;
-      border-radius: 6px;
-      white-space: nowrap;
-    }
-
     /* --- ЭКРАН ПОЛНОГО ПРОСМОТРА ПОСТА --- */
     .full-post-modal {
       position: fixed;
@@ -2452,7 +2369,7 @@
         <span>Каналы</span>
       </button>
 
-      <button class="nav-item-add" id="fabAddBtn" onclick="toggleFabMenu()" aria-label="Добавить">
+      <button class="nav-item-add" id="fabAddBtn" onclick="openCreateModal()" aria-label="Добавить">
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>
 
@@ -2466,33 +2383,6 @@
         <span>Профиль</span>
       </button>
     </nav>
-
-    <!-- ЗАТЕМНЕНИЕ ДЛЯ ЗАКРЫТИЯ FAB-МЕНЮ ПО ТАПУ ВНЕ -->
-    <div class="fab-overlay" id="fabOverlay" onclick="closeFabMenu()"></div>
-
-    <!-- БОКОВОЕ МЕНЮ FAB (SPEED DIAL) -->
-    <div class="fab-menu" id="fabMenu">
-      <button class="fab-mini-btn type-post" onclick="quickCreate('post')">
-        <span class="fab-mini-icon">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg>
-        </span>
-        <span class="fab-mini-label">Пост</span>
-      </button>
-
-      <button class="fab-mini-btn type-video" onclick="quickCreate('video')">
-        <span class="fab-mini-icon">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-        </span>
-        <span class="fab-mini-label">Видео</span>
-      </button>
-
-      <button class="fab-mini-btn type-vacancy" onclick="quickCreate('vacancy')">
-        <span class="fab-mini-icon">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        </span>
-        <span class="fab-mini-label">Вакансия</span>
-      </button>
-    </div>
 
   </div>
 
@@ -3703,22 +3593,6 @@
       if (activeProfileTab === 'saved') renderProfileFeed();
     }
 
-    let fabMenuOpen = false;
-
-    function toggleFabMenu() {
-      fabMenuOpen = !fabMenuOpen;
-      document.getElementById('fabMenu').classList.toggle('active', fabMenuOpen);
-      document.getElementById('fabOverlay').classList.toggle('active', fabMenuOpen);
-      document.getElementById('fabAddBtn').classList.toggle('active', fabMenuOpen);
-    }
-
-    function closeFabMenu() {
-      fabMenuOpen = false;
-      document.getElementById('fabMenu').classList.remove('active');
-      document.getElementById('fabOverlay').classList.remove('active');
-      document.getElementById('fabAddBtn').classList.remove('active');
-    }
-
     function setPostType(type) {
       document.getElementById('postTypeSelect').value = type;
       document.querySelectorAll('.post-type-btn').forEach(btn => {
@@ -3727,13 +3601,8 @@
       toggleVideoInputs(type);
     }
 
-    function quickCreate(type) {
-      closeFabMenu();
-      openCreateModal();
-      setPostType(type);
-    }
-
     function openCreateModal() {
+      setPostType('post');
       document.getElementById('createModal').classList.add('active');
     }
 
