@@ -577,6 +577,14 @@
       transition: transform 0.2s ease;
     }
 
+    .jobs-hero {
+      background: linear-gradient(135deg, #0e7490, #164e63);
+    }
+
+    .radio-hero {
+      background: linear-gradient(135deg, #c2410c, #7f1d1d);
+    }
+
     .video-channel-hero:active {
       transform: scale(0.98);
     }
@@ -628,6 +636,13 @@
       backdrop-filter: blur(8px);
       padding: 3px 8px;
       border-radius: 999px;
+    }
+
+    .video-channel-hero-count {
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0.85;
+      white-space: nowrap;
     }
 
     .video-channel-hero-play {
@@ -972,6 +987,75 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 10px;
+    }
+
+    .job-company-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .job-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+    }
+
+    .job-company-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .job-company-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .job-location {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .job-salary-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      align-self: flex-start;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--accent-color, #ffb648);
+      background: var(--accent-color-soft);
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    .job-comments {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-secondary);
+    }
+
+    .job-chevron {
+      color: var(--text-secondary);
+      opacity: 0.6;
     }
 
     .job-badge {
@@ -1897,22 +1981,67 @@
     .radio-play-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0,0,0,0.35);
+      background: rgba(0, 0, 0, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: background-color 0.25s ease;
     }
 
     .radio-play-icon-small {
-      width: 38px;
-      height: 38px;
-      background: #fff;
-      color: #000;
+      width: 42px;
+      height: 42px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #111;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .radio-play-icon-small svg {
+      margin-left: 2px;
+    }
+
+    .radio-card:hover .radio-play-overlay {
+      background: rgba(0, 0, 0, 0.45);
+    }
+    .radio-card:hover .radio-play-icon-small {
+      transform: scale(1.08);
+    }
+    .radio-card:active .radio-play-icon-small {
+      transform: scale(0.88);
+    }
+
+    .radio-eq {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 26px;
+      padding: 6px 9px;
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 9px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .radio-eq span {
+      width: 3px;
+      border-radius: 2px;
+      background: var(--jobs-color, #5fe3c4);
+      height: 5px;
+      animation: radioEq 1s ease-in-out infinite;
+    }
+    .radio-eq span:nth-child(1) { animation-delay: 0s; }
+    .radio-eq span:nth-child(2) { animation-delay: 0.2s; }
+    .radio-eq span:nth-child(3) { animation-delay: 0.4s; }
+    .radio-eq span:nth-child(4) { animation-delay: 0.1s; }
+    @keyframes radioEq {
+      0%, 100% { height: 5px; }
+      50% { height: 22px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .radio-eq span { animation: none; height: 10px; }
     }
 
     .radio-badge-live {
@@ -2800,33 +2929,55 @@
 
       <div class="channels-list">
 
-        <!-- ВХОД В ВАКАНСИИ (перенесено из нижнего меню) -->
-        <button class="jobs-entry-card" onclick="openJobsSection()">
-          <div class="channel-info">
-            <span class="jobs-entry-icon">
+        <!-- ВХОД В ВАКАНСИИ -->
+        <div class="video-channel-hero jobs-hero" onclick="openJobsSection()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openJobsSection()">
+          <svg class="video-channel-hero-bg" width="200" height="140" viewBox="0 0 200 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle cx="170" cy="30" r="50" fill="#5fe3c4" opacity="0.45"/>
+            <circle cx="30" cy="110" r="40" fill="#38bdf8" opacity="0.4"/>
+            <rect x="140" y="90" width="70" height="70" rx="14" fill="#a78bfa" opacity="0.35"/>
+            <rect x="-10" y="-20" width="60" height="60" rx="12" fill="#f472b6" opacity="0.3"/>
+          </svg>
+          <div class="video-channel-hero-content">
+            <div class="video-channel-hero-info">
+              <div class="video-channel-hero-title">Вакансии</div>
+              <div class="video-channel-hero-sub">
+                <span class="video-channel-hero-badge">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                  Работа и объявления
+                </span>
+                <span class="video-channel-hero-count" id="jobsHeroCount">вакансий</span>
+              </div>
+            </div>
+            <div class="video-channel-hero-play">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-            </span>
-            <div>
-              <div class="channel-name">Вакансии</div>
-              <div class="channel-subs">Работа и объявления</div>
             </div>
           </div>
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+        </div>
 
         <!-- ВХОД В РАДИО -->
-        <button class="jobs-entry-card" onclick="openRadioSection()">
-          <div class="channel-info">
-            <span class="jobs-entry-icon" style="background-color: var(--accent-color-soft); color: var(--accent-color);">
+        <div class="video-channel-hero radio-hero" onclick="openRadioSection()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openRadioSection()">
+          <svg class="video-channel-hero-bg" width="200" height="140" viewBox="0 0 200 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle cx="170" cy="30" r="50" fill="#fb923c" opacity="0.5"/>
+            <circle cx="30" cy="110" r="40" fill="#f472b6" opacity="0.4"/>
+            <rect x="140" y="90" width="70" height="70" rx="14" fill="#facc15" opacity="0.35"/>
+            <rect x="-10" y="-20" width="60" height="60" rx="12" fill="#f87171" opacity="0.3"/>
+          </svg>
+          <div class="video-channel-hero-content">
+            <div class="video-channel-hero-info">
+              <div class="video-channel-hero-title">Радио</div>
+              <div class="video-channel-hero-sub">
+                <span class="video-channel-hero-badge">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+                  Слушать онлайн
+                </span>
+                <span class="video-channel-hero-count" id="radioHeroCount">станций</span>
+              </div>
+            </div>
+            <div class="video-channel-hero-play">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
-            </span>
-            <div>
-              <div class="channel-name">Радио</div>
-              <div class="channel-subs">Слушать онлайн радиостанции</div>
             </div>
           </div>
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+        </div>
 
         <!-- ВХОД В ВИДЕО-КАНАЛ -->
         <div class="video-channel-hero" onclick="openVideoChannel()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openVideoChannel()">
@@ -3685,7 +3836,10 @@
       document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
 
       if (tabName === 'feed') document.getElementById('tabFeed').classList.add('active');
-      if (tabName === 'channels') document.getElementById('tabChannels').classList.add('active');
+      if (tabName === 'channels') {
+        document.getElementById('tabChannels').classList.add('active');
+        updateChannelCounts();
+      }
       if (tabName === 'jobs') {
         document.getElementById('tabJobs').classList.add('active');
         renderJobsFeed();
@@ -3713,6 +3867,14 @@
     // Открыть раздел «Вакансии» из вкладки «Каналы»
     function openJobsSection() {
       switchTab('jobs', document.getElementById('navChannelsBtn'));
+    }
+
+    // Счётчики на hero-карточках «Вакансии» и «Радио» во вкладке «Каналы»
+    function updateChannelCounts() {
+      const jc = document.getElementById('jobsHeroCount');
+      if (jc) jc.textContent = (jobs ? jobs.length : 0) + ' вакансий';
+      const rc = document.getElementById('radioHeroCount');
+      if (rc) rc.textContent = (radioList ? radioList.length : 0) + ' станций';
     }
 
     // Открыть раздел «Радио» из вкладки «Каналы»
@@ -4698,6 +4860,21 @@
       });
     }
 
+    const JOB_GRADS = [
+      'linear-gradient(135deg,#0ea5e9,#312e81)',
+      'linear-gradient(135deg,#f59e0b,#be123c)',
+      'linear-gradient(135deg,#10b981,#064e3b)',
+      'linear-gradient(135deg,#8b5cf6,#4c1d95)',
+      'linear-gradient(135deg,#ec4899,#831843)',
+      'linear-gradient(135deg,#14b8a6,#155e75)'
+    ];
+
+    function jobGrad(s) {
+      let h = 0;
+      for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+      return JOB_GRADS[h % JOB_GRADS.length];
+    }
+
     function createJobCard(job) {
       const card = document.createElement('article');
       card.className = 'job-card';
@@ -4705,20 +4882,37 @@
 
       const badgeClass = job.jobType === 'offer' ? 'offer' : 'seek';
       const badgeLabel = job.jobType === 'offer' ? 'Предлагают работу' : 'Ищут работу';
+      const initials = job.company.split(/\s+/).map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+      const grad = jobGrad(job.company);
+
+      const salary = job.salary
+        ? `<div class="job-salary-pill">
+             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+             ${job.salary}
+           </div>`
+        : '';
 
       card.innerHTML = `
-        <div class="job-card-top">
-          <h2 class="job-title">${job.title}</h2>
+        <div class="job-company-row">
+          <span class="job-avatar" style="background: ${grad}">${initials}</span>
+          <div class="job-company-info">
+            <div class="job-company-name">${job.company}</div>
+            <div class="job-location">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${job.location}
+            </div>
+          </div>
           <span class="job-badge ${badgeClass}">${badgeLabel}</span>
         </div>
-        <div class="job-meta">
-          <span>🏢 ${job.company}</span>
-          <span>📍 ${job.location}</span>
-          ${job.salary ? `<span>💰 ${job.salary}</span>` : ''}
-        </div>
+        <h2 class="job-title">${job.title}</h2>
+        ${salary}
         <p class="job-text">${job.text}</p>
         <div class="job-footer">
-          <span>💬 ${job.comments.length} комментариев</span>
+          <span class="job-comments">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            ${job.comments.length} комментариев
+          </span>
+          <svg class="job-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       `;
       return card;
@@ -5037,6 +5231,20 @@
     // ================= РАДИО =================
     const RADIO_API = 'https://api.mediabay.tv/v2/channels/listradio';
     const RADIO_HOST = 'https://media.mediabay.tv';
+    const RADIO_FALLBACK = [
+      { id: 9001, name: 'TANHO FM', category: 'Поп-музыка', logo: 'https://picsum.photos/seed/radio1/300/300', preview: 'https://ice1.somafm.com/groovesalad-128-mp3' },
+      { id: 9002, name: 'Night Drive', category: 'Chill / Synthwave', logo: 'https://picsum.photos/seed/radio2/300/300', preview: 'https://ice1.somafm.com/secretagent-128-mp3' },
+      { id: 9003, name: 'Drone Zone', category: 'Ambient', logo: 'https://picsum.photos/seed/radio3/300/300', preview: 'https://ice1.somafm.com/dronezone-128-mp3' },
+      { id: 9004, name: 'Groove Salad', category: 'Downtempo', logo: 'https://picsum.photos/seed/radio4/300/300', preview: 'https://ice1.somafm.com/groovesalad-128-mp3' },
+      { id: 9005, name: 'Bagel Radio', category: 'Alternative', logo: 'https://picsum.photos/seed/radio5/300/300', preview: 'https://ice1.somafm.com/bagel-128-mp3' },
+      { id: 9006, name: 'Deep Space One', category: 'Space / Ambient', logo: 'https://picsum.photos/seed/radio6/300/300', preview: 'https://ice1.somafm.com/deepspaceone-128-mp3' },
+      { id: 9007, name: 'Def Con Radio', category: 'Electronic', logo: 'https://picsum.photos/seed/radio7/300/300', preview: 'https://ice1.somafm.com/defcon-128-mp3' },
+      { id: 9008, name: 'Sonic Universe', category: 'Jazz / Trip-hop', logo: 'https://picsum.photos/seed/radio8/300/300', preview: 'https://ice1.somafm.com/sonicuniverse-128-mp3' },
+      { id: 9009, name: 'Fluid', category: 'Instrumental Hip-Hop', logo: 'https://picsum.photos/seed/radio9/300/300', preview: 'https://ice1.somafm.com/fluid-128-mp3' },
+      { id: 9010, name: 'Lush', category: 'Vocal Chillout', logo: 'https://picsum.photos/seed/radio10/300/300', preview: 'https://ice1.somafm.com/lush-128-mp3' },
+      { id: 9011, name: 'PopTron', category: 'Electro-Pop', logo: 'https://picsum.photos/seed/radio11/300/300', preview: 'https://ice1.somafm.com/poptron-128-mp3' },
+      { id: 9012, name: 'Seven Inch Soul', category: 'Soul / Funk', logo: 'https://picsum.photos/seed/radio12/300/300', preview: 'https://ice1.somafm.com/7inch-128-mp3' }
+    ];
     let radioList = [];
     let radioAudio = null;
     let radioCurrId = null;
@@ -5049,17 +5257,18 @@
       try {
         const r = await fetch(RADIO_API);
         const d = await r.json();
-        if (d.status === 'ok') {
-          radioList = d.data || [];
-          document.getElementById('radioCount').innerText = radioList.length + ' станций';
+        if (d.status === 'ok' && d.data && d.data.length) {
+          radioList = d.data;
         } else {
-          document.getElementById('radioCount').innerText = '';
+          radioList = RADIO_FALLBACK.slice();
         }
       } catch (e) {
         console.error(e);
-        document.getElementById('radioCount').innerText = '';
+        radioList = RADIO_FALLBACK.slice();
       }
 
+      document.getElementById('radioCount').innerText = radioList.length + ' станций';
+      updateChannelCounts();
       radioRender();
     }
 
@@ -5080,7 +5289,11 @@
           <div class="radio-card ${active ? 'radio-playing' : ''}" onclick="radioPlayStation(${c.id})">
             <div class="radio-card-img-wrap">
               <img class="radio-card-img" src="${img || 'https://via.placeholder.com/150/18181b/5fe3c4?text=R'}" loading="lazy">
-              <div class="radio-play-overlay"><div class="radio-play-icon-small">▶</div></div>
+              <div class="radio-play-overlay">
+                ${active
+                  ? '<div class="radio-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div>'
+                  : '<div class="radio-play-icon-small"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>'}
+              </div>
               <div class="radio-badge-live">LIVE</div>
             </div>
             <div class="radio-card-info">
