@@ -3981,6 +3981,11 @@
     let vpScrollY = 0;
     let vpLikesChanged = false;
     const vpReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Текущий список роликов в плеере (канальные видео или видео профиля)
+    let vpList = videos;
+    let vpLikes = videoLikes;
+    let vpIsProfile = false;
+    let profileVideoLikes = {};
 
     function vpCardTemplate() {
       return `
@@ -4040,7 +4045,7 @@
     }
 
     function setVpLikeState(card, video) {
-      const liked = !!videoLikes[video.id];
+      const liked = !!vpLikes[video.id];
       card.querySelector('.vp-heart').classList.toggle('liked', liked);
       card.querySelector('.vp-side-label').textContent = (video.likes || 0).toLocaleString('ru-RU');
     }
@@ -4086,10 +4091,36 @@
       });
     }
 
+    // Открыть плеер с канальными видео (видео-канал)
     function openVideoPlayer(i) {
+      openVideos(videos, videoLikes, false, i);
+    }
+
+    // Открыть плеер с видео профиля (посты пользователя с типом video)
+    function openProfileVideos(i) {
+      const list = posts.filter(p => p.isUserCreated && p.type === 'video').map((p, idx) => ({
+        id: p.id,
+        title: p.title,
+        author: (document.getElementById('userName').innerText || 'Вы'),
+        avatar: document.getElementById('userAvatar').src || 'https://i.pravatar.cc/100?u=tanho',
+        img: p.img,
+        duration: p.duration || '0:45',
+        views: p.views || '0',
+        likes: (p.likes || 0) + (profileVideoLikes[p.id] ? 1 : 0),
+        ratio: 0.8,
+        src: VIDEO_SOURCES[idx % VIDEO_SOURCES.length]
+      }));
+      if (!list.length) return;
+      openVideos(list, profileVideoLikes, true, i);
+    }
+
+    function openVideos(list, likes, isProfile, i) {
       if (vpModal.classList.contains('open')) return;
       if (typeof i !== 'number' || isNaN(i)) i = 0;
-      vpIdx = Math.max(0, Math.min(videos.length - 1, i));
+      vpList = list;
+      vpLikes = likes;
+      vpIsProfile = !!isProfile;
+      vpIdx = Math.max(0, Math.min(vpList.length - 1, i));
       vpScrollY = window.scrollY;
       document.body.style.overflow = 'hidden';
       if (!vpCards.length) {
@@ -4103,9 +4134,9 @@
         });
       }
       vpDir = 1;
-      const backIdx = (vpIdx + 1) % videos.length;
-      fillVpCard(vpCards[0], videos[vpIdx], vpIdx);
-      fillVpCard(vpCards[1], videos[backIdx], backIdx);
+      const backIdx = (vpIdx + 1) % vpList.length;
+      fillVpCard(vpCards[0], vpList[vpIdx], vpIdx);
+      fillVpCard(vpCards[1], vpList[backIdx], backIdx);
       const a = vpCards[0], b = vpCards[1];
       a.style.zIndex = '2'; b.style.zIndex = '1';
       a.style.transition = 'none'; b.style.transition = 'none';
@@ -4137,16 +4168,17 @@
       });
       if (vpLikesChanged) {
         vpLikesChanged = false;
-        renderVideos();
+        if (vpIsProfile) renderProfileFeed();
+        else renderVideos();
       }
     }
 
     function vpNavigate(dir) {
-      if (vpBusy || !vpModal.classList.contains('open') || videos.length < 2) return;
+      if (vpBusy || !vpModal.classList.contains('open') || vpList.length < 2) return;
       vpBusy = true;
       const front = vpCards[vpFront];
       const back = vpCards[1 - vpFront];
-      const nextIdx = (vpIdx + dir + videos.length) % videos.length;
+      const nextIdx = (vpIdx + dir + vpList.length) % vpList.length;
       if (dir !== vpDir || back._filledFor !== nextIdx) {
         fillVpCard(back, videos[nextIdx], nextIdx);
         back._filledFor = nextIdx;
@@ -4172,8 +4204,8 @@
       const finish = () => {
         const old = vpCards[oldFront];
         old.querySelector('video').pause();
-        const neighbor = (vpIdx + vpDir + videos.length) % videos.length;
-        fillVpCard(old, videos[neighbor], neighbor);
+        const neighbor = (vpIdx + vpDir + vpList.length) % vpList.length;
+        fillVpCard(old, vpList[neighbor], neighbor);
         old._filledFor = neighbor;
         old.style.transition = 'none';
         old.style.transform = vpDir === 1 ? 'translateY(100%)' : 'translateY(-100%)';
@@ -4190,14 +4222,21 @@
     }
 
     function vpToggleLike() {
-      const v = videos[vpIdx];
-      if (videoLikes[v.id]) {
-        delete videoLikes[v.id];
+      const v = vpList[vpIdx];
+      if (vpLikes[v.id]) {
+        delete vpLikes[v.id];
         v.likes = Math.max(0, (v.likes || 0) - 1);
       } else {
-        videoLikes[v.id] = true;
+        vpLikes[v.id] = true;
         v.likes = (v.likes || 0) + 1;
         vpFloatHeart();
+      }
+      if (vpIsProfile) {
+        const post = posts.find(x => x.id === v.id);
+        if (post) {
+          post.likes = v.likes;
+          post.isLiked = !!vpLikes[v.id];
+        }
       }
       vpCards.forEach(c => setVpLikeState(c, v));
       vpLikesChanged = true;
@@ -4229,7 +4268,7 @@
     }
 
     function vpShare() {
-      const v = videos[vpIdx];
+      const v = vpList[vpIdx];
       if (navigator.share) {
         navigator.share({ title: v.title, text: v.author + ' — ' + v.title, url: location.href }).catch(() => {});
       }
@@ -4249,8 +4288,8 @@
     }
 
     function renderEpisodesGrid() {
-      vpDrawerSubtitle.textContent = (vpIdx + 1) + ' из ' + videos.length;
-      vpEpisodesGrid.innerHTML = videos.map((v, i) => {
+      vpDrawerSubtitle.textContent = (vpIdx + 1) + ' из ' + vpList.length;
+      vpEpisodesGrid.innerHTML = vpList.map((v, i) => {
         const active = i === vpIdx;
         return '<button class="vp-ep-btn' + (active ? ' active' : '') + '" onclick="vpJumpTo(' + i + ')" aria-label="Серия ' + (i + 1) + '">' + (i + 1) + '</button>';
       }).join('');
@@ -4259,7 +4298,7 @@
     function vpJumpTo(idx) {
       closeEpisodesDrawer();
       if (idx === vpIdx || vpBusy) return;
-      const n = videos.length;
+      const n = vpList.length;
       const fwd = (idx - vpIdx + n) % n;
       const back = n - fwd;
       const dir = fwd <= back ? 1 : -1;
@@ -4649,10 +4688,10 @@
         const grid = document.createElement('div');
         grid.className = 'video-grid';
 
-        items.forEach(video => {
+        items.forEach((video, idx) => {
           const card = document.createElement('div');
           card.className = 'video-card';
-          card.onclick = () => openPost(video.id);
+          card.onclick = () => openProfileVideos(idx);
           card.innerHTML = `
             <img class="video-thumb" src="${video.img}" alt="${video.title}">
             <div class="video-overlay">
@@ -4662,6 +4701,9 @@
                 <span>${video.views}</span>
               </div>
             </div>
+            <span class="video-card-play-badge">
+              <svg width="26" height="26" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </span>
           `;
           grid.appendChild(card);
         });
