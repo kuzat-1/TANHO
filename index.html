@@ -3387,14 +3387,7 @@
           </svg>
           <div class="video-channel-hero-content">
             <div class="video-channel-hero-info">
-              <div class="video-channel-hero-title">Видео-канал</div>
-              <div class="video-channel-hero-sub">
-                <span class="video-channel-hero-badge">
-                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                  Вертикальные видео
-                </span>
-                <span>12 роликов</span>
-              </div>
+              <div class="video-channel-hero-title">Qisqa</div>
             </div>
             <div class="video-channel-hero-play">
               <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg>
@@ -3426,22 +3419,14 @@
       </div>
     </div>
 
-    <!-- ВИДЕО-КАНАЛ: ВЕРТИКАЛЬНЫЕ ВИДЕО (в стиле meigen.ai/videos) -->
+    <!-- ВИДЕО-КАНАЛ QISQA (в стиле meigen.ai/videos) -->
     <div class="tab-screen" id="tabVideos">
       <div class="profile-title-bar">
         <button class="settings-btn" onclick="switchTab('channels', document.getElementById('navChannelsBtn'))" aria-label="Назад">
           <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </button>
-        <h1 class="page-title">Видео-канал</h1>
+        <h1 class="page-title">Qisqa</h1>
         <span style="width: 24px;"></span>
-      </div>
-
-      <div class="videos-tab-header">
-        <span class="video-channel-hero-badge">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-          Вертикальные видео
-        </span>
-        <span style="font-size: 12px; color: var(--text-secondary);" id="videosCount"></span>
       </div>
 
       <div class="videos-masonry" id="videosGrid"></div>
@@ -4594,7 +4579,6 @@
     function renderVideos() {
       const grid = document.getElementById('videosGrid');
       if (!grid) return;
-      document.getElementById('videosCount').textContent = videos.length + ' роликов';
 
       grid.innerHTML = videos.map((v, i) => {
         const liked = videoLikes[v.id] || false;
