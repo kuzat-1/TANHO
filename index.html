@@ -245,6 +245,12 @@
       width: 100%;
     }
 
+    /* Активный сегмент: плавное заполнение за 7 секунд (фото) */
+    .story-viewer-progress-seg.active .story-viewer-progress-seg-fill {
+      width: 100%;
+      transition: width 7s linear;
+    }
+
     .story-viewer-top {
       position: absolute;
       top: 22px;
@@ -3983,7 +3989,7 @@
 
       <div class="story-viewer-media-wrap">
         <img class="story-viewer-img" id="storyViewerImg" src="" alt="">
-        <video class="story-viewer-video" id="storyViewerVideo" playsinline autoplay muted loop></video>
+        <video class="story-viewer-video" id="storyViewerVideo" playsinline autoplay muted></video>
       </div>
 
       <div class="story-viewer-bottom">
@@ -4203,10 +4209,12 @@
         linkText: 'Читать статью', linkUrl: 'https://kuzat-1.github.io/TANHO/#post-2'
       },
       {
-        id: 3, isUserCreated: false, label: 'Музыка', mediaType: 'image', img: 'https://picsum.photos/id/1082/500/900', seen: true,
-        newsTitle: 'Новый трек MUZNAVO',
-        newsText: 'Анимированный логотип и свежий трек — оцените новое видео на канале.',
-        linkText: 'Смотреть видео', linkUrl: 'https://kuzat-1.github.io/TANHO/#post-3'
+        id: 3, isUserCreated: false, label: 'Видео', mediaType: 'video',
+        img: 'https://test-videos.co.uk/vids/jellyfish/mp4/h264/360/Jellyfish_360_10s_1MB.mp4',
+        thumb: 'https://picsum.photos/id/1082/200/280', seen: true,
+        newsTitle: 'Живой видео-сюжет',
+        newsText: 'Это видео-история: она играет до конца и сама переключается на следующую.',
+        linkText: 'Смотреть', linkUrl: '#'
       },
       {
         id: 4, isUserCreated: false, label: 'Плеер', mediaType: 'image', img: 'https://picsum.photos/id/1012/500/900', seen: false,
@@ -4238,6 +4246,7 @@
       storyViewerIndex = index;
       renderStoryViewerProgress();
       renderStoryViewerSlide();
+      startStoryAuto();
       document.getElementById('storyViewer').classList.add('active');
 
       const nav = document.querySelector('.bottom-nav');
@@ -4247,10 +4256,63 @@
     function renderStoryViewerProgress() {
       const bar = document.getElementById('storyViewerProgress');
       bar.innerHTML = stories.map((s, i) => `
-        <div class="story-viewer-progress-seg ${i <= storyViewerIndex ? 'seen' : ''}">
+        <div class="story-viewer-progress-seg ${i < storyViewerIndex ? 'seen' : ''}">
           <div class="story-viewer-progress-seg-fill"></div>
         </div>
       `).join('');
+    }
+
+    // --- Автопрокрутка историй: фото 7 секунд, видео — до конца ---
+    let storyAutoTimer = null;
+    const STORY_IMAGE_DURATION = 7000;
+
+    function clearStoryAutoTimer() {
+      if (storyAutoTimer) {
+        clearTimeout(storyAutoTimer);
+        storyAutoTimer = null;
+      }
+      const v = document.getElementById('storyViewerVideo');
+      if (v) {
+        v.onended = null;
+        v.ontimeupdate = null;
+      }
+    }
+
+    function startStoryAuto() {
+      clearStoryAutoTimer();
+      const story = stories[storyViewerIndex];
+      if (!story) return;
+
+      const segs = document.querySelectorAll('#storyViewerProgress .story-viewer-progress-seg');
+      const activeSeg = segs[storyViewerIndex];
+
+      if (story.mediaType === 'video') {
+        // Видео: сегмент заполняется по прогрессу воспроизведения
+        if (activeSeg) {
+          const fill = activeSeg.querySelector('.story-viewer-progress-seg-fill');
+          fill.style.transition = 'none';
+          fill.style.width = '0%';
+        }
+        const v = document.getElementById('storyViewerVideo');
+        v.ontimeupdate = () => {
+          if (activeSeg && v.duration) {
+            const f = activeSeg.querySelector('.story-viewer-progress-seg-fill');
+            f.style.width = (v.currentTime / v.duration * 100).toFixed(1) + '%';
+          }
+        };
+        v.onended = () => storyViewerNext();
+      } else {
+        // Фото: CSS-анимация заполнения за 7 секунд, затем переход
+        if (activeSeg) {
+          activeSeg.classList.add('active');
+          const fill = activeSeg.querySelector('.story-viewer-progress-seg-fill');
+          fill.style.transition = 'none';
+          fill.style.width = '0%';
+          void fill.offsetWidth; /* перезапуск анимации */
+          fill.style.transition = '';
+        }
+        storyAutoTimer = setTimeout(() => storyViewerNext(), STORY_IMAGE_DURATION);
+      }
     }
 
     function applyStoryMediaFit(el, wrapEl) {
@@ -4348,6 +4410,7 @@
     }
 
     function closeStoryViewer() {
+      clearStoryAutoTimer();
       document.getElementById('storyViewer').classList.remove('active');
       document.getElementById('storyViewerVideo').pause();
       document.getElementById('storyViewerBgVideo').pause();
