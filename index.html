@@ -2425,50 +2425,211 @@
       color: var(--accent-color);
     }
 
-    .post-type-switch {
+    .tg-type-list {
       display: flex;
-      gap: 4px;
-      padding: 4px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 50px;
+      flex-direction: column;
+      gap: 6px;
+      padding: 6px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
     }
 
-    .post-type-btn {
-      flex: 1;
+    .tg-type-item {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 10px 8px;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 14px;
       border: none;
-      border-radius: 50px;
+      border-radius: 12px;
       background: transparent;
       color: var(--text-secondary);
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
-    .post-type-btn:hover {
+    .tg-type-item:hover {
+      background: rgba(255, 255, 255, 0.04);
       color: var(--text-color);
     }
 
-    .post-type-btn.active {
-      background: var(--accent-color);
-      color: #1a1420;
-      box-shadow: 0 4px 16px rgba(255, 182, 71, 0.25);
+    .tg-type-item.active {
+      background: rgba(255, 182, 71, 0.08);
+      color: var(--accent-color);
     }
 
-    .post-type-btn.active .post-type-btn-icon {
+    .tg-type-item.active .tg-chevron {
+      color: var(--accent-color);
+    }
+
+    .tg-type-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tg-type-icon {
+      opacity: 0.8;
+      stroke-width: 1.8;
+    }
+
+    .tg-chevron {
+      opacity: 0.35;
+      transition: all 0.2s ease;
+      color: var(--text-secondary);
+    }
+
+    .tg-type-item.active .tg-chevron {
       opacity: 1;
     }
 
-    .post-type-btn-icon {
-      opacity: 0.65;
-      transition: opacity 0.2s ease;
+    /* --- TELEGRAM STYLE LABELS --- */
+    .tg-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      padding-left: 2px;
+    }
+
+    .tg-input {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: var(--text-color);
       font-size: 14px;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .tg-input:focus {
+      border-color: rgba(255, 182, 71, 0.4);
+      box-shadow: 0 0 0 3px rgba(255, 182, 71, 0.15);
+    }
+
+    .tg-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    textarea.tg-input {
+      resize: none;
+      min-height: 90px;
+      border-radius: 14px;
+    }
+
+    .tg-select-wrapper {
+      position: relative;
+    }
+
+    .tg-select {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: var(--text-color);
+      font-size: 14px;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9' fill='%2394a3b8'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 10px;
+      padding-right: 32px;
+    }
+
+    .tg-select:focus {
+      border-color: rgba(255, 182, 71, 0.4);
+    }
+
+    .tg-select option {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+
+    /* --- TELEGRAM STYLE INPUT ROW (media URL + button) --- */
+    .tg-input-row {
+      display: flex;
+      gap: 6px;
+      align-items: stretch;
+    }
+
+    .tg-input-row .tg-input {
+      flex: 1;
+      min-width: 0;
+      border-radius: 12px;
+    }
+
+    .tg-media-btn {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      color: var(--text-color);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tg-media-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* --- MEDIA PREVIEW --- */
+    .tg-media-preview {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-top: 2px;
+    }
+
+    .tg-media-preview img,
+    .tg-media-preview video {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #000;
+      flex-shrink: 0;
+    }
+
+    .tg-media-preview span {
+      flex: 1;
+      min-width: 0;
+      font-size: 12px;
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .media-preview-clear {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px;
+      flex-shrink: 0;
+      transition: color 0.2s;
+    }
+
+    .media-preview-clear:hover {
+      color: var(--accent-color);
     }
 
     /* --- SUBMIT BUTTON --- */
@@ -4115,137 +4276,155 @@
     </div>
   </div>
 
-  <div class="create-modal" id="createModal">
-    <div class="create-modal-content">
+  <div class="create-modal tg-create-modal" id="createModal">
+    <div class="create-modal-content tg-create-sheet">
       <div class="create-modal-drag"></div>
 
-      <div class="create-modal-header">
-        <div class="create-modal-title">
-          <svg class="create-modal-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          <span id="createModalHeading">Создать пост</span>
-        </div>
-        <button class="close-btn create-close-btn" onclick="closeCreateModal()" aria-label="Закрыть">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <div class="tg-create-header">
+        <button class="tg-close-btn tg-close" onclick="closeCreateModal()" aria-label="Закрыть">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
+        <div class="tg-create-title" id="createModalHeading">Создать пост</div>
+        <div style="width: 40px;"></div>
       </div>
 
       <form onsubmit="handleCreatePost(event)">
-        <div class="form-group">
-          <label>Тип публикации</label>
-          <div class="post-type-switch" id="postTypeSwitch">
-            <button type="button" class="post-type-btn active" data-type="post" onclick="setPostType('post')">
-              <svg class="post-type-btn-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/></svg>
-              Пост
-            </button>
-            <button type="button" class="post-type-btn" data-type="video" onclick="setPostType('video')">
-              <svg class="post-type-btn-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-              Видео
-            </button>
-            <button type="button" class="post-type-btn" data-type="vacancy" onclick="setPostType('vacancy')">
-              <svg class="post-type-btn-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              Вакансия
-            </button>
-            <button type="button" class="post-type-btn" data-type="story" onclick="setPostType('story')">
-              <svg class="post-type-btn-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" ry="2"/><path d="M8 21v-4"/></svg>
-              История
-            </button>
+        <div class="tg-create-body">
+          <div class="form-group">
+            <div class="tg-type-list" id="postTypeSwitch">
+              <button type="button" class="tg-type-item active" data-type="post" onclick="setPostType('post')">
+                <div class="tg-type-left">
+                  <svg class="tg-type-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/></svg>
+                  <span>Пост</span>
+                </div>
+                <svg class="tg-chevron" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+              <button type="button" class="tg-type-item" data-type="video" onclick="setPostType('video')">
+                <div class="tg-type-left">
+                  <svg class="tg-type-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                  <span>Видео</span>
+                </div>
+                <svg class="tg-chevron" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+              <button type="button" class="tg-type-item" data-type="vacancy" onclick="setPostType('vacancy')">
+                <div class="tg-type-left">
+                  <svg class="tg-type-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                  <span>Вакансия</span>
+                </div>
+                <svg class="tg-chevron" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+              <button type="button" class="tg-type-item" data-type="story" onclick="setPostType('story')">
+                <div class="tg-type-left">
+                  <svg class="tg-type-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" ry="2"/><path d="M8 21v-4"/></svg>
+                  <span>История</span>
+                </div>
+                <svg class="tg-chevron" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+            <input type="hidden" id="postTypeSelect" value="post">
           </div>
-          <input type="hidden" id="postTypeSelect" value="post">
-        </div>
 
-        <div class="form-group" id="postCategoryGroup">
-          <label>Категория</label>
-          <select class="form-control" id="postCategorySelect" required>
-            <option value="Новости">Новости</option>
-            <option value="Технологии">Технологии</option>
-            <option value="Дизайн">Дизайн</option>
-            <option value="Спорт">Спорт</option>
-            <option value="Музыка">Музыка</option>
-          </select>
-        </div>
-
-        <div class="form-group" id="jobTypeGroup" style="display: none;">
-          <label>Тип объявления</label>
-          <select class="form-control" id="jobTypeSelect">
-            <option value="offer">Предлагаю работу</option>
-            <option value="seek">Ищу работу</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label id="postTitleLabel">Заголовок</label>
-          <input type="text" class="form-control" id="postTitleInput" placeholder="Введите заголовок..." required>
-        </div>
-
-        <div class="form-group" id="jobCompanyGroup" style="display: none;">
-          <label>Компания / имя автора</label>
-          <input type="text" class="form-control" id="jobCompanyInput" placeholder="Например, Uzlayn">
-        </div>
-
-        <div class="form-group" id="jobLocationGroup" style="display: none;">
-          <label>Локация</label>
-          <input type="text" class="form-control" id="jobLocationInput" placeholder="Ташкент / Удалённо">
-        </div>
-
-        <div class="form-group" id="jobSalaryGroup" style="display: none;">
-          <label>Зарплата (необязательно)</label>
-          <input type="text" class="form-control" id="jobSalaryInput" placeholder="Например, 5-8 млн сум">
-        </div>
-
-        <div class="form-group" id="jobContactGroup" style="display: none;">
-          <label>Контакт (Telegram username)</label>
-          <input type="text" class="form-control" id="jobContactInput" placeholder="@username">
-        </div>
-
-        <div class="form-group" id="postImageGroup">
-          <label id="postImageLabel">Ссылка на обложку / видео</label>
-          <div class="media-input-row">
-            <input type="url" class="form-control" id="postImageUrl" placeholder="https://picsum.photos/600/900" oninput="clearMediaPreview()">
-            <button type="button" class="media-pick-btn" onclick="document.getElementById('mediaFileInput').click()">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-              С устройства
-            </button>
+          <div class="form-group" id="postCategoryGroup">
+            <label class="tg-label">Категория</label>
+            <div class="tg-select-wrapper">
+              <select class="form-control tg-select" id="postCategorySelect" required>
+                <option value="Новости">Новости</option>
+                <option value="Технологии">Технологии</option>
+                <option value="Дизайн">Дизайн</option>
+                <option value="Спорт">Спорт</option>
+                <option value="Музыка">Музыка</option>
+              </select>
+            </div>
           </div>
-          <input type="file" id="mediaFileInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaFilePick(event)">
-          <div class="media-preview" id="mediaPreview" style="display:none;">
-            <img id="mediaPreviewImg" style="display:none;">
-            <video id="mediaPreviewVideo" muted style="display:none;"></video>
-            <span id="mediaPreviewName"></span>
-            <button type="button" class="media-preview-clear" onclick="clearMediaPreview(true)" aria-label="Очистить">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
+
+          <div class="form-group" id="jobTypeGroup" style="display: none;">
+            <label class="tg-label">Тип объявления</label>
+            <div class="tg-select-wrapper">
+              <select class="form-control tg-select" id="jobTypeSelect">
+                <option value="offer">Предлагаю работу</option>
+                <option value="seek">Ищу работу</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="tg-label" id="postTitleLabel">Заголовок *</label>
+            <input type="text" class="form-control tg-input" id="postTitleInput" placeholder="Введите заголовок..." required>
+          </div>
+
+          <div class="form-group" id="jobCompanyGroup" style="display: none;">
+            <label class="tg-label">Компания / имя автора</label>
+            <input type="text" class="form-control tg-input" id="jobCompanyInput" placeholder="Например, Uzlayn">
+          </div>
+
+          <div class="form-group" id="jobLocationGroup" style="display: none;">
+            <label class="tg-label">Локация</label>
+            <input type="text" class="form-control tg-input" id="jobLocationInput" placeholder="Ташкент / Удалённо">
+          </div>
+
+          <div class="form-group" id="jobSalaryGroup" style="display: none;">
+            <label class="tg-label">Зарплата (необязательно)</label>
+            <input type="text" class="form-control tg-input" id="jobSalaryInput" placeholder="Например, 5-8 млн сум">
+          </div>
+
+          <div class="form-group" id="jobContactGroup" style="display: none;">
+            <label class="tg-label">Контакт (Telegram username)</label>
+            <input type="text" class="form-control tg-input" id="jobContactInput" placeholder="@username">
+          </div>
+
+          <div class="form-group" id="postImageGroup">
+            <label class="tg-label" id="postImageLabel">Ссылка на обложку / видео</label>
+            <div class="tg-input-row">
+              <input type="url" class="form-control tg-input" id="postImageUrl" placeholder="https://picsum.photos/600/900" oninput="clearMediaPreview()">
+              <button type="button" class="tg-media-btn" onclick="document.getElementById('mediaFileInput').click()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+              </button>
+            </div>
+            <input type="file" id="mediaFileInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaFilePick(event)">
+            <div class="media-preview tg-media-preview" id="mediaPreview" style="display:none;">
+              <img id="mediaPreviewImg" style="display:none;">
+              <video id="mediaPreviewVideo" muted style="display:none;"></video>
+              <span id="mediaPreviewName"></span>
+              <button type="button" class="media-preview-clear" onclick="clearMediaPreview(true)" aria-label="Очистить">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group" id="storyLabelGroup" style="display: none;">
+            <label class="tg-label">Короткая подпись под превью</label>
+            <input type="text" class="form-control tg-input" id="storyLabelInput" placeholder="Например, Новости">
+          </div>
+
+          <div class="form-group" id="storyMediaTypeGroup" style="display: none;">
+            <label class="tg-label">Тип медиа истории</label>
+            <div class="tg-select-wrapper">
+              <select class="form-control tg-select" id="storyMediaTypeSelect">
+                <option value="image">Изображение</option>
+                <option value="video">Видео</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" id="postTextGroup">
+            <label class="tg-label" id="postTextLabel">Описание</label>
+            <textarea class="form-control tg-input" id="postTextInput" placeholder="Введите описание..." rows="3"></textarea>
+          </div>
+
+          <div class="form-group" id="storyLinkTextGroup" style="display: none;">
+            <label class="tg-label">Текст кнопки внизу истории</label>
+            <input type="text" class="form-control tg-input" id="storyLinkTextInput" placeholder="Читать / Перейти">
+          </div>
+
+          <div class="form-group" id="storyLinkUrlGroup" style="display: none;">
+            <label class="tg-label">Ссылка, куда ведёт кнопка</label>
+            <input type="url" class="form-control tg-input" id="storyLinkUrlInput" placeholder="https://...">
           </div>
         </div>
 
-        <div class="form-group" id="storyLabelGroup" style="display: none;">
-          <label>Короткая подпись под превью</label>
-          <input type="text" class="form-control" id="storyLabelInput" placeholder="Например, Новости">
+        <div class="tg-create-footer">
+          <button type="submit" class="btn-submit tg-submit" id="createSubmitBtn">Опубликовать</button>
         </div>
-
-        <div class="form-group" id="storyMediaTypeGroup" style="display: none;">
-          <label>Тип медиа истории</label>
-          <select class="form-control" id="storyMediaTypeSelect">
-            <option value="image">Изображение</option>
-            <option value="video">Видео</option>
-          </select>
-        </div>
-
-        <div class="form-group" id="postTextGroup">
-          <label id="postTextLabel">Описание</label>
-          <textarea class="form-control" id="postTextInput" placeholder="Введите описание..."></textarea>
-        </div>
-
-        <div class="form-group" id="storyLinkTextGroup" style="display: none;">
-          <label>Текст кнопки внизу истории</label>
-          <input type="text" class="form-control" id="storyLinkTextInput" placeholder="Читать / Перейти">
-        </div>
-
-        <div class="form-group" id="storyLinkUrlGroup" style="display: none;">
-          <label>Ссылка, куда ведёт кнопка</label>
-          <input type="url" class="form-control" id="storyLinkUrlInput" placeholder="https://...">
-        </div>
-
-        <button type="submit" class="btn-submit" id="createSubmitBtn">Опубликовать</button>
       </form>
     </div>
   </div>
@@ -6170,7 +6349,7 @@
       const typeSelect = document.getElementById('postTypeSelect');
       typeSelect.value = type;
 
-      document.querySelectorAll('.post-type-btn').forEach(btn => {
+      document.querySelectorAll('.post-type-btn, .tg-type-item').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.type === type);
       });
 
@@ -6195,6 +6374,15 @@
       clearMediaPreview();
       document.body.style.overflow = '';
     }
+
+    /* Close create modal on Escape key */
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (document.getElementById('createModal').classList.contains('active')) {
+          closeCreateModal();
+        }
+      }
+    });
 
     /* Close create modal when clicking backdrop */
     document.getElementById('createModal')?.addEventListener('click', function(e) {
