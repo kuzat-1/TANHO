@@ -2549,13 +2549,89 @@
       border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .tg-create-footer {
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    .tg-type-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .tg-type-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 16px 6px 12px;
+      border: none;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.32, 0.68, 0.48, 1);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .tg-type-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-color);
+      transform: translateY(-2px);
+    }
+
+    .tg-type-card.active {
+      background: rgba(255, 182, 71, 0.12);
+      border-color: rgba(255, 182, 71, 0.3);
+      color: var(--accent-color);
+      transform: translateY(0);
+    }
+
+    .tg-type-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .tg-type-card:hover .tg-type-circle {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .tg-type-card.active .tg-type-circle {
+      background: rgba(255, 182, 71, 0.15);
+      border-color: rgba(255, 182, 71, 0.4);
+    }
+
+    .tg-type-icon {
+      opacity: 0.8;
+      stroke-width: 1.8;
+      transition: opacity 0.2s;
+    }
+
+    .tg-type-card.active .tg-type-icon {
+      opacity: 1;
+    }
+
+    .tg-type-label {
+      font-size: 12px;
+      font-weight: 500;
     }
 
     .tg-media-preview img,
     .tg-media-preview video {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #000;
+      flex-shrink: 0;
+    }
 
     .tg-media-preview span {
       flex: 1;
