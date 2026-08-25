@@ -6287,9 +6287,10 @@
       imageLabel.innerText = isStory ? 'Ссылка на изображение / видео истории' : 'Ссылка на обложку / видео';
       titleLabel.innerText = isVacancy ? 'Название вакансии' : (isStory ? 'Заголовок новости' : 'Заголовок');
       textLabel.innerText = isVacancy ? 'Описание вакансии' : (isStory ? 'Текст новости внизу истории' : 'Описание');
-      submitBtn.innerText = isVacancy ? 'Опубликовать вакансию' : (isStory ? 'Добавить историю' : 'Опубликовать');
+      submitBtn.innerText = isVacancy ? 'Опубликовать вакансию' : (isStory ? 'Добавить историю' : (val === 'video' ? 'Опубликовать видео' : 'Опубликовать'));
       submitBtn.classList.toggle('jobs-submit', isVacancy);
-      document.getElementById('createModalHeading').innerText = isVacancy ? 'Создать вакансию' : (isStory ? 'Добавить историю' : 'Создать пост');
+      submitBtn.classList.toggle('videos-submit', val === 'video');
+      document.getElementById('createModalHeading').innerText = isVacancy ? 'Создать вакансию' : (isStory ? 'Добавить историю' : (val === 'video' ? 'Создать видео' : 'Создать пост'));
 
       if (isVacancy) textGroup.style.display = 'flex';
     }
