@@ -2549,6 +2549,138 @@
       border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
+    /* --- ARTICLE EDITOR --- */
+    .article-editor-modal {
+      display: none;
+    }
+
+    .article-editor-modal.active {
+      display: flex;
+    }
+
+    .article-editor-sheet {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 26px 26px 0 0;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      box-shadow: 0 24px 56px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      overflow: hidden;
+    }
+
+    .article-editor-drag {
+      width: 42px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 2px;
+      margin: 4px auto 14px;
+    }
+
+    .article-editor-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 16px;
+    }
+
+    .article-editor-preview-card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+
+    .article-editor-preview-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .article-editor-preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .article-cover-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      width: 36px;
+      height: 36px;
+    }
+
+    .article-cover-url {
+      margin-top: 8px;
+    }
+
+    .tg-editor {
+      min-height: 200px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: var(--text-color);
+      font-size: 14px;
+      line-height: 1.5;
+      outline: none;
+      overflow-y: auto;
+      overflow-wrap: break-word;
+    }
+
+    .tg-editor:focus {
+      border-color: rgba(255, 182, 71, 0.4);
+    }
+
+    .tg-editor:empty:before {
+      content: attr(placeholder);
+      color: var(--text-secondary);
+      pointer-events: none;
+    }
+
+    .tg-editor-toolbar {
+      display: flex;
+      gap: 4px;
+      padding: 6px 0 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 8px;
+    }
+
+    .tg-toolbar-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tg-toolbar-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-color);
+    }
+
     .tg-type-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -4293,6 +4425,12 @@
               </div>
               <span class="tg-type-label">История</span>
             </button>
+            <button type="button" class="tg-type-card" data-type="article" onclick="setPostType('article')">
+              <div class="tg-type-circle">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h20v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>
+              </div>
+              <span class="tg-type-label">Статья</span>
+            </button>
           </div>
           <input type="hidden" id="postTypeSelect" value="post">
 
@@ -4402,6 +4540,93 @@
           <button type="submit" class="btn-submit tg-submit" id="createSubmitBtn">Опубликовать</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ПОЛНОЭКРАННЫЙ РЕДАКТОР СТАТЕЙ -->
+  <div class="create-modal article-editor-modal" id="articleEditorModal">
+    <div class="article-editor-sheet">
+      <div class="article-editor-drag"></div>
+
+      <div class="tg-create-header">
+        <button class="tg-close-btn tg-close" onclick="closeArticleEditor()" aria-label="Назад">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="17" y1="1" x2="11" y2="7m6 0 0 0L11 1h6zm0 0h6v6m0 0L11 7"></svg>
+        </button>
+        <span class="tg-create-title">Создать статью</span>
+        <div style="width: 40px;"></div>
+      </div>
+
+      <div class="article-editor-body">
+        <div class="article-editor-preview-card">
+          <div class="article-editor-preview-placeholder" id="articlePreviewPlaceholder">
+            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M8 12h8M12 8v8"/></svg>
+            <span>Добавьте обложку статьи</span>
+          </div>
+          <img id="articlePreviewImg" class="article-editor-preview-img" style="display: none;">
+          <button type="button" class="tg-media-btn article-cover-btn" onclick="document.getElementById('articleCoverInput').click()" aria-label="Загрузить обложку">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          </button>
+          <input type="file" id="articleCoverInput" accept="image/*" style="display:none;" onchange="handleArticleCoverPick(event)">
+          <input type="url" class="form-control tg-input article-cover-url" id="articleCoverUrl" placeholder="Или вставьте ссылку на обложку..." oninput="handleArticleCoverUrl()">
+        </div>
+
+        <div class="form-group">
+          <label class="tg-label">Заголовок *</label>
+          <input type="text" class="form-control tg-input" id="articleTitleInput" placeholder="Введите заголовок статьи..." required>
+        </div>
+
+        <div class="form-group">
+          <label class="tg-label">Краткое описание</label>
+          <textarea class="form-control tg-input" id="articleDescInput" placeholder="Краткое описание для превью..." rows="2"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="tg-label">Текст статьи *</label>
+          <div class="tg-editor-toolbar">
+            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('bold')" aria-label="Полужирный">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 4h12M6 8h12M8 12h8M8 16h8M8 20h8"/></svg>
+            </button>
+            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('italic')" aria-label="Курсив">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M15 5v14M9 5v14"/></svg>
+            </button>
+            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('strikeThrough')" aria-label="Зачёркнутый">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 12H7m10 0c0 3-2 5-5 5s-5-2-5-5 2-5 5-5 5 2 5 5"/></svg>
+            </button>
+            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('insertUnorderedList')" aria-label="Список">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="1"/><line x1="15" y1="7" x2="21" y2="7"/><circle cx="9" cy="12" r="1"/><line x1="15" y1="12" x2="21" y2="12"/><circle cx="9" cy="17" r="1"/><line x1="15" y1="17" x2="21" y2="17"/></svg>
+            </button>
+            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('insertOrderedList')" aria-label="Нумерованный список">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="15" y1="7" x2="21" y2="7"/><line x1="15" y1="12" x2="21" y2="12"/><line x1="15" y1="17" x2="21" y2="17"/><circle cx="6" cy="7" r="1.5"/><circle cx="6" cy="12" r="1.5"/><circle cx="6" cy="17" r="1.5"/></svg>
+            </button>
+            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('formatBlock', 'H2')" aria-label="Подзаголовок">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 12h12M6 6h12M6 18h12"/></svg>
+            </button>
+          </div>
+          <div class="tg-editor" id="articleEditor" contenteditable="true" placeholder="Введите текст статьи..." spellcheck="true"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="tg-label">Категория</label>
+          <div class="tg-select-wrapper">
+            <select class="form-control tg-select" id="articleCategorySelect">
+              <option value="Новости">Новости</option>
+              <option value="Технологии">Технологии</option>
+              <option value="Дизайн">Дизайн</option>
+              <option value="Спорт">Спорт</option>
+              <option value="Музыка">Музыка</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="tg-label">Теги (через запятую)</label>
+          <input type="text" class="form-control tg-input" id="articleTagsInput" placeholder="например: дизайн, UI, mobile">
+        </div>
+      </div>
+
+      <div class="tg-create-footer">
+        <button type="button" class="btn-submit tg-submit" onclick="publishArticle()">Опубликовать</button>
+      </div>
     </div>
   </div>
 
@@ -4939,10 +5164,9 @@
       }
     ];
 
+    let articles = [];
+
     let jobs = [
-      {
-        id: 101,
-        jobType: 'offer',
         title: 'Ищем SMM-менеджера в Telegram-проект',
         company: 'Uzlayn',
         location: 'Ташкент / удалённо',
@@ -6316,7 +6540,8 @@
         post: 'Создать пост',
         video: 'Создать видео',
         vacancy: 'Создать вакансию',
-        story: 'Добавить историю'
+        story: 'Добавить историю',
+        article: 'Создать статью'
       };
       heading.textContent = headings[type] || 'Создать пост';
       heading.style.opacity = '0.4';
@@ -6329,7 +6554,24 @@
         btn.classList.toggle('active', btn.dataset.type === type);
       });
 
+      if (type === 'article') {
+        closeCreateModal();
+        setTimeout(() => openArticleEditor(), 300);
+        return;
+      }
+
       toggleVideoInputs(type);
+
+      const submitBtn = document.getElementById('createSubmitBtn');
+      const submitLabels = {
+        post: 'Опубликовать',
+        video: 'Опубликовать видео',
+        vacancy: 'Опубликовать вакансию',
+        story: 'Добавить историю'
+      };
+      submitBtn.innerText = submitLabels[type] || 'Опубликовать';
+      submitBtn.classList.toggle('jobs-submit', type === 'vacancy');
+      submitBtn.classList.toggle('videos-submit', type === 'video');
     }
 
     let editingStoryId = null;
@@ -6354,7 +6596,9 @@
     /* Close create modal on Escape key */
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
-        if (document.getElementById('createModal').classList.contains('active')) {
+        if (document.getElementById('articleEditorModal').classList.contains('active')) {
+          closeArticleEditor();
+        } else if (document.getElementById('createModal').classList.contains('active')) {
           closeCreateModal();
         }
       }
@@ -6364,6 +6608,13 @@
     document.getElementById('createModal')?.addEventListener('click', function(e) {
       if (e.target === this) {
         closeCreateModal();
+      }
+    });
+
+    /* Close article editor when clicking backdrop */
+    document.getElementById('articleEditorModal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeArticleEditor();
       }
     });
 
@@ -6566,6 +6817,172 @@
       document.getElementById('postTitleInput').value = '';
       document.getElementById('postTextInput').value = '';
       closeCreateModal();
+    }
+
+    // ================= СТАТЬИ (ARTICLE EDITOR) =================
+    let articleCoverData = null;
+    let editingArticleId = null;
+
+    function openArticleEditor(articleId) {
+      editingArticleId = articleId || null;
+
+      if (articleId) {
+        const article = articles.find(a => a.id === articleId);
+        if (article) {
+          document.getElementById('articleTitleInput').value = article.title;
+          document.getElementById('articleDescInput').value = article.desc || '';
+          document.getElementById('articleCategorySelect').value = article.category || 'Новости';
+          document.getElementById('articleTagsInput').value = (article.tags || []).join(', ');
+          document.getElementById('articleEditor').innerHTML = article.content || '';
+          if (article.cover) {
+            articleCoverData = { url: article.cover };
+            const img = document.getElementById('articlePreviewImg');
+            img.src = article.cover;
+            img.style.display = 'block';
+            document.getElementById('articlePreviewPlaceholder').style.display = 'none';
+          }
+        }
+      } else {
+        document.getElementById('articleTitleInput').value = '';
+        document.getElementById('articleDescInput').value = '';
+        document.getElementById('articleCategorySelect').value = 'Новости';
+        document.getElementById('articleTagsInput').value = '';
+        document.getElementById('articleEditor').innerHTML = '';
+        articleCoverData = null;
+        document.getElementById('articlePreviewImg').style.display = 'none';
+        document.getElementById('articlePreviewPlaceholder').style.display = 'flex';
+      }
+
+      document.getElementById('articleEditorModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeArticleEditor() {
+      document.getElementById('articleEditorModal').classList.remove('active');
+      editingArticleId = null;
+      articleCoverData = null;
+      document.body.style.overflow = '';
+    }
+
+    function editorCmd(command, value = null) {
+      document.execCommand(command, false, value);
+      document.getElementById('articleEditor').focus();
+    }
+
+    function handleArticleCoverPick(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        articleCoverData = { url: e.target.result, file: file };
+        const img = document.getElementById('articlePreviewImg');
+        img.src = e.target.result;
+        img.style.display = 'block';
+        document.getElementById('articlePreviewPlaceholder').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleArticleCoverUrl() {
+      const url = document.getElementById('articleCoverUrl').value.trim();
+      if (url) {
+        articleCoverData = { url: url };
+        const img = document.getElementById('articlePreviewImg');
+        img.src = url;
+        img.style.display = 'block';
+        document.getElementById('articlePreviewPlaceholder').style.display = 'none';
+      } else {
+        articleCoverData = null;
+        document.getElementById('articlePreviewImg').style.display = 'none';
+        document.getElementById('articlePreviewPlaceholder').style.display = 'flex';
+      }
+    }
+
+    function publishArticle() {
+      const title = document.getElementById('articleTitleInput').value.trim();
+      const desc = document.getElementById('articleDescInput').value.trim();
+      const category = document.getElementById('articleCategorySelect').value;
+      const tagsStr = document.getElementById('articleTagsInput').value.trim();
+      const content = document.getElementById('articleEditor').innerHTML;
+      const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
+
+      if (!title || !content.replace(/<[^>]*>/g, '').trim()) {
+        alert('Введите заголовок и текст статьи');
+        return;
+      }
+
+      const article = {
+        id: editingArticleId || Date.now(),
+        title: title,
+        desc: desc,
+        category: category,
+        tags: tags,
+        content: content,
+        cover: articleCoverData ? articleCoverData.url : null,
+        author: 'Вы',
+        avatar: 'https://picsum.photos/seed/user/100/100',
+        date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }),
+        likes: 0,
+        views: 0,
+        isUserCreated: true
+      };
+
+      if (editingArticleId) {
+        const idx = articles.findIndex(a => a.id === editingArticleId);
+        if (idx >= 0) articles[idx] = article;
+      } else {
+        articles.unshift(article);
+      }
+
+      renderArticlesList();
+      closeArticleEditor();
+    }
+
+    function renderArticlesList() {
+      // Render articles on feed
+      const feedEl = document.getElementById('feedList');
+      if (!feedEl) return;
+      const existing = feedEl.querySelectorAll('.article-card');
+      existing.forEach(el => el.remove());
+      const fragment = document.createDocumentFragment();
+      articles.slice(0, 10).forEach(article => {
+        const card = createArticleCard(article);
+        fragment.appendChild(card);
+      });
+      feedEl.prepend(fragment);
+    }
+
+    function createArticleCard(article) {
+      const card = document.createElement('div');
+      card.className = 'post-card article-card';
+      card.innerHTML = `
+        <div class="post-header-info">
+          <span class="post-category-tag">${article.category}</span>
+          <span class="post-time">${article.date}</span>
+        </div>
+        ${article.cover ? `<img src="${article.cover}" alt="${article.title}" class="post-media">` : ''}
+        <div class="post-content">
+          <h3 class="post-card-title">${article.title}</h3>
+          ${article.desc ? `<p class="post-text">${article.desc}</p>` : ''}
+        </div>
+        <div class="post-card-actions">
+          <div class="post-card-actions-left">
+            <button class="post-card-action-btn" onclick="likeArticle(${article.id})">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 0C.68 6.34 0 9.18 0 12c0 2.5 1 4.8 2.61 6.41L12 29.83l10.39-10.42A5.37 5.37 0 0 0 20.84 4.61z"/></svg>
+            </button>
+            <span class="post-card-action-count">${article.likes}</span>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    function likeArticle(id) {
+      const article = articles.find(a => a.id === id);
+      if (article) {
+        article.likes = (article.likes || 0) + 1;
+        renderArticlesList();
+      }
     }
 
     // ================= РАДИО =================
