@@ -2078,34 +2078,50 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: rgba(0, 0, 0, 0.85);
+      background-color: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       z-index: 1001;
-      display: none;
+      display: flex;
       align-items: flex-end;
       justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s ease, visibility 0.35s;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     .settings-modal.active, .create-modal.active {
+      opacity: 1;
+      visibility: visible;
       display: flex;
     }
 
     .settings-modal-content, .create-modal-content {
-      background-color: var(--card-bg);
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-top-left-radius: 26px;
+      border-top-right-radius: 26px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
       width: 100%;
       max-width: 480px;
-      border-radius: 20px 20px 0 0;
-      padding: 20px;
+      padding: 10px 20px 20px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      animation: slideUp 0.25s ease-out;
-      max-height: 90vh;
+      gap: 14px;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 -4px 24px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      animation: slideUp 0.35s cubic-bezier(0.32, 0.68, 0.48, 1);
+      max-height: calc(100vh - env(safe-area-inset-top, 0px) - 10px);
       overflow-y: auto;
     }
 
     @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
+      0% { transform: translateY(100%); }
+      75% { transform: translateY(-2%); }
+      100% { transform: translateY(0); }
     }
 
     .modal-header-nav {
@@ -2156,11 +2172,55 @@
     }
 
     .close-btn {
-      background: none;
-      border: none;
-      color: var(--text-color);
-      font-size: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.14);
+      color: var(--text-color);
+    }
+
+    .create-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 4px;
+    }
+
+    .create-modal-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-color);
+      transition: opacity 0.2s ease;
+    }
+
+    .create-modal-icon {
+      color: var(--accent-color);
+    }
+
+    .create-modal-drag {
+      width: 42px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 2px;
+      margin: 4px auto 14px;
+      flex-shrink: 0;
     }
 
     /* МИНИ-ОКНО ПОДТВЕРЖДЕНИЯ (ALERT / DIALOG) */
@@ -2237,36 +2297,57 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      transition: all 0.25s ease;
     }
 
     .form-group label {
       font-size: 12px;
+      font-weight: 600;
       color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .form-control {
-      background-color: var(--input-bg);
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 10px 12px;
-      color: #fff;
+      background: rgba(255, 255, 255, 0.03);
+      background-image: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: var(--text-color);
       font-size: 14px;
+      font-weight: 500;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .form-control::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(255, 182, 71, 0.15);
     }
 
     textarea.form-control {
       resize: none;
-      height: 80px;
+      height: 90px;
+      border-radius: 14px;
     }
 
+    /* --- MEDIA INPUT --- */
     .media-input-row {
       display: flex;
       gap: 8px;
+      align-items: stretch;
     }
 
     .media-input-row .form-control {
       flex: 1;
       min-width: 0;
+      border-radius: 12px;
     }
 
     .media-pick-btn {
@@ -2274,39 +2355,48 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      background-color: var(--chip-bg);
+      background: rgba(255, 255, 255, 0.03);
+      background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
       color: var(--text-color);
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 0 14px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .media-pick-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
     }
 
     .media-pick-btn:active {
-      background-color: var(--input-bg);
+      transform: scale(0.97);
     }
 
+    /* --- MEDIA PREVIEW --- */
     .media-preview {
       display: flex;
       align-items: center;
-      gap: 8px;
-      background-color: var(--input-bg);
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 6px 8px;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px 12px;
       margin-top: 2px;
     }
 
     .media-preview img,
     .media-preview video {
-      width: 40px;
-      height: 40px;
+      width: 48px;
+      height: 48px;
       object-fit: cover;
-      border-radius: 6px;
+      border-radius: 8px;
       background: #000;
+      flex-shrink: 0;
     }
 
     .media-preview span {
@@ -2328,13 +2418,19 @@
       cursor: pointer;
       padding: 4px;
       flex-shrink: 0;
+      transition: color 0.2s;
+    }
+
+    .media-preview-clear:hover {
+      color: var(--accent-color);
     }
 
     .post-type-switch {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       padding: 4px;
-      background: var(--chip-bg);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 50px;
     }
 
@@ -2352,7 +2448,7 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      transition: all 0.2s ease;
     }
 
     .post-type-btn:hover {
@@ -2362,6 +2458,7 @@
     .post-type-btn.active {
       background: var(--accent-color);
       color: #1a1420;
+      box-shadow: 0 4px 16px rgba(255, 182, 71, 0.25);
     }
 
     .post-type-btn.active .post-type-btn-icon {
@@ -2371,21 +2468,39 @@
     .post-type-btn-icon {
       opacity: 0.65;
       transition: opacity 0.2s ease;
+      font-size: 14px;
     }
 
+    /* --- SUBMIT BUTTON --- */
     .btn-submit {
-      background-color: var(--accent-color);
+      background: var(--accent-color);
       color: #1a1420;
       border: none;
-      padding: 12px;
-      border-radius: 8px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       margin-top: 8px;
+      transition: all 0.25s cubic-bezier(0.32, 0.68, 0.48, 1);
+      box-shadow: 0 4px 16px rgba(255, 182, 71, 0.25);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(255, 182, 71, 0.32);
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
     }
 
     .btn-submit.jobs-submit {
-      background-color: var(--jobs-color);
+      background: var(--jobs-color);
+    }
+
+    .btn-submit.videos-submit {
+      background: var(--videos-color, #ec4899);
     }
 
     /* --- РАДИО (внутри Каналов) --- */
@@ -4002,9 +4117,16 @@
 
   <div class="create-modal" id="createModal">
     <div class="create-modal-content">
-      <div class="create-modal-title" style="display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 700;">
-        <span id="createModalHeading">Создать пост</span>
-        <button class="close-btn" onclick="closeCreateModal()">&times;</button>
+      <div class="create-modal-drag"></div>
+
+      <div class="create-modal-header">
+        <div class="create-modal-title">
+          <svg class="create-modal-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <span id="createModalHeading">Создать пост</span>
+        </div>
+        <button class="close-btn" onclick="closeCreateModal()" aria-label="Закрыть">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
 
       <form onsubmit="handleCreatePost(event)">
@@ -4089,7 +4211,9 @@
             <img id="mediaPreviewImg" style="display:none;">
             <video id="mediaPreviewVideo" muted style="display:none;"></video>
             <span id="mediaPreviewName"></span>
-            <button type="button" class="media-preview-clear" onclick="clearMediaPreview(true)">&times;</button>
+            <button type="button" class="media-preview-clear" onclick="clearMediaPreview(true)" aria-label="Очистить">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
           </div>
         </div>
 
@@ -6032,10 +6156,24 @@
     }
 
     function setPostType(type) {
-      document.getElementById('postTypeSelect').value = type;
+      const heading = document.getElementById('createModalHeading');
+      const headings = {
+        post: 'Создать пост',
+        video: 'Создать видео',
+        vacancy: 'Создать вакансию',
+        story: 'Добавить историю'
+      };
+      heading.textContent = headings[type] || 'Создать пост';
+      heading.style.opacity = '0.4';
+      setTimeout(() => { heading.style.opacity = '1'; }, 150);
+
+      const typeSelect = document.getElementById('postTypeSelect');
+      typeSelect.value = type;
+
       document.querySelectorAll('.post-type-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.type === type);
       });
+
       toggleVideoInputs(type);
     }
 
@@ -6044,15 +6182,26 @@
     function openCreateModal() {
       editingStoryId = null;
       setPostType('post');
-      document.getElementById('createModal').classList.add('active');
+      const modal = document.getElementById('createModal');
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
     function closeCreateModal() {
-      document.getElementById('createModal').classList.remove('active');
+      const modal = document.getElementById('createModal');
+      modal.classList.remove('active');
       editingStoryId = null;
       setPostType('post');
       clearMediaPreview();
+      document.body.style.overflow = '';
     }
+
+    /* Close create modal when clicking backdrop */
+    document.getElementById('createModal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeCreateModal();
+      }
+    });
 
     function handleMediaFilePick(event) {
       const file = event.target.files && event.target.files[0];
