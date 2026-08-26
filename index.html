@@ -2083,8 +2083,9 @@
       -webkit-backdrop-filter: blur(12px);
       z-index: 1001;
       display: flex;
-      align-items: flex-end;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.35s ease, visibility 0.35s;
@@ -2095,6 +2096,9 @@
       opacity: 1;
       visibility: visible;
       display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
     }
 
     .settings-modal-content, .create-modal-content {
@@ -2104,18 +2108,18 @@
       border-top-right-radius: 26px;
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
-      width: 100%;
+      width: 90vw;
       max-width: 480px;
+      margin: 0 auto;
       padding: 10px 20px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 -4px 24px rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       animation: slideUp 0.35s cubic-bezier(0.32, 0.68, 0.48, 1);
       max-height: calc(100vh - env(safe-area-inset-top, 0px) - 10px);
-      overflow-y: auto;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     @keyframes slideUp {
@@ -2533,9 +2537,11 @@
     }
 
     .tg-create-body {
-      flex: 1;
+      flex: 1 1 auto;
       overflow-y: auto;
       padding: 4px 0;
+      min-height: 0;
+      width: 100%;
     }
 
     .tg-create-fields {
@@ -2547,6 +2553,11 @@
     .tg-create-footer {
       padding-top: 8px;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
+      position: sticky;
+      bottom: 0;
+      background: var(--card-bg);
+      z-index: 10;
+      backdrop-filter: blur(10px);
     }
 
     /* --- ARTICLE EDITOR --- */
@@ -2753,6 +2764,111 @@
     .tg-type-label {
       font-size: 12px;
       font-weight: 500;
+    }
+
+    /* --- TELEGRAM-STYLE BOTTOM TAB BAR (single-screen composer) --- */
+    .tg-create-tabpanel {
+      display: flex;
+      justify-content: space-around;
+      align-items-center;
+      gap: 4px;
+      padding: 10px 8px 6px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 20px;
+      margin-top: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      position: sticky;
+      bottom: 72px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .tg-create-tabpanel {
+      --tg-tab-bg: rgba(255, 255, 255, 0.04);
+      --tg-tab-border: rgba(255, 255, 255, 0.08);
+      --tg-tab-active-bg: rgba(255, 182, 71, 0.15);
+      --tg-tab-active-border: rgba(255, 182, 71, 0.4);
+    }
+
+    .tg-create-tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 10px 4px 8px;
+      border: none;
+      border-radius: 16px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.32, 0.68, 0.48, 1);
+    }
+
+    .tg-create-tab:hover {
+      color: var(--text-color);
+    }
+
+    .tg-create-tab.active {
+      color: var(--accent-color);
+    }
+
+    .tg-create-tab-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--tg-tab-bg);
+      border: 1px solid var(--tg-tab-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .tg-create-tab:hover .tg-create-tab-circle {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .tg-create-tab.active .tg-create-tab-circle {
+      background: var(--tg-tab-active-bg);
+      border-color: var(--tg-tab-active-border);
+      box-shadow: 0 0 0 2px rgba(255, 182, 71, 0.12);
+    }
+
+    /* Content sections (hidden except active) */
+    .tg-content-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tg-content-section {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* --- RICHTEXT EDITOR INLINE WRAPPER --- */
+    .tg-input-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tg-input-addon {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-top: 2px;
+    }
+
+    .tg-rich-text {
+      min-height: 90px;
     }
 
     .tg-media-preview img,
@@ -3819,7 +3935,1072 @@
       .vp-card { transition: none; }
       .vp-float-heart.show { animation-duration: .01s; }
     }
-  </style>
+
+    /* ===== TANHO CREATE FLOW ===== */
+    .tg-bottomsheet-backdrop { display: none; }
+
+    .tg-bottomsheet-sheet {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-top-left-radius: 26px;
+      border-top-right-radius: 26px;
+      width: 92vw;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 8px 18px 22px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 -4px 26px rgba(0,0,0,0.5);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      animation: slideUp 0.35s cubic-bezier(0.32, 0.68, 0.48, 1);
+      max-height: calc(100vh - 12px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tg-bottomsheet-drag {
+      width: 42px; height: 4px;
+      background: rgba(255,255,255,0.14);
+      border-radius: 2px;
+      margin: 6px auto 16px;
+      flex-shrink: 0;
+    }
+
+    .tg-bottomsheet-title {
+      font-size: 15px; font-weight: 700;
+      color: var(--text-color);
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .tg-bottomsheet-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .tg-type-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 10px 2px;
+      border-radius: 14px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .tg-type-card:hover { background: rgba(255,255,255,0.05); }
+    .tg-type-card:active { background: rgba(255,255,255,0.08); transform: scale(0.96); }
+    .tg-type-card:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
+
+    .tg-type-circle {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+    }
+    .tg-type-article { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+    .tg-type-story { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+    .tg-type-shortvideo { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+    .tg-type-vacancy { background: linear-gradient(135deg, #10b981, #059669); }
+
+    .tg-type-label { font-size: 11px; color: var(--text-secondary); font-weight: 600; text-align: center; line-height: 1.2; }
+
+    .tg-article-sheet, .tg-simple-sheet, .tg-preview-sheet {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-top-left-radius: 22px;
+      border-top-right-radius: 22px;
+      width: 95vw;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 -4px 30px rgba(0,0,0,0.55);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      animation: slideUp 0.35s cubic-bezier(0.32, 0.68, 0.48, 1);
+      max-height: 96vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tg-create-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .tg-create-title { font-size: 16px; font-weight: 700; color: var(--text-color); }
+
+    .tg-close-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-secondary);
+      border-radius: 10px;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .tg-close-btn:hover { background: rgba(255,255,255,0.08); color: var(--text-color); }
+    .tg-close-btn:active { transform: scale(0.94); }
+
+    .tg-header-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-color);
+      border-radius: 10px;
+      height: 34px; padding: 0 12px;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tg-header-btn:hover { background: rgba(255,255,255,0.08); }
+    .tg-header-btn:active { transform: scale(0.96); }
+    .tg-header-actions { display: flex; gap: 8px; }
+
+    .tg-article-body, .tg-simple-body, .tg-preview-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tg-article-title-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid rgba(255,255,255,0.06);
+      color: var(--text-color);
+      font-size: 22px;
+      font-weight: 800;
+      padding: 6px 2px;
+      outline: none;
+      font-family: inherit;
+    }
+    .tg-article-title-input::placeholder { color: rgba(255,255,255,0.25); }
+    .tg-article-title-input:focus { border-bottom-color: var(--accent-color); }
+
+    .tg-article-desc-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: var(--text-secondary);
+      font-size: 15px;
+      padding: 4px 2px;
+      outline: none;
+      resize: none;
+      font-family: inherit;
+    }
+    .tg-article-desc-input::placeholder { color: rgba(255,255,255,0.2); }
+
+    .tg-article-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tg-article-meta .form-group { flex: 1; min-width: 130px; }
+
+    .tg-article-footer {
+      display: flex; gap: 10px; padding: 12px 16px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: var(--card-bg);
+      flex-shrink: 0;
+    }
+
+    .tg-cta-btn {
+      flex: 1;
+      background: var(--accent-color);
+      color: #1a1205;
+      border: none;
+      border-radius: 12px;
+      height: 46px;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all 0.2s;
+    }
+    .tg-cta-btn:hover { filter: brightness(1.06); }
+    .tg-cta-btn:active { transform: scale(0.98); }
+    .tg-cta-btn.secondary {
+      flex: 0 0 auto; width: 46px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-color);
+    }
+
+    .tg-article-footer .btn-submit,
+    .tg-create-footer .btn-submit {
+      flex: 1;
+      margin-top: 0;
+    }
+
+    .tg-toolbar-sep {
+      width: 1px; height: 22px;
+      background: rgba(255,255,255,0.1);
+      margin: 0 2px;
+      align-self: center;
+      flex-shrink: 0;
+    }
+
+    .tg-preview-content { color: var(--text-color); font-size: 15px; line-height: 1.65; word-break: break-word; }
+    .tg-preview-content img, .tg-preview-content video { max-width: 100%; border-radius: 12px; margin: 8px 0; }
+    .tg-preview-content a { color: var(--accent-color); }
+    .tg-preview-content blockquote { border-left: 3px solid var(--accent-color); margin: 8px 0; padding: 4px 12px; color: var(--text-secondary); }
+    .tg-preview-content h1, .tg-preview-content h2, .tg-preview-content h3 { color: var(--text-color); margin: 10px 0 4px; }
+
+    @media (max-width: 360px) {
+      .tg-type-circle { width: 50px; height: 50px; }
+      .tg-type-label { font-size: 10px; }
+      .tg-bottomsheet-grid { gap: 2px; }
+    }
+    /* ===== TANHO PROFILE & SETTINGS (new style) ===== */
+    .profile-logged-in {
+      background: transparent;
+      border: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+    .profile-header-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 8px 4px 4px;
+      gap: 4px;
+    }
+    .profile-avatar-wrap {
+      width: 104px; height: 104px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, var(--accent-color), #8b5cf6 70%);
+      margin-bottom: 6px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      flex-shrink: 0;
+    }
+    .profile-avatar-large {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--card-bg);
+      display: block;
+    }
+    .profile-header-info h2 {
+      font-size: 20px; font-weight: 800; color: var(--text-color);
+      margin: 2px 0 0;
+    }
+    .profile-username-tag {
+      font-size: 13px; color: var(--accent-color); font-weight: 600;
+    }
+    .profile-bio {
+      font-size: 14px; color: var(--text-secondary); margin: 6px 0 0;
+      max-width: 320px; line-height: 1.4;
+    }
+
+    .tg-profile-stats {
+      display: flex;
+      width: 100%;
+      margin: 16px 0 4px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .tg-stat {
+      flex: 1;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 12px 4px;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      color: var(--text-color);
+      transition: background 0.2s;
+    }
+    .tg-stat + .tg-stat { border-left: 1px solid rgba(255,255,255,0.07); }
+    .tg-stat:hover { background: rgba(255,255,255,0.04); }
+    .tg-stat:active { background: rgba(255,255,255,0.07); }
+    .tg-stat-num { font-size: 17px; font-weight: 800; }
+    .tg-stat-label { font-size: 11px; color: var(--text-secondary); }
+
+    .profile-actions {
+      display: flex; gap: 10px; width: 100%; margin-top: 14px;
+    }
+    .tg-profile-btn {
+      flex: 1;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      height: 44px;
+      background: var(--accent-color);
+      color: #1a1205;
+      border: none; border-radius: 12px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tg-profile-btn:hover { filter: brightness(1.06); }
+    .tg-profile-btn:active { transform: scale(0.98); }
+    .tg-profile-btn.ghost {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-color);
+      flex: 0 0 auto; width: 52px;
+    }
+
+    .profile-tabs-nav {
+      display: flex; gap: 8px; padding: 14px 4px 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .profile-tab-item {
+      flex: 1;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: var(--text-secondary);
+      border-radius: 12px;
+      padding: 10px 6px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.2s;
+    }
+    .profile-tab-item:hover { color: var(--text-color); background: rgba(255,255,255,0.06); }
+    .profile-tab-item.active {
+      background: rgba(255,182,72,0.14);
+      border-color: rgba(255,182,72,0.4);
+      color: var(--accent-color);
+    }
+    .profile-tab-badge {
+      background: rgba(255,255,255,0.12);
+      color: var(--text-color);
+      border-radius: 999px; padding: 1px 7px; font-size: 11px; font-weight: 700;
+    }
+    .profile-tab-item.active .profile-tab-badge { background: var(--accent-color); color: #1a1205; }
+
+    /* Settings modal -> bottom sheet glass */
+    .settings-modal-content {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-bottom: none;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 -6px 30px rgba(0,0,0,0.5);
+      background: var(--card-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      padding: 4px 18px max(18px, env(safe-area-inset-bottom));
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+    .modal-header-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 0 14px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 10px;
+    }
+    .modal-header-nav span { font-size: 16px; font-weight: 700; color: var(--text-color); }
+    .modal-header-nav .close-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-secondary);
+      width: 34px; height: 34px; border-radius: 10px; font-size: 18px; line-height: 1;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .modal-header-nav .close-btn:hover { color: var(--text-color); background: rgba(255,255,255,0.08); }
+
+    .settings-menu-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 6px; }
+    .settings-menu-btn {
+      width: 100%;
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: var(--text-color);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; text-align: left;
+      transition: all 0.2s;
+    }
+    .settings-menu-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+    .settings-menu-btn:active { transform: scale(0.99); }
+    .settings-menu-btn svg { color: var(--text-secondary); flex-shrink: 0; }
+    .settings-menu-btn span { flex: 1; }
+    .settings-menu-btn .chev { color: var(--text-secondary); }
+    .settings-menu-btn.danger { color: #f87171; border-color: rgba(248,113,113,0.2); background: rgba(248,113,113,0.06); }
+    .settings-menu-btn.danger svg { color: #f87171; }
+
+    .settings-subview { padding: 4px 0 8px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label, .tg-label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; }
+    .form-control {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-color);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .form-control:focus { border-color: var(--accent-color); }
+    .form-group .hint { font-size: 11px; color: var(--text-secondary); margin-top: 5px; }
+    .save-btn {
+      width: 100%;
+      background: var(--accent-color); color: #1a1205; border: none;
+      border-radius: 12px; height: 46px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s; margin-top: 6px;
+    }
+    .save-btn:hover { filter: brightness(1.06); }
+    .save-btn:active { transform: scale(0.98); }
+    .subview-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    .subview-header .back-btn {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-secondary); border-radius: 10px; width: 34px; height: 34px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .subview-header .back-btn:hover { color: var(--text-color); background: rgba(255,255,255,0.08); }
+    .subview-header h3 { font-size: 16px; font-weight: 700; color: var(--text-color); margin: 0; }
+
+    /* Delete confirm dialog as bottom sheet */
+    .confirm-dialog-overlay {
+      position: fixed; inset: 0; z-index: 1100;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      display: none; align-items: flex-end; justify-content: center;
+      padding: 0;
+    }
+    .confirm-dialog-overlay.active { display: flex; }
+    .confirm-dialog-box {
+      width: 92vw; max-width: 460px; margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-top-left-radius: 22px; border-top-right-radius: 22px;
+      padding: 8px 18px max(18px, env(safe-area-inset-bottom));
+      animation: slideUp 0.3s cubic-bezier(0.32, 0.68, 0.48, 1);
+      box-shadow: 0 -6px 30px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .confirm-dialog-title { font-size: 17px; font-weight: 800; color: var(--text-color); margin: 14px 0 8px; text-align: center; }
+    .confirm-dialog-msg { font-size: 14px; color: var(--text-secondary); text-align: center; margin: 0 0 16px; line-height: 1.5; }
+    .confirm-dialog-actions { display: flex; flex-direction: column; gap: 10px; }
+    .btn-dialog {
+      width: 100%; border: none; border-radius: 12px; height: 46px;
+      font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-dialog-danger { background: #ef4444; color: #fff; }
+    .btn-dialog-danger:hover { filter: brightness(1.06); }
+    .btn-dialog-cancel {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-color);
+    }
+    .btn-dialog-cancel:hover { background: rgba(255,255,255,0.09); }
+
+    /* Auth card (login/register) */
+    .auth-container {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+    .auth-card {
+      display: block;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      padding: 18px 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .auth-tabs {
+      display: flex; gap: 6px; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 4px; margin-bottom: 18px;
+    }
+    .auth-tab-btn {
+      flex: 1; background: transparent; border: none; cursor: pointer;
+      color: var(--text-secondary); font-size: 14px; font-weight: 700;
+      padding: 11px; border-radius: 10px; transition: all 0.2s;
+    }
+    .auth-tab-btn:hover { color: var(--text-color); }
+    .auth-tab-btn.active { background: var(--accent-color); color: #1a1205; }
+    .auth-form { display: flex; flex-direction: column; gap: 12px; }
+    .auth-form .form-control {
+      width: 100%;
+      height: 48px;
+      padding: 13px 14px;
+      font-size: 15px;
+      background: var(--input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+    }
+    .btn-auth-submit {
+      width: 100%; background: var(--accent-color); color: #1a1205; border: none;
+      border-radius: 12px; height: 48px; font-size: 15px; font-weight: 700; cursor: pointer;
+      margin-top: 4px; transition: all 0.2s;
+    }
+    .btn-auth-submit:hover { filter: brightness(1.06); }
+    .btn-auth-submit:active { transform: scale(0.98); }
+    .social-divider {
+      display: flex; align-items: center; gap: 12px; color: var(--text-secondary);
+      font-size: 12px; margin: 18px 0 12px;
+    }
+    .social-divider::before, .social-divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08);
+    }
+    .social-btns { display: flex; flex-direction: column; gap: 10px; }
+    .btn-social {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-color); border-radius: 12px; height: 46px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-social:hover { background: rgba(255,255,255,0.08); }
+    .btn-social:active { transform: scale(0.98); }
+    .btn-social svg { width: 20px; height: 20px; }
+
+    .empty-msg { text-align: center; color: var(--text-secondary); padding: 30px 10px; font-size: 14px; }
+
+    @media (max-width: 360px) {
+      .profile-avatar-wrap { width: 92px; height: 92px; }
+      .profile-actions { gap: 8px; }
+      .tg-profile-btn { font-size: 13px; }
+    }
+  
+    /* ===== TANHO SEARCH (new style) ===== */
+    .search-page-container {
+      padding: 6px 14px 10px;
+      position: sticky; top: 0; z-index: 5;
+      background: rgba(22, 21, 28, 0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .search-page-input-wrap {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 14px;
+      padding: 0 12px;
+      height: 44px;
+      transition: border-color 0.2s;
+    }
+    .search-page-input-wrap:focus-within { border-color: var(--accent-color); }
+    .search-page-input-icon { color: var(--text-secondary); flex-shrink: 0; }
+    .search-page-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text-color); font-size: 15px; font-family: inherit;
+    }
+    .search-page-input::placeholder { color: var(--text-secondary); }
+    .search-page-clear {
+      background: transparent; border: none; color: var(--text-secondary);
+      cursor: pointer; display: flex; align-items: center; padding: 4px;
+      border-radius: 8px; transition: all 0.2s;
+    }
+    .search-page-clear:hover { color: var(--text-color); background: rgba(255,255,255,0.06); }
+
+    .search-filters {
+      display: flex; gap: 8px; margin-top: 12px;
+      overflow-x: auto; padding-bottom: 2px; scrollbar-width: none;
+    }
+    .search-filters::-webkit-scrollbar { display: none; }
+    .search-chip {
+      flex: 0 0 auto;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-secondary);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px; font-weight: 600; white-space: nowrap;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .search-chip:hover { color: var(--text-color); background: rgba(255,255,255,0.07); }
+    .search-chip.active {
+      background: var(--accent-color); color: #1a1205; border-color: var(--accent-color);
+    }
+
+    .search-results-list { display: flex; flex-direction: column; gap: 10px; padding: 14px; }
+    .search-result-card {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; padding: 10px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .search-result-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+    .search-result-card:active { transform: scale(0.99); }
+    .search-result-thumb {
+      width: 52px; height: 52px; border-radius: 12px; overflow: hidden; flex-shrink: 0;
+      background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center;
+    }
+    .search-result-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .search-result-info { flex: 1; min-width: 0; }
+    .search-result-title {
+      font-size: 14px; font-weight: 700; color: var(--text-color);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .search-result-meta {
+      font-size: 12px; color: var(--text-secondary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .search-result-type {
+      flex-shrink: 0;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+      color: var(--accent-color);
+      background: rgba(255,182,72,0.14);
+      border: 1px solid rgba(255,182,72,0.3);
+      border-radius: 999px; padding: 3px 9px;
+    }
+    .search-results-empty { text-align: center; padding: 50px 20px; color: var(--text-secondary); }
+    .search-results-empty-icon { color: var(--text-secondary); opacity: 0.6; margin-bottom: 12px; }
+    .search-results-empty-text { font-size: 14px; line-height: 1.5; }
+
+    @media (max-width: 360px) {
+      .search-chip { padding: 7px 13px; font-size: 12px; }
+    }
+
+
+    .profile-title-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .profile-title-actions .settings-btn:hover {
+      color: var(--accent-color);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+    }
+
+  /* ===== Article editor — minimalist (Medium/Notion/Telegram-like) ===== */
+  .ae-screen { background-color: rgba(0,0,0,0.55); }
+  .ae-screen.active { justify-content: flex-end; }
+  .ae-sheet {
+    width: 100%; max-width: 720px; height: 100%;
+    background: var(--bg-color, #14121b);
+    display: flex; flex-direction: column;
+    animation: slideUp 0.35s cubic-bezier(0.32, 0.68, 0.48, 1);
+  }
+  @media (min-width: 640px) {
+    .ae-screen.active { justify-content: center; }
+    .ae-sheet { height: 94vh; max-height: 94vh; border-radius: 22px 22px 0 0; box-shadow: 0 -8px 50px rgba(0,0,0,0.5); }
+  }
+  .ae-header { display: flex; align-items: center; gap: 10px; padding: 12px 18px; flex-shrink: 0; }
+  .ae-icon-btn {
+    width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent;
+    color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .2s; flex-shrink: 0;
+  }
+  .ae-icon-btn:hover { background: rgba(255,255,255,0.07); }
+  .ae-icon-btn:active { transform: scale(.94); }
+  .ae-header-title { flex: 1; font-size: 16px; font-weight: 700; color: var(--text-color); }
+  .ae-header-actions { display: flex; gap: 2px; }
+
+  .ae-scroll {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 6px 22px 30px; display: flex; flex-direction: column; gap: 22px;
+  }
+
+  /* Cover */
+  .ae-cover { border-radius: 16px; }
+  .ae-cover-empty {
+    display: flex; align-items: center; gap: 16px; padding: 28px 20px;
+    background: rgba(255,255,255,0.025); border: 1px dashed rgba(255,255,255,0.12); border-radius: 16px;
+  }
+  .ae-cover-action {
+    display: inline-flex; align-items: center; gap: 8px; background: transparent; border: none;
+    color: var(--text-secondary); font-size: 14px; font-weight: 600; font-family: inherit;
+    cursor: pointer; padding: 4px 2px; transition: color .2s;
+  }
+  .ae-cover-action svg { color: var(--text-secondary); transition: color .2s; }
+  .ae-cover-action:hover { color: var(--accent-color); }
+  .ae-cover-action:hover svg { color: var(--accent-color); }
+  .ae-cover-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.12); }
+  .ae-cover-urlwrap { margin-top: 12px; }
+  .ae-cover-url {
+    width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 12px; padding: 12px 14px; color: var(--text-color); font-size: 14px; font-family: inherit; outline: none;
+    transition: border-color .2s;
+  }
+  .ae-cover-url:focus { border-color: var(--accent-color); }
+  .ae-cover-preview { position: relative; }
+  .ae-cover-img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 16px; display: block; }
+  .ae-cover-remove {
+    position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(0,0,0,0.55); border: none; color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: background .2s;
+  }
+  .ae-cover-remove:hover { background: rgba(0,0,0,0.78); }
+
+  /* Title */
+  .ae-title {
+    width: 100%; border: none; background: transparent; outline: none; resize: none; overflow: hidden;
+    font-family: inherit; color: var(--text-color);
+    font-size: 34px; font-weight: 800; line-height: 1.18; letter-spacing: -0.4px; padding: 0; min-height: 42px;
+  }
+  .ae-title::placeholder { color: rgba(255,255,255,0.22); }
+  @media (min-width: 640px) { .ae-title { font-size: 38px; } }
+
+  /* Description */
+  .ae-desc {
+    width: 100%; border: none; background: transparent; outline: none; resize: none; overflow: hidden;
+    font-family: inherit; color: var(--text-secondary);
+    font-size: 17px; font-weight: 500; line-height: 1.42; padding: 0; margin-top: -10px; min-height: 26px;
+  }
+  .ae-desc::placeholder { color: rgba(255,255,255,0.22); }
+
+  /* Toolbar */
+  .ae-toolbar {
+    position: relative; display: flex; align-items: center; gap: 2px; padding: 10px 0;
+    border-top: 1px solid rgba(255,255,255,0.07); border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .ae-tool {
+    width: 36px; height: 36px; border-radius: 10px; border: none; background: transparent;
+    color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .ae-tool:hover { background: rgba(255,255,255,0.07); color: var(--text-color); }
+  .ae-tool:active { transform: scale(.94); }
+  .ae-tool.active { color: var(--accent-color); }
+  .ae-tool-sep { width: 1px; height: 22px; background: rgba(255,255,255,0.10); margin: 0 4px; }
+  .ae-tool-more { margin-left: auto; }
+  .ae-more {
+    position: absolute; top: 100%; right: 0; margin-top: 8px; z-index: 30;
+    background: #1b1822; border: 1px solid rgba(255,255,255,0.10); border-radius: 14px;
+    padding: 6px; display: flex; flex-direction: column; min-width: 220px; box-shadow: 0 12px 34px rgba(0,0,0,0.5);
+  }
+  .ae-more-item {
+    text-align: left; background: transparent; border: none; cursor: pointer; color: var(--text-color);
+    font-size: 14px; font-weight: 500; font-family: inherit; padding: 12px 12px; border-radius: 10px; transition: background .15s;
+  }
+  .ae-more-item:hover { background: rgba(255,255,255,0.07); }
+
+  /* Editor */
+  .ae-editor {
+    min-height: 260px; outline: none; color: var(--text-color); font-size: 17px; line-height: 1.65; font-family: inherit;
+  }
+  .ae-editor:empty:before { content: attr(placeholder); color: rgba(255,255,255,0.28); pointer-events: none; }
+  .ae-editor p { margin: 0 0 12px; }
+  .ae-editor h1, .ae-editor h2, .ae-editor h3 { margin: 18px 0 10px; line-height: 1.25; }
+  .ae-editor a { color: var(--accent-color); }
+  .ae-editor blockquote {
+    margin: 14px 0; padding: 4px 0 4px 16px; border-left: 3px solid var(--accent-color);
+    color: var(--text-secondary); font-style: italic;
+  }
+  .ae-editor img, .ae-editor video { max-width: 100%; border-radius: 12px; margin: 12px 0; }
+  .ae-editor hr { border: none; border-top: 1px solid rgba(255,255,255,0.14); margin: 18px 0; }
+
+  /* Meta */
+  .ae-meta { display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 4px; }
+  .ae-meta-row {
+    display: flex; align-items: center; gap: 16px; padding: 15px 2px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .ae-meta-row:last-child { border-bottom: none; }
+  .ae-meta-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); min-width: 96px; flex-shrink: 0; }
+  .ae-select, .ae-tags {
+    flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: var(--text-color);
+    font-size: 15px; font-family: inherit; font-weight: 500; padding: 4px 0;
+  }
+  .ae-select { cursor: pointer; appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9' fill='none' stroke='%239a91ac' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 2px center; padding-right: 22px; }
+  .ae-tags::placeholder { color: rgba(255,255,255,0.25); }
+
+  /* Footer / Publish */
+  .ae-footer { padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px)); flex-shrink: 0; background: var(--bg-color, #14121b); }
+  .ae-publish {
+    width: 100%; border: none; border-radius: 14px; cursor: pointer; font-family: inherit;
+    background: var(--accent-color); color: #1a1205; font-size: 16px; font-weight: 700; padding: 15px;
+    transition: opacity .2s, transform .15s, box-shadow .2s; box-shadow: 0 6px 22px rgba(255,182,71,0.28);
+  }
+  .ae-publish:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 26px rgba(255,182,71,0.36); }
+  .ae-publish:active:not(:disabled) { transform: scale(.985); }
+  .ae-publish:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+
+  /* ===== Story screen — minimalist (Telegram/Instagram Stories-like) ===== */
+  .st-screen { background-color: rgba(0,0,0,0.55); }
+  .st-screen.active { justify-content: flex-end; }
+  .st-sheet {
+    width: 100%; max-width: 520px; height: 100%;
+    background: var(--bg-color, #14121b); display: flex; flex-direction: column;
+    animation: slideUp 0.35s cubic-bezier(0.32, 0.68, 0.48, 1);
+  }
+  @media (min-width: 640px) {
+    .st-screen.active { justify-content: center; }
+    .st-sheet { height: 94vh; max-height: 94vh; border-radius: 22px 22px 0 0; box-shadow: 0 -8px 50px rgba(0,0,0,0.5); }
+  }
+  .st-header { display: flex; align-items: center; gap: 10px; padding: 12px 18px; flex-shrink: 0; }
+  .st-icon-btn {
+    width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent;
+    color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .2s; flex-shrink: 0;
+  }
+  .st-icon-btn:hover { background: rgba(255,255,255,0.07); }
+  .st-icon-btn:active { transform: scale(.94); }
+  .st-header-title { flex: 1; font-size: 16px; font-weight: 700; color: var(--text-color); }
+
+  .st-scroll {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 8px 22px 30px; display: flex; flex-direction: column; gap: 20px;
+  }
+
+  /* Media card */
+  .st-media-card {
+    position: relative; border-radius: 18px; overflow: hidden; cursor: pointer;
+    background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.14);
+    min-height: 200px; display: flex; align-items: center; justify-content: center;
+    transition: transform .2s, border-color .2s, background .2s;
+  }
+  .st-media-card:hover { border-color: rgba(255,182,71,0.5); }
+  .st-media-card:active { transform: scale(.99); }
+  .st-media-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 30px 20px; text-align: center; }
+  .st-media-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
+  .st-media-title { font-size: 16px; font-weight: 700; color: var(--text-color); }
+  .st-media-sub { font-size: 13px; color: var(--text-secondary); cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+  .st-media-sub:hover { color: var(--accent-color); }
+  .st-media-preview { position: relative; width: 100%; }
+  .st-media-preview img, .st-media-preview video { width: 100%; max-height: 340px; object-fit: cover; display: block; }
+  .st-media-preview.show { animation: stPop .35s cubic-bezier(.2,.8,.3,1); }
+  @keyframes stPop { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+  .st-media-remove {
+    position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(0,0,0,0.55); border: none; color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: background .2s; z-index: 2;
+  }
+  .st-media-remove:hover { background: rgba(0,0,0,0.8); }
+  .st-link-wrap { margin-top: -12px; }
+
+  .st-input {
+    width: 100%; height: 52px; padding: 0 16px; background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: var(--text-color);
+    font-size: 15px; font-family: inherit; outline: none; transition: border-color .2s, background .2s;
+  }
+  .st-input::placeholder { color: rgba(255,255,255,0.28); }
+  .st-input:focus { border-color: var(--accent-color); background: rgba(255,255,255,0.06); }
+
+  /* Title */
+  .st-title {
+    width: 100%; border: none; background: transparent; outline: none; color: var(--text-color);
+    font-family: inherit; font-size: 24px; font-weight: 800; line-height: 1.25; padding: 4px 2px;
+  }
+  .st-title::placeholder { color: rgba(255,255,255,0.25); }
+
+  /* Segmented control */
+  .st-seg { display: flex; background: rgba(255,255,255,0.05); border-radius: 14px; padding: 4px; gap: 4px; }
+  .st-seg-item {
+    flex: 1; border: none; background: transparent; color: var(--text-secondary); font-size: 14px;
+    font-weight: 600; font-family: inherit; padding: 10px; border-radius: 10px; cursor: pointer; transition: all .2s;
+  }
+  .st-seg-item.active { background: var(--bg-color, #14121b); color: var(--text-color); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+  .st-seg-item:active { transform: scale(.97); }
+
+  /* Toggle */
+  .st-toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 2px; }
+  .st-toggle-label { font-size: 15px; font-weight: 600; color: var(--text-color); }
+  .st-switch {
+    width: 50px; height: 30px; border-radius: 15px; border: none; background: rgba(255,255,255,0.14);
+    cursor: pointer; position: relative; transition: background .25s; flex-shrink: 0;
+  }
+  .st-switch .st-switch-knob { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .25s; }
+  .st-switch.on { background: var(--accent-color); }
+  .st-switch.on .st-switch-knob { transform: translateX(20px); }
+  .st-btn-fields { display: flex; flex-direction: column; gap: 12px; animation: stFade .25s ease; }
+  @keyframes stFade { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Live preview */
+  .st-live-preview { margin-top: 4px; }
+  .st-live-card { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 3/4; max-height: 360px; background: #0c0a12; }
+  .st-live-media { position: absolute; inset: 0; }
+  .st-live-media img, .st-live-media video { width: 100%; height: 100%; object-fit: cover; }
+  .st-live-media-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.3); font-size: 14px; }
+  .st-live-overlay { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 16px 16px; background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0)); }
+  .st-live-title { font-size: 18px; font-weight: 800; color: #fff; line-height: 1.25; }
+  .st-live-caption { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 4px; }
+  .st-live-btn { display: inline-block; margin-top: 10px; padding: 9px 18px; border-radius: 12px; background: var(--accent-color); color: #1a1205; font-weight: 700; font-size: 14px; }
+  .st-live-hint { font-size: 12px; color: var(--text-secondary); margin-top: 8px; text-align: center; }
+
+  /* Fullscreen preview */
+  .st-fs-preview { position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.92); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+  .st-fs-close { position: absolute; top: 16px; left: 16px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .st-fs-close:active { transform: scale(.94); }
+  .st-fs-card { position: relative; width: 100%; max-width: 380px; aspect-ratio: 9/16; max-height: 80vh; border-radius: 22px; overflow: hidden; background: #000; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+  .st-fs-media { position: absolute; inset: 0; }
+  .st-fs-media img, .st-fs-media video { width: 100%; height: 100%; object-fit: cover; }
+  .st-fs-overlay { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 20px 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0)); }
+  .st-fs-title { font-size: 20px; font-weight: 800; color: #fff; }
+  .st-fs-caption { font-size: 14px; color: rgba(255,255,255,0.8); margin-top: 4px; }
+  .st-fs-btn { display: block; margin-top: 14px; width: 100%; text-align: center; padding: 13px; border-radius: 14px; background: var(--accent-color); color: #1a1205; font-weight: 700; font-size: 15px; border: none; }
+
+  /* Footer */
+  .st-footer { padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px)); flex-shrink: 0; background: var(--bg-color, #14121b); }
+  .st-publish {
+    width: 100%; border: none; border-radius: 14px; cursor: pointer; font-family: inherit;
+    background: var(--accent-color); color: #1a1205; font-size: 16px; font-weight: 700; padding: 15px;
+    transition: opacity .25s, transform .15s, box-shadow .25s; box-shadow: 0 6px 22px rgba(255,182,71,0.28);
+  }
+  .st-publish:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 26px rgba(255,182,71,0.36); }
+  .st-publish:active:not(:disabled) { transform: scale(.985); }
+  .st-publish:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+  .st-publish.ready { animation: stReady .4s ease; }
+  @keyframes stReady { 0% { transform: scale(.98); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+
+  /* ===== Vacancy screen — minimalist (Telegram/Notion-like) ===== */
+  .vc-screen { background-color: rgba(0,0,0,0.55); }
+  .vc-screen.active { justify-content: flex-end; }
+  .vc-sheet {
+    width: 100%; max-width: 520px; height: 100%;
+    background: var(--bg-color, #14121b); display: flex; flex-direction: column;
+    animation: slideUp 0.35s cubic-bezier(0.32, 0.68, 0.48, 1);
+  }
+  @media (min-width: 640px) {
+    .vc-screen.active { justify-content: center; }
+    .vc-sheet { height: 94vh; max-height: 94vh; border-radius: 22px 22px 0 0; box-shadow: 0 -8px 50px rgba(0,0,0,0.5); }
+  }
+
+  .vc-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; flex-shrink: 0; }
+  .vc-icon-btn {
+    width: 38px; height: 38px; border-radius: 50%; border: none; background: transparent;
+    color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .2s; flex-shrink: 0;
+  }
+  .vc-icon-btn:hover { background: rgba(255,255,255,0.07); }
+  .vc-icon-btn:active { transform: scale(.94); }
+  .vc-header-title { flex: 1; text-align: center; font-size: 16px; font-weight: 700; color: var(--text-color); padding-right: 38px; }
+
+  .vc-scroll {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 6px 22px 28px; display: flex; flex-direction: column; gap: 26px;
+  }
+  .vc-section { display: flex; flex-direction: column; gap: 14px; }
+  .vc-section-title {
+    font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--text-secondary); margin: 0;
+  }
+
+  /* Segmented type control */
+  .vc-seg { display: flex; background: rgba(255,255,255,0.05); border-radius: 14px; padding: 4px; gap: 4px; }
+  .vc-seg-item {
+    flex: 1; border: none; background: transparent; color: var(--text-secondary); font-size: 13.5px;
+    font-weight: 600; font-family: inherit; padding: 11px 8px; border-radius: 10px; cursor: pointer; transition: all .2s;
+  }
+  .vc-seg-item.active { background: var(--bg-color, #14121b); color: var(--text-color); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+  .vc-seg-item:active { transform: scale(.97); }
+
+  /* Dominant title typography */
+  .vc-title {
+    width: 100%; border: none; background: transparent; outline: none; color: var(--text-color);
+    font-family: inherit; font-size: 26px; font-weight: 800; line-height: 1.25; padding: 2px 2px;
+    resize: none; overflow: hidden;
+  }
+  .vc-title::placeholder { color: rgba(255,255,255,0.25); }
+
+  /* Company row + logo */
+  .vc-company-row { display: flex; align-items: center; gap: 12px; }
+  .vc-company-logo {
+    width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0; cursor: pointer; overflow: hidden;
+    background: var(--accent-color); display: flex; align-items: center; justify-content: center;
+    position: relative; transition: transform .2s;
+  }
+  .vc-company-logo:active { transform: scale(.96); }
+  .vc-company-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vc-company-initial {
+    font-size: 22px; font-weight: 800; color: #1a1205; user-select: none;
+  }
+  .vc-input {
+    width: 100%; height: 52px; padding: 0 16px; background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: var(--text-color);
+    font-size: 15px; font-family: inherit; outline: none; transition: border-color .2s, background .2s;
+  }
+  .vc-input::placeholder { color: rgba(255,255,255,0.28); }
+  .vc-input:focus { border-color: var(--accent-color); background: rgba(255,255,255,0.06); }
+  .vc-company-input { flex: 1; min-width: 0; }
+
+  /* Location */
+  .vc-location { display: flex; flex-direction: column; gap: 10px; }
+  .vc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .vc-chip {
+    border: 1px solid rgba(255,255,255,0.12); background: transparent; color: var(--text-secondary);
+    font-size: 13px; font-weight: 600; font-family: inherit; padding: 8px 14px; border-radius: 20px; cursor: pointer;
+    transition: all .2s;
+  }
+  .vc-chip:hover { border-color: rgba(255,182,71,0.5); color: var(--text-color); }
+  .vc-chip.active { background: var(--accent-color); border-color: var(--accent-color); color: #1a1205; }
+
+  /* Salary */
+  .vc-salary { display: flex; flex-direction: column; gap: 12px; }
+  .vc-salary-row { display: flex; align-items: center; gap: 8px; }
+  .vc-salary-from, .vc-salary-to { flex: 1; min-width: 0; }
+  .vc-salary-dash { color: var(--text-secondary); font-size: 15px; flex-shrink: 0; }
+  .vc-currency { width: auto; flex: 0 0 90px; cursor: pointer; appearance: none; -webkit-appearance: none; }
+  .vc-salary.disabled .vc-salary-row,
+  .vc-salary.disabled .vc-salary-dash { opacity: .35; pointer-events: none; }
+  .vc-check { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-secondary); cursor: pointer; user-select: none; }
+  .vc-check input { width: 18px; height: 18px; accent-color: var(--accent-color); cursor: pointer; }
+
+  /* Helper */
+  .vc-helper { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+
+  /* Textareas */
+  .vc-textarea { height: auto; min-height: 78px; padding: 14px 16px; line-height: 1.5; resize: vertical; font-family: inherit; }
+
+  /* Footer + progress */
+  .vc-footer { padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px)); flex-shrink: 0; background: var(--bg-color, #14121b); border-top: 1px solid rgba(255,255,255,0.06); }
+  .vc-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .vc-progress-bar { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.1); overflow: hidden; }
+  .vc-progress-fill { height: 100%; width: 15%; border-radius: 3px; background: var(--accent-color); transition: width .35s cubic-bezier(.2,.8,.3,1); }
+  .vc-progress-text { font-size: 12px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; min-width: 78px; text-align: right; }
+  .vc-publish {
+    width: 100%; border: none; border-radius: 14px; cursor: pointer; font-family: inherit;
+    background: var(--accent-color); color: #1a1205; font-size: 16px; font-weight: 700; padding: 15px;
+    transition: opacity .25s, transform .15s, box-shadow .25s; box-shadow: 0 6px 22px rgba(255,182,71,0.28);
+  }
+  .vc-publish:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 26px rgba(255,182,71,0.36); }
+  .vc-publish:active:not(:disabled) { transform: scale(.985); }
+  .vc-publish:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+  .vc-publish.ready { animation: stReady .4s ease; }
+
+  /* Fullscreen preview */
+  .vc-preview {
+    position: fixed; inset: 0; z-index: 2000; background: var(--bg-color, #14121b);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px;
+    overflow-y: auto; animation: slideUp .3s ease;
+  }
+  .vc-fs-close {
+    position: fixed; top: 16px; left: 16px; width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: none; color: var(--text-color); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; z-index: 3;
+  }
+  .vc-fs-close:active { transform: scale(.94); }
+  .vc-preview-card { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 16px; }
+  .vc-preview-head { display: flex; align-items: center; gap: 12px; }
+  .vc-preview-logo {
+    width: 52px; height: 52px; border-radius: 14px; background: var(--accent-color); color: #1a1205;
+    display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; flex-shrink: 0;
+    overflow: hidden;
+  }
+  .vc-preview-logo img { width: 100%; height: 100%; object-fit: cover; }
+  .vc-preview-head-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .vc-preview-company { font-size: 16px; font-weight: 700; color: var(--text-color); }
+  .vc-preview-type { font-size: 13px; color: var(--accent-color); font-weight: 600; }
+  .vc-preview-title { font-size: 24px; font-weight: 800; color: var(--text-color); line-height: 1.25; margin: 0; }
+  .vc-preview-meta { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+  .vc-preview-block { display: flex; flex-direction: column; gap: 4px; }
+  .vc-preview-block b { font-size: 13px; text-transform: uppercase; letter-spacing: .03em; color: var(--text-secondary); }
+  .vc-preview-block p { margin: 0; font-size: 15px; color: var(--text-color); line-height: 1.55; white-space: pre-wrap; }
+  .vc-preview-contact {
+    margin-top: 6px; width: 100%; border: none; border-radius: 14px; cursor: pointer; font-family: inherit;
+    background: var(--accent-color); color: #1a1205; font-size: 15px; font-weight: 700; padding: 14px;
+  }
+  .vc-preview-contact:active { transform: scale(.985); }
+</style>
 </head>
 <body>
 
@@ -4043,6 +5224,14 @@
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
         </div>
+
+        <div class="search-filters" id="searchFilters">
+          <button class="search-chip active" type="button" data-filter="all" onclick="setSearchFilter('all')">Все</button>
+          <button class="search-chip" type="button" data-filter="article" onclick="setSearchFilter('article')">Статьи</button>
+          <button class="search-chip" type="button" data-filter="video" onclick="setSearchFilter('video')">Видео</button>
+          <button class="search-chip" type="button" data-filter="job" onclick="setSearchFilter('job')">Вакансии</button>
+          <button class="search-chip" type="button" data-filter="radio" onclick="setSearchFilter('radio')">Радио</button>
+        </div>
       </div>
 
       <div id="searchResultsContainer"></div>
@@ -4053,9 +5242,15 @@
       <div class="profile-title-bar">
         <h1 class="page-title">Профиль</h1>
         <!-- ИКОНКА НАСТРОЕК (ШЕСТЕРЕНКА) -->
-        <button class="settings-btn" id="settingsGearBtn" style="display: none;" onclick="openSettingsModal()" aria-label="Настройки">
+                <div class="profile-title-actions">
+          <button class="settings-btn" id="profileShareBtn" style="display: none;" onclick="shareProfile()" aria-label="Поделиться">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+          <!-- ИКОНКА НАСТРОЕК (ШЕСТЕРЕНКА) -->
+          <button class="settings-btn" id="settingsGearBtn" style="display: none;" onclick="openSettingsModal()" aria-label="Настройки">
           <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
+      </div>
       </div>
       
       <!-- Форма авторизации (Когда не вошел) -->
@@ -4116,10 +5311,29 @@
       <!-- Кабинет пользователя (Когда вошел) -->
       <div class="profile-logged-in" id="profileBox" style="display: none;">
         <div class="profile-header-info">
-          <img class="profile-avatar-large" id="userAvatar" src="" alt="User Avatar">
+          <div class="profile-avatar-wrap">
+            <img class="profile-avatar-large" id="userAvatar" src="" alt="User Avatar">
+          </div>
           <h2 id="userName">Имя Пользователя</h2>
           <div class="profile-username-tag" id="userTag">@username</div>
           <p class="profile-bio" id="userBio">Описание профиля не указано</p>
+
+          <div class="tg-profile-stats">
+            <button class="tg-stat" type="button" onclick="switchProfileTab('posts')">
+              <span class="tg-stat-num" id="statPosts">0</span>
+              <span class="tg-stat-label">Публикации</span>
+            </button>
+            <button class="tg-stat" type="button">
+              <span class="tg-stat-num" id="statFollowers">1.2k</span>
+              <span class="tg-stat-label">Подписчики</span>
+            </button>
+            <button class="tg-stat" type="button">
+              <span class="tg-stat-num" id="statFollowing">348</span>
+              <span class="tg-stat-label">Подписки</span>
+            </button>
+          </div>
+
+          
         </div>
 
         <!-- ВКЛАДКИ ВНУТРИ ПРОФИЛЯ -->
@@ -4157,7 +5371,10 @@
     </div>
 
     <!-- НИЖНЕЕ МЕНЮ (теперь 4 пункта + FAB) -->
-    <nav class="bottom-nav">
+
+  </div>
+
+<nav class="bottom-nav">
       <button class="nav-item active" onclick="switchTab('feed', this)">
         <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>Лента</span>
@@ -4183,11 +5400,11 @@
       </button>
     </nav>
 
-  </div>
 
   <!-- ЭКРАН НАСТРОЕК (ВЫДВИЖНОЕ МЕНЮ) -->
   <div class="settings-modal" id="settingsModal">
     <div class="settings-modal-content">
+      <div class="tg-bottomsheet-drag"></div>
       <div class="modal-header-nav">
         <span>Настройки</span>
         <button class="close-btn" onclick="closeSettingsModal()">&times;</button>
@@ -4383,232 +5600,276 @@
     </section>
   </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ПОСТА -->
-  <div class="create-modal tg-create-modal" id="createModal">
-    <div class="create-modal-content tg-create-sheet">
-      <div class="create-modal-drag"></div>
-
-      <div class="tg-create-header">
-        <button class="tg-close-btn tg-close create-close-btn" onclick="closeCreateModal()" aria-label="Закрыть">
-          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <!-- BOTTOM SHEET: ВЫБОР ТИПА КОНТЕНТА -->
+  <div class="create-modal tg-bottomsheet" id="createModal">
+    <div class="tg-bottomsheet-backdrop" onclick="closeCreateModal()"></div>
+    <div class="tg-bottomsheet-sheet" id="createSheet">
+      <div class="tg-bottomsheet-drag"></div>
+      <div class="tg-bottomsheet-title">Что хотите опубликовать?</div>
+      <div class="tg-bottomsheet-grid" id="contentTypeGrid">
+        <button type="button" class="tg-type-card" data-type="article" onclick="selectContentType('article')">
+          <div class="tg-type-circle tg-type-article">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          </div>
+          <span class="tg-type-label">Статья</span>
         </button>
-        <span class="tg-create-title" id="createModalHeading">Создать пост</span>
-        <div style="width: 20px;"></div>
+        <button type="button" class="tg-type-card" data-type="story" onclick="selectContentType('story')">
+          <div class="tg-type-circle tg-type-story">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" ry="2"/><path d="M8 21v-4"/></svg>
+          </div>
+          <span class="tg-type-label">История</span>
+        </button>
+        <button type="button" class="tg-type-card" data-type="shortvideo" onclick="selectContentType('shortvideo')">
+          <div class="tg-type-circle tg-type-shortvideo">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><polygon points="10 8 16 12 10 16 10 8"/><rect x="3" y="5" width="18" height="14" rx="2" ry="2"/></svg>
+          </div>
+          <span class="tg-type-label">Короткое видео</span>
+        </button>
+        <button type="button" class="tg-type-card" data-type="vacancy" onclick="selectContentType('vacancy')">
+          <div class="tg-type-circle tg-type-vacancy">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <span class="tg-type-label">Вакансия</span>
+        </button>
       </div>
-
-      <form onsubmit="handleCreatePost(event)">
-        <div class="tg-create-body">
-
-          <!-- Telegram-style type selector grid -->
-          <div class="tg-type-grid" id="postTypeSwitch">
-            <button type="button" class="tg-type-card active" data-type="post" onclick="setPostType('post')">
-              <div class="tg-type-circle">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/></svg>
-              </div>
-              <span class="tg-type-label">Пост</span>
-            </button>
-            <button type="button" class="tg-type-card" data-type="video" onclick="setPostType('video')">
-              <div class="tg-type-circle">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-              </div>
-              <span class="tg-type-label">Видео</span>
-            </button>
-            <button type="button" class="tg-type-card" data-type="vacancy" onclick="setPostType('vacancy')">
-              <div class="tg-type-circle">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              </div>
-              <span class="tg-type-label">Вакансия</span>
-            </button>
-            <button type="button" class="tg-type-card" data-type="story" onclick="setPostType('story')">
-              <div class="tg-type-circle">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" ry="2"/><path d="M8 21v-4"/></svg>
-              </div>
-              <span class="tg-type-label">История</span>
-            </button>
-            <button type="button" class="tg-type-card" data-type="article" onclick="setPostType('article')">
-              <div class="tg-type-circle">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h20v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>
-              </div>
-              <span class="tg-type-label">Статья</span>
-            </button>
-          </div>
-          <input type="hidden" id="postTypeSelect" value="post">
-
-          <!-- Form fields -->
-          <div class="tg-create-fields">
-
-            <div class="form-group" id="postCategoryGroup">
-              <label class="tg-label">Категория</label>
-              <div class="tg-select-wrapper">
-                <select class="form-control tg-select" id="postCategorySelect" required>
-                  <option value="Новости">Новости</option>
-                  <option value="Технологии">Технологии</option>
-                  <option value="Дизайн">Дизайн</option>
-                  <option value="Спорт">Спорт</option>
-                  <option value="Музыка">Музыка</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group" id="jobTypeGroup" style="display: none;">
-              <label class="tg-label">Тип объявления</label>
-              <div class="tg-select-wrapper">
-                <select class="form-control tg-select" id="jobTypeSelect">
-                  <option value="offer">Предлагаю работу</option>
-                  <option value="seek">Ищу работу</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="tg-label" id="postTitleLabel">Заголовок *</label>
-              <input type="text" class="form-control tg-input" id="postTitleInput" placeholder="Введите заголовок..." required>
-            </div>
-
-            <div class="form-group" id="jobCompanyGroup" style="display: none;">
-              <label class="tg-label">Компания / имя автора</label>
-              <input type="text" class="form-control tg-input" id="jobCompanyInput" placeholder="Например, Uzlayn">
-            </div>
-
-            <div class="form-group" id="jobLocationGroup" style="display: none;">
-              <label class="tg-label">Локация</label>
-              <input type="text" class="form-control tg-input" id="jobLocationInput" placeholder="Ташкент / Удалённо">
-            </div>
-
-            <div class="form-group" id="jobSalaryGroup" style="display: none;">
-              <label class="tg-label">Зарплата (необязательно)</label>
-              <input type="text" class="form-control tg-input" id="jobSalaryInput" placeholder="Например, 5-8 млн сум">
-            </div>
-
-            <div class="form-group" id="jobContactGroup" style="display: none;">
-              <label class="tg-label">Контакт (Telegram username)</label>
-              <input type="text" class="form-control tg-input" id="jobContactInput" placeholder="@username">
-            </div>
-
-            <div class="form-group" id="postImageGroup">
-              <label class="tg-label" id="postImageLabel">Ссылка на обложку / видео</label>
-              <div class="tg-input-row">
-                <input type="url" class="form-control tg-input" id="postImageUrl" placeholder="https://picsum.photos/600/900" oninput="clearMediaPreview()">
-                <button type="button" class="tg-media-btn" onclick="document.getElementById('mediaFileInput').click()">
-                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-                </button>
-              </div>
-              <input type="file" id="mediaFileInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaFilePick(event)">
-              <div class="media-preview tg-media-preview" id="mediaPreview" style="display:none;">
-                <img id="mediaPreviewImg" style="display:none;">
-                <video id="mediaPreviewVideo" muted style="display:none;"></video>
-                <span id="mediaPreviewName"></span>
-                <button type="button" class="media-preview-clear" onclick="clearMediaPreview(true)" aria-label="Очистить">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
-              </div>
-            </div>
-
-            <div class="form-group" id="storyLabelGroup" style="display: none;">
-              <label class="tg-label">Короткая подпись под превью</label>
-              <input type="text" class="form-control tg-input" id="storyLabelInput" placeholder="Например, Новости">
-            </div>
-
-            <div class="form-group" id="storyMediaTypeGroup" style="display: none;">
-              <label class="tg-label">Тип медиа истории</label>
-              <div class="tg-select-wrapper">
-                <select class="form-control tg-select" id="storyMediaTypeSelect">
-                  <option value="image">Изображение</option>
-                  <option value="video">Видео</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group" id="postTextGroup">
-              <label class="tg-label" id="postTextLabel">Описание</label>
-              <textarea class="form-control tg-input" id="postTextInput" placeholder="Введите описание..." rows="3"></textarea>
-            </div>
-
-            <div class="form-group" id="storyLinkTextGroup" style="display: none;">
-              <label class="tg-label">Текст кнопки внизу истории</label>
-              <input type="text" class="form-control tg-input" id="storyLinkTextInput" placeholder="Читать / Перейти">
-            </div>
-
-            <div class="form-group" id="storyLinkUrlGroup" style="display: none;">
-              <label class="tg-label">Ссылка, куда ведёт кнопка</label>
-              <input type="url" class="form-control tg-input" id="storyLinkUrlInput" placeholder="https://...">
-            </div>
-          </div>
-        </div>
-
-        <div class="tg-create-footer">
-          <button type="submit" class="btn-submit tg-submit" id="createSubmitBtn">Опубликовать</button>
-        </div>
-      </form>
     </div>
   </div>
 
-  <!-- ПОЛНОЭКРАННЫЙ РЕДАКТОР СТАТЕЙ -->
-  <div class="create-modal article-editor-modal" id="articleEditorModal">
-    <div class="article-editor-sheet">
-      <div class="article-editor-drag"></div>
+  <!-- ЭКРАН СТАТЬИ (полноценный редактор) -->
+  <div class="create-modal ae-screen" id="articleScreen">
+    <div class="ae-sheet">
 
-      <div class="tg-create-header">
-        <button class="tg-close-btn tg-close article-close-btn" onclick="closeArticleEditor()" aria-label="Назад">
-          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="17" y1="7" x2="7" y2="17"/><line x1="7" y1="7" x2="17" y2="17"/></svg>
+      <header class="ae-header">
+        <button type="button" class="ae-icon-btn" onclick="closeArticleScreen()" aria-label="Назад">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         </button>
-        <span class="tg-create-title">Создать статью</span>
-        <div style="width: 40px;"></div>
+        <span class="ae-header-title">Новая статья</span>
+        <div class="ae-header-actions">
+          <button type="button" class="ae-icon-btn" onclick="saveDraft()" aria-label="Сохранить черновик">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          </button>
+          <button type="button" class="ae-icon-btn" onclick="previewArticle()" aria-label="Предпросмотр">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="ae-scroll">
+
+        <!-- Обложка -->
+        <div class="ae-cover" id="articleCoverCard">
+          <div class="ae-cover-empty" id="articleCoverEmpty">
+            <button type="button" class="ae-cover-action" onclick="document.getElementById('articleCoverInput').click()">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="m21 15-5-5L5 21"/></svg>
+              <span>Добавить обложку</span>
+            </button>
+            <span class="ae-cover-sep"></span>
+            <button type="button" class="ae-cover-action" onclick="showCoverUrlInput()">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              <span>Вставить ссылку</span>
+            </button>
+          </div>
+          <div class="ae-cover-urlwrap" id="articleCoverUrlWrap" style="display:none;">
+            <input type="url" class="ae-cover-url" id="articleCoverUrl" placeholder="Вставьте ссылку на изображение..." oninput="handleArticleCoverUrl()">
+          </div>
+          <div class="ae-cover-preview" id="articleCoverPreview" style="display:none;">
+            <img id="articlePreviewImg" class="ae-cover-img" alt="Обложка">
+            <button type="button" class="ae-cover-remove" onclick="removeArticleCover()" aria-label="Удалить обложку">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <input type="file" id="articleCoverInput" accept="image/*" style="display:none;" onchange="handleArticleCoverPick(event)">
+        </div>
+
+        <!-- Заголовок -->
+        <textarea class="ae-title" id="articleTitleInput" placeholder="Заголовок" rows="1" maxlength="120"></textarea>
+
+        <!-- Описание -->
+        <textarea class="ae-desc" id="articleDescInput" placeholder="Краткое описание (необязательно)" rows="1"></textarea>
+
+        <!-- Тулбар форматирования -->
+        <div class="ae-toolbar" id="articleToolbar">
+          <button type="button" class="ae-tool" onclick="editorCmd('bold')" title="Жирный" aria-label="Жирный"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 4h8a4 4 0 0 1 0 8H6zM6 12h9a4 4 0 0 1 0 8H6z"/></svg></button>
+          <button type="button" class="ae-tool" onclick="editorCmd('italic')" title="Курсив" aria-label="Курсив"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
+          <span class="ae-tool-sep"></span>
+          <button type="button" class="ae-tool" onclick="editorCmd('insertUnorderedList')" title="Список" aria-label="Список"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.4"/><circle cx="4" cy="12" r="1.4"/><circle cx="4" cy="18" r="1.4"/></svg></button>
+          <button type="button" class="ae-tool" onclick="editorCmd('formatBlock','BLOCKQUOTE')" title="Цитата" aria-label="Цитата"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2-2-2H4c-1.25 0-2 .75-2 2v6c0 1 .75 1.75 1.75 1.75H6"/><path d="M14 21c3 0 7-1 7-8V5c0-1.25-.756-2-2-2h-4c-1.25 0-2 .75-2 2v6c0 1 .75 1.75 1.75 1.75H17"/></svg></button>
+          <button type="button" class="ae-tool" onclick="insertLink()" title="Ссылка" aria-label="Ссылка"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
+          <button type="button" class="ae-tool ae-tool-more" onclick="toggleMoreTools()" title="Ещё" aria-label="Ещё">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+          </button>
+          <div class="ae-more" id="articleMoreTools" style="display:none;">
+            <button type="button" class="ae-more-item" onclick="editorCmd('strikeThrough');closeMoreTools()">Зачёркнутый</button>
+            <button type="button" class="ae-more-item" onclick="insertDivider();closeMoreTools()">Разделитель</button>
+            <button type="button" class="ae-more-item" onclick="insertButton();closeMoreTools()">Кнопка</button>
+            <button type="button" class="ae-more-item" onclick="insertMediaAtCursor('article');closeMoreTools()">Изображение / видео</button>
+          </div>
+        </div>
+
+        <!-- Редактор текста -->
+        <div class="ae-editor" id="articleEditor" contenteditable="true" placeholder="Расскажите свою историю…" spellcheck="true"></div>
+
+        <!-- Категория и теги -->
+        <div class="ae-meta">
+          <div class="ae-meta-row">
+            <label class="ae-meta-label" for="articleCategorySelect">Категория</label>
+            <select class="ae-select" id="articleCategorySelect">
+              <option value="Новости">Новости</option>
+              <option value="Технологии">Технологии</option>
+              <option value="Дизайн">Дизайн</option>
+              <option value="Спорт">Спорт</option>
+              <option value="Музыка">Музыка</option>
+            </select>
+          </div>
+          <div class="ae-meta-row">
+            <label class="ae-meta-label" for="articleTagsInput">Теги</label>
+            <input type="text" class="ae-tags" id="articleTagsInput" placeholder="через запятую, напр. дизайн, UI">
+          </div>
+        </div>
+
       </div>
 
-      <div class="article-editor-body">
-        <div class="article-editor-preview-card">
-          <div class="article-editor-preview-placeholder" id="articlePreviewPlaceholder">
-            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M8 12h8M12 8v8"/></svg>
-            <span>Добавьте обложку статьи</span>
+      <footer class="ae-footer">
+        <button type="button" class="ae-publish" id="articlePublishBtn" onclick="publishArticle()" disabled>Опубликовать</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ЭКРАН ИСТОРИИ -->
+  <div class="create-modal st-screen" id="storyScreen">
+    <div class="st-sheet">
+
+      <header class="st-header">
+        <button type="button" class="st-icon-btn" onclick="closeSimpleScreen('storyScreen')" aria-label="Назад">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <span class="st-header-title">Новая история</span>
+        <button type="button" class="st-icon-btn" onclick="openStoryPreview()" aria-label="Предпросмотр">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </header>
+
+      <div class="st-scroll">
+
+        <!-- Большая карточка медиа -->
+        <div class="st-media-card" id="storyMediaCard" onclick="storyMediaActivate()">
+          <div class="st-media-empty" id="storyMediaEmpty">
+            <div class="st-media-icon">
+              <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <div class="st-media-title">Добавить фото/видео</div>
+            <div class="st-media-sub" onclick="event.stopPropagation();revealStoryLink()">или вставить ссылку</div>
           </div>
-          <img id="articlePreviewImg" class="article-editor-preview-img" style="display: none;">
-          <button type="button" class="tg-media-btn article-cover-btn" onclick="document.getElementById('articleCoverInput').click()" aria-label="Загрузить обложку">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          <div class="st-media-preview" id="storyMediaPreview" style="display:none;">
+            <img id="storyPreviewImg" alt="Медиа">
+            <video id="storyPreviewVideo" muted playsinline style="display:none;"></video>
+            <button type="button" class="st-media-remove" onclick="event.stopPropagation();clearStoryMedia()" aria-label="Удалить">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <input type="file" id="storyFileInput" accept="image/*,video/*" style="display:none;" onchange="handleStoryFilePick(event)">
+        </div>
+        <div class="st-link-wrap" id="storyLinkWrap" style="display:none;">
+          <input type="url" class="st-input" id="storyImageUrl" placeholder="Вставьте ссылку на изображение (необязательно)" oninput="handleStoryUrl()">
+        </div>
+
+        <!-- Заголовок -->
+        <input type="text" class="st-title" id="storyTitleInput" placeholder="Заголовок" maxlength="120" oninput="updateStoryLivePreview();updateStoryState();">
+
+        <!-- Подпись -->
+        <input type="text" class="st-input" id="storyLabelInput" placeholder="Краткая подпись" oninput="updateStoryLivePreview();updateStoryState();">
+
+        <!-- Тип медиа (сегментированный контрол) -->
+        <div class="st-seg" id="storyMediaSeg">
+          <button type="button" class="st-seg-item active" data-type="image" onclick="setStoryMediaType('image',this)">Фото</button>
+          <button type="button" class="st-seg-item" data-type="video" onclick="setStoryMediaType('video',this)">Видео</button>
+          <button type="button" class="st-seg-item" data-type="gif" onclick="setStoryMediaType('gif',this)">GIF</button>
+        </div>
+
+        <!-- Прогрессивное раскрытие: кнопка -->
+        <div class="st-toggle-row">
+          <span class="st-toggle-label">Добавить кнопку</span>
+          <button type="button" class="st-switch" id="storyBtnToggle" role="switch" aria-checked="false" onclick="toggleStoryButton()">
+            <span class="st-switch-knob"></span>
           </button>
-          <input type="file" id="articleCoverInput" accept="image/*" style="display:none;" onchange="handleArticleCoverPick(event)">
-          <input type="url" class="form-control tg-input article-cover-url" id="articleCoverUrl" placeholder="Или вставьте ссылку на обложку..." oninput="handleArticleCoverUrl()">
+        </div>
+        <div class="st-btn-fields" id="storyBtnFields" style="display:none;">
+          <input type="text" class="st-input" id="storyLinkTextInput" placeholder="Текст кнопки (напр. Читать)" oninput="updateStoryLivePreview();updateStoryState();">
+          <input type="url" class="st-input" id="storyLinkUrlInput" placeholder="Ссылка кнопки (необязательно)">
         </div>
 
-        <div class="form-group">
-          <label class="tg-label">Заголовок *</label>
-          <input type="text" class="form-control tg-input" id="articleTitleInput" placeholder="Введите заголовок статьи..." required>
+        <!-- Живое превью -->
+        <div class="st-live-preview">
+          <div class="st-live-card">
+            <div class="st-live-media" id="storyLiveMedia"><span class="st-live-media-ph">Медиа появится здесь</span></div>
+            <div class="st-live-overlay">
+              <div class="st-live-title" id="storyLiveTitle"></div>
+              <div class="st-live-caption" id="storyLiveCaption"></div>
+              <div class="st-live-btn" id="storyLiveBtn" style="display:none;"></div>
+            </div>
+          </div>
+          <div class="st-live-hint">Так будет выглядеть история</div>
         </div>
 
-        <div class="form-group">
-          <label class="tg-label">Краткое описание</label>
-          <textarea class="form-control tg-input" id="articleDescInput" placeholder="Краткое описание для превью..." rows="2"></textarea>
-        </div>
+      </div>
 
+      <footer class="st-footer">
+        <button type="button" class="st-publish" id="storyPublishBtn" onclick="publishStory()" disabled>Добавить в историю</button>
+      </footer>
+
+      <!-- Полноэкранный предпросмотр -->
+      <div class="st-fs-preview" id="storyFsPreview" style="display:none;">
+        <button type="button" class="st-fs-close" onclick="closeStoryPreview()" aria-label="Закрыть">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div class="st-fs-card">
+          <div class="st-fs-media" id="storyFsMedia"></div>
+          <div class="st-fs-overlay">
+            <div class="st-fs-title" id="storyFsTitle"></div>
+            <div class="st-fs-caption" id="storyFsCaption"></div>
+            <button type="button" class="st-fs-btn" id="storyFsBtn" style="display:none;"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ЭКРАН КОРОТКОГО ВИДЕО -->
+  <div class="create-modal tg-simple-screen" id="shortvideoScreen">
+    <div class="tg-simple-sheet">
+      <div class="tg-create-header">
+        <button class="tg-close-btn" onclick="closeSimpleScreen('shortvideoScreen')" aria-label="Назад">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <span class="tg-create-title">Новое короткое видео</span>
+        <div style="width: 40px;"></div>
+      </div>
+      <div class="tg-simple-body">
         <div class="form-group">
-          <label class="tg-label">Текст статьи *</label>
-          <div class="tg-editor-toolbar">
-            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('bold')" aria-label="Полужирный">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 4h12M6 8h12M8 12h8M8 16h8M8 20h8"/></svg>
-            </button>
-            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('italic')" aria-label="Курсив">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M15 5v14M9 5v14"/></svg>
-            </button>
-            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('strikeThrough')" aria-label="Зачёркнутый">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 12H7m10 0c0 3-2 5-5 5s-5-2-5-5 2-5 5-5 5 2 5 5"/></svg>
-            </button>
-            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('insertUnorderedList')" aria-label="Список">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="1"/><line x1="15" y1="7" x2="21" y2="7"/><circle cx="9" cy="12" r="1"/><line x1="15" y1="12" x2="21" y2="12"/><circle cx="9" cy="17" r="1"/><line x1="15" y1="17" x2="21" y2="17"/></svg>
-            </button>
-            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('insertOrderedList')" aria-label="Нумерованный список">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="15" y1="7" x2="21" y2="7"/><line x1="15" y1="12" x2="21" y2="12"/><line x1="15" y1="17" x2="21" y2="17"/><circle cx="6" cy="7" r="1.5"/><circle cx="6" cy="12" r="1.5"/><circle cx="6" cy="17" r="1.5"/></svg>
-            </button>
-            <button type="button" class="tg-toolbar-btn" onclick="editorCmd('formatBlock', 'H2')" aria-label="Подзаголовок">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 12h12M6 6h12M6 18h12"/></svg>
+          <label class="tg-label">Видео (ссылка или файл)</label>
+          <div class="tg-input-row">
+            <input type="url" class="form-control tg-input" id="shortvideoUrlInput" placeholder="https://example.com/video.mp4">
+            <button type="button" class="tg-media-btn" onclick="document.getElementById('shortvideoFileInput').click()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 8l9-5v10l-9 5z"/><circle cx="18" cy="12" r="3"/></svg>
             </button>
           </div>
-          <div class="tg-editor" id="articleEditor" contenteditable="true" placeholder="Введите текст статьи..." spellcheck="true"></div>
+          <input type="file" id="shortvideoFileInput" accept="video/*" style="display:none;" onchange="handleShortVideoFilePick(event)">
+          <div class="media-preview tg-media-preview" id="shortvideoPreview" style="display:none;">
+            <video id="shortvideoPreviewVideo" muted style="display:none;"></video>
+            <span id="shortvideoPreviewName"></span>
+            <button type="button" class="media-preview-clear" onclick="clearMediaPreview(true, 'shortvideo')" aria-label="Очистить">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
         </div>
-
+        <div class="form-group">
+          <label class="tg-label">Заголовок</label>
+          <input type="text" class="form-control tg-input" id="shortvideoTitleInput" placeholder="Введите заголовок...">
+        </div>
         <div class="form-group">
           <label class="tg-label">Категория</label>
           <div class="tg-select-wrapper">
-            <select class="form-control tg-select" id="articleCategorySelect">
+            <select class="form-control tg-select" id="shortvideoCategorySelect">
               <option value="Новости">Новости</option>
               <option value="Технологии">Технологии</option>
               <option value="Дизайн">Дизайн</option>
@@ -4617,19 +5878,151 @@
             </select>
           </div>
         </div>
-
         <div class="form-group">
-          <label class="tg-label">Теги (через запятую)</label>
-          <input type="text" class="form-control tg-input" id="articleTagsInput" placeholder="например: дизайн, UI, mobile">
+          <label class="tg-label">Описание</label>
+          <textarea class="form-control tg-input" id="shortvideoDescriptionInput" placeholder="Введите описание..." rows="3"></textarea>
         </div>
       </div>
-
       <div class="tg-create-footer">
-        <button type="button" class="btn-submit tg-submit" onclick="publishArticle()">Опубликовать</button>
+        <button type="button" class="btn-submit tg-submit" onclick="publishShortVideo()">Опубликовать видео</button>
       </div>
     </div>
   </div>
 
+  <!-- ЭКРАН ВАКАНСИИ -->
+  <div class="create-modal vc-screen" id="vacancyScreen">
+    <div class="vc-sheet">
+
+      <header class="vc-header">
+        <button type="button" class="vc-icon-btn" onclick="closeSimpleScreen('vacancyScreen')" aria-label="Назад">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <span class="vc-header-title">Новая вакансия</span>
+        <button type="button" class="vc-icon-btn" onclick="openVacPreview()" aria-label="Предпросмотр">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </header>
+
+      <div class="vc-scroll">
+
+        <!-- 1. Основная информация -->
+        <section class="vc-section">
+          <h2 class="vc-section-title">Основная информация</h2>
+
+          <div class="vc-seg" id="vacTypeSeg">
+            <button type="button" class="vc-seg-item active" data-type="offer" onclick="setVacType('offer',this)">Предлагаю работу</button>
+            <button type="button" class="vc-seg-item" data-type="seek" onclick="setVacType('seek',this)">Ищу работу</button>
+          </div>
+
+          <input type="text" class="vc-title" id="vacancyTitleInput" placeholder="Например, Senior Frontend-разработчик" oninput="onVacInput()">
+
+          <div class="vc-company-row">
+            <div class="vc-company-logo" id="vacCompanyLogo" onclick="document.getElementById('vacancyLogoInput').click()" aria-label="Логотип">
+              <span id="vacCompanyInitial">C</span>
+              <input type="file" id="vacancyLogoInput" accept="image/*" style="display:none;" onchange="updateVacLogo(event)">
+            </div>
+            <input type="text" class="vc-input" id="vacancyCompanyInput" placeholder="Компания или ваше имя" oninput="onVacInput()">
+          </div>
+        </section>
+
+        <!-- 2. Условия -->
+        <section class="vc-section">
+          <h2 class="vc-section-title">Условия</h2>
+
+          <div class="vc-location">
+            <input type="text" class="vc-input" id="vacancyLocationInput" placeholder="Город или «Удалённо»" list="vacCities" oninput="onVacInput()">
+            <datalist id="vacCities">
+              <option value="Ташкент"></option><option value="Самарканд"></option>
+              <option value="Бухара"></option><option value="Андижан"></option>
+              <option value="Удалённо"></option><option value="Гибрид"></option>
+            </datalist>
+            <div class="vc-chips" id="vacLocationChips">
+              <button type="button" class="vc-chip" onclick="selectVacLocation('Ташкент',this)">Ташкент</button>
+              <button type="button" class="vc-chip" onclick="selectVacLocation('Самарканд',this)">Самарканд</button>
+              <button type="button" class="vc-chip" onclick="selectVacLocation('Удалённо',this)">Удалённо</button>
+              <button type="button" class="vc-chip" onclick="selectVacLocation('Гибрид',this)">Гибрид</button>
+            </div>
+          </div>
+
+          <div class="vc-salary" id="vacSalaryWrap">
+            <div class="vc-salary-row">
+              <input type="number" class="vc-input vc-salary-from" id="vacancySalaryFrom" placeholder="От" oninput="onVacInput()">
+              <span class="vc-salary-dash">—</span>
+              <input type="number" class="vc-input vc-salary-to" id="vacancySalaryTo" placeholder="До" oninput="onVacInput()">
+              <select class="vc-input vc-currency" id="vacancySalaryCurrency" onchange="onVacInput()">
+                <option value="сум">сум</option><option value="USD">USD</option>
+                <option value="EUR">EUR</option><option value="RUB">RUB</option>
+              </select>
+            </div>
+            <label class="vc-check">
+              <input type="checkbox" id="vacancySalarySkip" onchange="toggleVacSalarySkip()">
+              <span>Не указывать зарплату</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- 3. Контакты -->
+        <section class="vc-section">
+          <h2 class="vc-section-title">Контакты</h2>
+          <input type="text" class="vc-input" id="vacancyContactInput" placeholder="@username в Telegram" oninput="onVacInput()">
+          <p class="vc-helper">Кандидаты смогут написать вам напрямую в Telegram по этому юзернейму.</p>
+        </section>
+
+        <!-- 4. Описание -->
+        <section class="vc-section">
+          <h2 class="vc-section-title">Описание</h2>
+          <textarea class="vc-input vc-textarea" id="vacancyRespInput" placeholder="Обязанности: что предстоит делать" oninput="onVacInput()"></textarea>
+          <textarea class="vc-input vc-textarea" id="vacancyReqInput" placeholder="Требования: каким навыкам должен соответствовать кандидат" oninput="onVacInput()"></textarea>
+          <textarea class="vc-input vc-textarea" id="vacancyBenefitInput" placeholder="Преимущества: что вы предлагаете (ДМС, гибкий график…)" oninput="onVacInput()"></textarea>
+        </section>
+
+      </div>
+
+      <footer class="vc-footer">
+        <div class="vc-progress">
+          <div class="vc-progress-bar"><div class="vc-progress-fill" id="vacProgressFill"></div></div>
+          <span class="vc-progress-text" id="vacProgressText">15% заполнено</span>
+        </div>
+        <button type="button" class="vc-publish" id="vacancyPublishBtn" onclick="publishVacancy()" disabled>Опубликовать вакансию</button>
+      </footer>
+
+      <!-- Предпросмотр -->
+      <div class="vc-preview" id="vacancyPreviewScreen" style="display:none;">
+        <button type="button" class="vc-fs-close" onclick="closeVacPreview()" aria-label="Закрыть">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div class="vc-preview-card">
+          <div class="vc-preview-head">
+            <div class="vc-preview-logo" id="vacPrevLogo">C</div>
+            <div class="vc-preview-head-text">
+              <div class="vc-preview-company" id="vacPrevCompany"></div>
+              <div class="vc-preview-type" id="vacPrevType"></div>
+            </div>
+          </div>
+          <h1 class="vc-preview-title" id="vacPrevTitle"></h1>
+          <div class="vc-preview-meta" id="vacPrevMeta"></div>
+          <div class="vc-preview-block"><b>Обязанности</b><p id="vacPrevResp"></p></div>
+          <div class="vc-preview-block"><b>Требования</b><p id="vacPrevReq"></p></div>
+          <div class="vc-preview-block"><b>Преимущества</b><p id="vacPrevBenefit"></p></div>
+          <button type="button" class="vc-preview-contact" id="vacPrevContact"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ПРЕДПРОСМОТР СТАТЬИ -->
+  <div class="create-modal tg-preview-screen" id="articlePreviewScreen">
+    <div class="tg-preview-sheet">
+      <div class="tg-create-header">
+        <button class="tg-close-btn" onclick="closePreviewScreen()" aria-label="Назад">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <span class="tg-create-title">Предпросмотр</span>
+        <div style="width: 40px;"></div>
+      </div>
+      <div class="tg-preview-body" id="articlePreviewContent"></div>
+    </div>
+  </div>
 <!-- ПЛЕЕР РАДИО -->
   <div class="radio-modal-backdrop" id="radioModal">
     <div class="radio-player-sheet" id="radioSheet">
@@ -5766,6 +7159,20 @@
       switchTab('feed', document.querySelector('.nav-item'));
     }
 
+    let currentSearchFilter = 'all';
+    function setSearchFilter(f) {
+      currentSearchFilter = f;
+      document.querySelectorAll('#searchFilters .search-chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.filter === f);
+      });
+      searchPageRender();
+    }
+    function searchTypeLabel(t, isVideo) {
+      if (t === 'job') return 'Вакансия';
+      if (t === 'radio') return 'Радио';
+      return isVideo ? 'Видео' : 'Статья';
+    }
+
     function searchPageRender() {
       const query = document.getElementById('searchPageInput').value.toLowerCase().trim();
       const container = document.getElementById('searchResultsContainer');
@@ -5787,38 +7194,57 @@
         return;
       }
 
-      let results = [];
+      const q = query;
+      const isVideoPost = p => /видео/i.test((p.category || ''));
 
-      // Поиск в постах
-      const matchedPosts = posts.filter(p =>
-        p.title.toLowerCase().includes(query) ||
-        p.text.toLowerCase().includes(query)
-      );
-
-      results = results.concat(matchedPosts.map(p => ({
+      const matchedPosts = (posts || []).filter(p =>
+        (p.title || '').toLowerCase().includes(q) ||
+        (p.text || '').toLowerCase().includes(q)
+      ).map(p => ({
         type: 'post',
         id: p.id,
         title: p.title,
         meta: p.category,
         img: p.img,
+        isVideo: isVideoPost(p),
         obj: p
-      })));
+      }));
 
-      // Поиск в радиостанциях
-      if (radioList.length > 0) {
-        const matchedRadio = radioList.filter(r =>
-          r.name.toLowerCase().includes(query) ||
-          (r.category && r.category.toLowerCase().includes(query))
-        );
-        results = results.concat(matchedRadio.map(r => ({
-          type: 'radio',
-          id: r.id,
-          title: r.name,
-          meta: r.category || 'Radio',
-          img: r.logo ? (r.logo.startsWith('http') ? r.logo : RADIO_HOST + r.logo) : '',
-          obj: r
-        })));
-      }
+      const matchedJobs = (jobs || []).filter(j =>
+        (j.title || '').toLowerCase().includes(q) ||
+        (j.company || '').toLowerCase().includes(q) ||
+        (j.text || '').toLowerCase().includes(q)
+      ).map(j => ({
+        type: 'job',
+        id: j.id,
+        title: j.title,
+        meta: (j.company || '') + (j.salary ? ' · ' + j.salary : ''),
+        img: '',
+        isVideo: false,
+        obj: j
+      }));
+
+      const matchedRadio = (radioList || []).filter(r =>
+        (r.name || '').toLowerCase().includes(q) ||
+        (r.category || '').toLowerCase().includes(q)
+      ).map(r => ({
+        type: 'radio',
+        id: r.id,
+        title: r.name,
+        meta: r.category || 'Radio',
+        img: r.logo ? (r.logo.startsWith('http') ? r.logo : RADIO_HOST + r.logo) : '',
+        isVideo: false,
+        obj: r
+      }));
+
+      const pools = {
+        all: [...matchedPosts, ...matchedJobs, ...matchedRadio],
+        article: matchedPosts.filter(r => !r.isVideo),
+        video: matchedPosts.filter(r => r.isVideo),
+        job: matchedJobs,
+        radio: matchedRadio
+      };
+      const results = pools[currentSearchFilter] || pools.all;
 
       if (results.length === 0) {
         container.innerHTML = `
@@ -5830,7 +7256,7 @@
                 <path d="M8.5 8.5l5 5M13.5 8.5l-5 5"></path>
               </svg>
             </div>
-            <div class="search-results-empty-text">Ничего не найдено по запросу "<strong>${query}</strong>"</div>
+            <div class="search-results-empty-text">Ничего не найдено по запросу "<strong>${escapeHtml(query)}</strong>"</div>
           </div>
         `;
         return;
@@ -5840,12 +7266,13 @@
         ${results.map(r => `
           <div class="search-result-card" onclick="searchResultClick('${r.type}', ${r.id})">
             <div class="search-result-thumb">
-              <img src="${r.img || 'https://via.placeholder.com/60/18181b/5fe3c4?text=R'}" alt="${r.title}">
+              <img src="${r.img || 'https://via.placeholder.com/60/18181b/5fe3c4?text=R'}" alt="${escapeHtml(r.title)}" loading="lazy">
             </div>
             <div class="search-result-info">
-              <div class="search-result-title">${r.title}</div>
-              <div class="search-result-meta">${r.meta}</div>
+              <div class="search-result-title">${escapeHtml(r.title)}</div>
+              <div class="search-result-meta">${escapeHtml(r.meta)}</div>
             </div>
+            <div class="search-result-type">${searchTypeLabel(r.type, r.isVideo)}</div>
           </div>
         `).join('')}
       </div>`;
@@ -5866,6 +7293,9 @@
         setTimeout(() => {
           radioPlayStation(id);
         }, 100);
+      } else if (type === 'job') {
+        switchTab('jobs', document.getElementById('navChannelsBtn'));
+        setTimeout(() => { if (typeof openJob === 'function') openJob(id); }, 120);
       }
     }
 
@@ -5925,6 +7355,7 @@
       document.getElementById('authBox').style.display = 'none';
       document.getElementById('profileBox').style.display = 'block';
       document.getElementById('settingsGearBtn').style.display = 'flex';
+      document.getElementById('profileShareBtn').style.display = 'flex';
 
       renderProfileFeed();
     }
@@ -5934,6 +7365,7 @@
       document.getElementById('authBox').style.display = 'block';
       document.getElementById('profileBox').style.display = 'none';
       document.getElementById('settingsGearBtn').style.display = 'none';
+      document.getElementById('profileShareBtn').style.display = 'none';
     }
 
     // ЛОГИКА НАСТРОЕК (МЕНЮ И РЕДАКТИРОВАНИЕ)
@@ -6040,9 +7472,34 @@
       document.getElementById('userPostsCount').innerText = userPosts.length;
       document.getElementById('userVideosCount').innerText = userVideos.length;
       document.getElementById('userSavedCount').innerText = savedItems.length;
+      const statPosts = document.getElementById('statPosts');
+      if (statPosts) statPosts.innerText = userPosts.length;
+    }
+
+    function shareProfile() {
+      const tag = (document.getElementById('userTag') || {}).innerText || '';
+      const name = (document.getElementById('userName') || {}).innerText || '';
+      const url = window.location.href;
+      const text = 'Профиль ' + name + ' ' + tag + ' на TANHO — ' + url;
+      if (navigator.share) {
+        navigator.share({ title: 'TANHO', text: text, url: url }).catch(() => {});
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => alert('Ссылка на профиль скопирована')).catch(() => alert(text));
+      } else {
+        alert(text);
+      }
     }
 
     function renderProfileFeed() {
+      const profileBox = document.getElementById('profileBox');
+      const authBox = document.getElementById('authBox');
+      if (profileBox && profileBox.style.display !== 'block') {
+        if (authBox) authBox.style.display = 'flex';
+        if (profileBox) profileBox.style.display = 'none';
+        return;
+      }
+      if (authBox) authBox.style.display = 'none';
+      if (profileBox) profileBox.style.display = 'block';
       updateProfileCounters();
       const container = document.getElementById('profileFeedContainer');
       container.innerHTML = '';
@@ -6203,7 +7660,7 @@
       card.onclick = () => openPost(post.id);
 
       card.innerHTML = `
-        <img class="post-media" src="${post.img}" alt="${post.title}" loading="lazy">
+        ${post.mediaHtml ? post.mediaHtml : `<img class="post-media" src="${post.img}" alt="${post.title}" loading="lazy">`}
         <div class="post-content">
           <div class="post-header-info">
             <span class="post-category-tag">${post.category}</span>
@@ -6535,54 +7992,70 @@
       if (activeProfileTab === 'saved') renderProfileFeed();
     }
 
-    function setPostType(type) {
+    function switchContentType(type) {
       const heading = document.getElementById('createModalHeading');
+      if (!heading) return; // old composer removed; new flow uses separate screens
       const headings = {
-        post: 'Создать пост',
-        video: 'Создать видео',
-        vacancy: 'Создать вакансию',
-        story: 'Добавить историю',
-        article: 'Создать статью'
+        post: 'Новый пост',
+        video: 'Новое видео',
+        job: 'Вакансия / работа',
+        story: 'Новая история',
+        article: 'Новая статья'
       };
       heading.textContent = headings[type] || 'Создать пост';
       heading.style.opacity = '0.4';
       setTimeout(() => { heading.style.opacity = '1'; }, 150);
 
+      // Update hidden input
       const typeSelect = document.getElementById('postTypeSelect');
-      typeSelect.value = type;
+      if (typeSelect) typeSelect.value = type;
 
+      // Update tabs active state (new bottom tab bar)
+      document.querySelectorAll('.tg-create-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.contentType === type);
+      });
+      // Backward compat: toggle old type-card active state if present
       document.querySelectorAll('.tg-type-card').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.type === type);
       });
 
-      if (type === 'article') {
-        closeCreateModal();
-        setTimeout(() => openArticleEditor(), 300);
-        return;
-      }
+      // Show/hide content sections
+      document.querySelectorAll('.tg-content-section').forEach(section => {
+        section.style.display = (section.getAttribute('data-content-type') === type) ? 'block' : 'none';
+      });
 
-      toggleVideoInputs(type);
-
+      // Update submit button label for all types (including article)
       const submitBtn = document.getElementById('createSubmitBtn');
-      const submitLabels = {
-        post: 'Опубликовать',
-        video: 'Опубликовать видео',
-        vacancy: 'Опубликовать вакансию',
-        story: 'Добавить историю'
-      };
-      submitBtn.innerText = submitLabels[type] || 'Опубликовать';
-      submitBtn.classList.toggle('jobs-submit', type === 'vacancy');
-      submitBtn.classList.toggle('videos-submit', type === 'video');
+      if (submitBtn) {
+        const submitLabels = {
+          post: 'Опубликовать пост',
+          video: 'Опубликовать видео',
+          job: 'Опубликовать объявление',
+          story: 'Добавить в историю',
+          article: 'Опубликовать статью'
+        };
+        submitBtn.innerText = submitLabels[type] || 'Опубликовать';
+        submitBtn.classList.toggle('jobs-submit', type === 'job');
+        submitBtn.classList.toggle('videos-submit', type === 'video');
+      }
+    }
+
+    // Backward-compatible bridge: old setPostType() callers use old type names
+    function setPostType(type) {
+      // Map old type names to new content types
+      const map = { 'vacancy': 'job', 'video': 'video', 'post': 'post', 'story': 'story', 'article': 'article' };
+      const newType = map[type] || type;
+      switchContentType(newType);
     }
 
     let editingStoryId = null;
 
     function openCreateModal() {
       editingStoryId = null;
-      setPostType('post');
       const modal = document.getElementById('createModal');
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
+      switchContentType('post');
     }
 
     function closeCreateModal() {
@@ -6594,13 +8067,315 @@
       document.body.style.overflow = '';
     }
 
+    /* ===== TANHO CREATE FLOW — Bottom Sheet & Editors ===== */
+    function closeAllCreateScreens() {
+      ['createModal', 'articleScreen', 'storyScreen', 'shortvideoScreen', 'vacancyScreen', 'articlePreviewScreen']
+        .forEach(function (id) {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove('active');
+        });
+      document.body.style.overflow = '';
+    }
+
+    function selectContentType(type) {
+      closeAllCreateScreens();
+      const map = {
+        article: 'articleScreen',
+        story: 'storyScreen',
+        shortvideo: 'shortvideoScreen',
+        vacancy: 'vacancyScreen'
+      };
+      if (type === 'article') resetArticleForm();
+      if (type === 'story') resetStoryForm();
+      if (type === 'vacancy') resetVacancyForm();
+      const el = document.getElementById(map[type]);
+      if (el) el.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function resetArticleForm() {
+      editingArticleId = null;
+      articleCoverData = null;
+      const title = document.getElementById('articleTitleInput');
+      const desc = document.getElementById('articleDescInput');
+      const editor = document.getElementById('articleEditor');
+      const tags = document.getElementById('articleTagsInput');
+      const coverUrl = document.getElementById('articleCoverUrl');
+      const coverImg = document.getElementById('articlePreviewImg');
+      const coverPh = document.getElementById('articlePreviewPlaceholder');
+      if (title) title.value = '';
+      if (desc) desc.value = '';
+      if (editor) editor.innerHTML = '';
+      if (tags) tags.value = '';
+      if (coverUrl) coverUrl.value = '';
+      if (coverImg) { coverImg.style.display = 'none'; coverImg.src = ''; }
+      const aeEmpty = document.getElementById('articleCoverEmpty'); if (aeEmpty) aeEmpty.style.display = 'flex';
+      const aeUw = document.getElementById('articleCoverUrlWrap'); if (aeUw) aeUw.style.display = 'none';
+      const aePrev = document.getElementById('articleCoverPreview'); if (aePrev) aePrev.style.display = 'none';
+      updatePublishState();
+    }
+
+    function closeArticleScreen() {
+      closeAllCreateScreens();
+      openCreateModal();
+    }
+
+    function saveDraft() {
+      const title = document.getElementById('articleTitleInput').value.trim();
+      const desc = document.getElementById('articleDescInput').value.trim();
+      const content = document.getElementById('articleEditor').innerHTML;
+      const plain = content.replace(/<[^>]*>/g, '').trim();
+      if (!title && !plain) {
+        alert('Нечего сохранять: добавьте заголовок или текст.');
+        return;
+      }
+      let drafts = [];
+      try { drafts = JSON.parse(localStorage.getItem('tanho_drafts') || '[]'); } catch (e) { drafts = []; }
+      drafts.unshift({
+        title: title,
+        desc: desc,
+        category: document.getElementById('articleCategorySelect').value,
+        tags: document.getElementById('articleTagsInput').value.trim(),
+        content: content,
+        cover: articleCoverData ? articleCoverData.url : null,
+        date: new Date().toLocaleString('ru-RU')
+      });
+      try { localStorage.setItem('tanho_drafts', JSON.stringify(drafts)); } catch (e) {}
+      alert('Черновик сохранён.');
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function previewArticle() {
+      const title = document.getElementById('articleTitleInput').value.trim();
+      const desc = document.getElementById('articleDescInput').value.trim();
+      const content = document.getElementById('articleEditor').innerHTML;
+      let html = '';
+      if (articleCoverData && articleCoverData.url) {
+        html += '<img src="' + articleCoverData.url + '" style="width:100%;border-radius:14px;margin-bottom:12px;max-height:220px;object-fit:cover;" alt="Обложка">';
+      }
+      if (title) html += '<h1 style="font-size:22px;font-weight:800;color:var(--text-color);margin:0 0 6px;">' + escapeHtml(title) + '</h1>';
+      if (desc) html += '<p style="color:var(--text-secondary);font-size:14px;margin:0 0 12px;">' + escapeHtml(desc) + '</p>';
+      html += '<div class="tg-preview-content">' + content + '</div>';
+      document.getElementById('articlePreviewContent').innerHTML = html;
+      closeAllCreateScreens();
+      document.getElementById('articlePreviewScreen').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePreviewScreen() {
+      closeAllCreateScreens();
+      document.getElementById('articleScreen').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function insertDivider() {
+      const editor = document.getElementById('articleEditor');
+      editor.focus();
+      document.execCommand('insertHTML', false, '<hr style="border:none;border-top:1px solid rgba(255,255,255,0.14);margin:14px 0;">');
+    }
+
+    function insertLink() {
+      const url = prompt('Введите URL ссылки:', 'https://');
+      if (!url) return;
+      const text = prompt('Текст ссылки:', url);
+      const editor = document.getElementById('articleEditor');
+      editor.focus();
+      const linkHtml = '<a href="' + url + '" target="_blank" rel="noopener" style="color:var(--accent-color);text-decoration:underline;">' + (text || url) + '</a>';
+      document.execCommand('insertHTML', false, linkHtml);
+    }
+
+    function insertButton() {
+      const text = prompt('Текст кнопки:', 'Подробнее');
+      if (!text) return;
+      const url = prompt('URL (куда ведёт кнопка):', 'https://');
+      if (!url) return;
+      const editor = document.getElementById('articleEditor');
+      editor.focus();
+      const btnHtml = '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-block;background:var(--accent-color);color:#1a1205;font-weight:700;padding:10px 18px;border-radius:12px;margin:8px 0;text-decoration:none;">' + text + '</a>';
+      document.execCommand('insertHTML', false, btnHtml);
+    }
+
+    function insertMediaAtCursor(target) {
+      const editorId = 'articleEditor';
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*,video/*';
+      input.onchange = function () {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const editor = document.getElementById(editorId);
+          editor.focus();
+          const isVideo = file.type.indexOf('video') === 0;
+          const mediaHtml = isVideo
+            ? '<video src="' + e.target.result + '" controls style="max-width:100%;border-radius:12px;margin:10px 0;"></video>'
+            : '<img src="' + e.target.result + '" style="max-width:100%;border-radius:12px;margin:10px 0;" alt="Изображение">';
+          document.execCommand('insertHTML', false, mediaHtml + '<br>');
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    }
+
+    function handleStoryFilePick(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const isVideo = file.type.indexOf('video') === 0;
+        window._storyFile = { url: e.target.result, type: isVideo ? 'video' : 'image' };
+        const ui = document.getElementById('storyImageUrl'); if (ui) ui.value = '';
+        showStoryMediaPreview();
+        updateStoryLivePreview();
+        updateStoryState();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleShortVideoFilePick(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const preview = document.getElementById('shortvideoPreview');
+        preview.innerHTML = '<video src="' + e.target.result + '" controls style="max-width:100%;border-radius:12px;"></video>';
+        preview.style.display = 'block';
+        window._shortvideoFile = { url: e.target.result };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function closeSimpleScreen(id) {
+      closeAllCreateScreens();
+      openCreateModal();
+    }
+
+    function publishStory() {
+      const title = document.getElementById('storyTitleInput').value.trim();
+      const label = document.getElementById('storyLabelInput').value.trim();
+      const mediaType = window._storyMediaType || 'image';
+      const linkText = document.getElementById('storyLinkTextInput').value.trim();
+      const linkUrl = document.getElementById('storyLinkUrlInput').value.trim();
+      const imageUrl = document.getElementById('storyImageUrl').value.trim();
+      if (!title) { return; }
+      const media = window._storyFile;
+      let finalImg = 'https://picsum.photos/seed/story/600/400';
+      if (media) {
+        finalImg = media.url;
+      } else if (imageUrl) {
+        finalImg = imageUrl;
+      }
+      const newStory = {
+        id: Date.now(),
+        isUserCreated: true,
+        label: label || 'История',
+        mediaType: (media && media.type === 'video') ? 'video' : 'image',
+        img: finalImg,
+        newsTitle: title,
+        newsText: label || '',
+        linkText: linkText || '',
+        linkUrl: linkUrl || '',
+        seen: false
+      };
+      stories.unshift(newStory);
+      renderStories();
+      closeAllCreateScreens();
+    }
+
+    function publishShortVideo() {
+      const url = document.getElementById('shortvideoUrlInput').value.trim();
+      const title = document.getElementById('shortvideoTitleInput').value.trim();
+      const category = document.getElementById('shortvideoCategorySelect').value;
+      const description = document.getElementById('shortvideoDescriptionInput').value.trim();
+      const media = window._shortvideoFile;
+      let mediaHtml = '';
+      let finalImg = 'https://picsum.photos/seed/video/600/400';
+      if (media) {
+        mediaHtml = '<video class="post-media" src="' + media.url + '" controls></video>';
+        finalImg = media.url;
+      } else if (url) {
+        // external video link — show a poster card
+        mediaHtml = '';
+        finalImg = 'https://picsum.photos/seed/video/600/400';
+      }
+      if (!title && !media && !url) { alert('Добавьте видео или ссылку.'); return; }
+      const post = {
+        id: Date.now(),
+        category: category || 'Короткое видео',
+        title: title || 'Короткое видео',
+        text: description || '',
+        img: finalImg,
+        mediaHtml: mediaHtml,
+        isSaved: false,
+        isLiked: false,
+        likes: 0,
+        views: 0,
+        comments: []
+      };
+      posts.unshift(post);
+      renderFeed();
+      closeAllCreateScreens();
+    }
+
+    function publishVacancy() {
+      const jobType = window._vacType || 'offer';
+      const title = document.getElementById('vacancyTitleInput').value.trim();
+      const company = document.getElementById('vacancyCompanyInput').value.trim();
+      const location = document.getElementById('vacancyLocationInput').value.trim();
+      const contact = document.getElementById('vacancyContactInput').value.trim();
+      const skip = document.getElementById('vacancySalarySkip').checked;
+      let salary = '';
+      if (!skip) {
+        const f = document.getElementById('vacancySalaryFrom').value.trim();
+        const t = document.getElementById('vacancySalaryTo').value.trim();
+        const cur = document.getElementById('vacancySalaryCurrency').value;
+        if (f || t) salary = (f ? f : '?') + (t ? '–' + t : '') + ' ' + cur;
+      }
+      const resp = document.getElementById('vacancyRespInput').value.trim();
+      const req = document.getElementById('vacancyReqInput').value.trim();
+      const benefit = document.getElementById('vacancyBenefitInput').value.trim();
+      const text = [resp, req, benefit].filter(Boolean).join('\n\n');
+      if (!title || !company || !contact) { return; }
+      const job = {
+        id: Date.now(),
+        jobType: jobType,
+        company: company,
+        location: location || 'Удалённо',
+        title: title,
+        salary: salary,
+        text: text,
+        contact: contact,
+        logo: window._vacLogo || null,
+        comments: []
+      };
+      jobs.unshift(job);
+      renderJobsFeed();
+      closeAllCreateScreens();
+    }
+
     /* Close create modal on Escape key */
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
-        if (document.getElementById('articleEditorModal').classList.contains('active')) {
+        const articleModal = document.getElementById('articleEditorModal');
+        if (articleModal && articleModal.classList.contains('active')) {
           closeArticleEditor();
-        } else if (document.getElementById('createModal').classList.contains('active')) {
-          closeCreateModal();
+        } else if (document.getElementById('articlePreviewScreen').classList.contains('active')) {
+          closePreviewScreen();
+        } else if (document.getElementById('createModal').classList.contains('active')
+            || document.getElementById('articleScreen').classList.contains('active')
+            || document.getElementById('storyScreen').classList.contains('active')
+            || document.getElementById('shortvideoScreen').classList.contains('active')
+            || document.getElementById('vacancyScreen').classList.contains('active')) {
+          closeAllCreateScreens();
         }
       }
     });
@@ -6656,61 +8431,21 @@
     }
 
     function clearMediaPreview(alsoClearUrl) {
-      document.getElementById('mediaPreview').style.display = 'none';
-      document.getElementById('mediaPreviewImg').removeAttribute('src');
-      document.getElementById('mediaPreviewVideo').removeAttribute('src');
-      document.getElementById('mediaFileInput').value = '';
-
+      const mp = document.getElementById('mediaPreview');
+      if (mp) mp.style.display = 'none';
+      const mpi = document.getElementById('mediaPreviewImg');
+      if (mpi) mpi.removeAttribute('src');
+      const mpv = document.getElementById('mediaPreviewVideo');
+      if (mpv) mpv.removeAttribute('src');
+      const mfi = document.getElementById('mediaFileInput');
+      if (mfi) mfi.value = '';
       if (alsoClearUrl) {
-        document.getElementById('postImageUrl').value = '';
+        const piu = document.getElementById('postImageUrl');
+        if (piu) piu.value = '';
       }
     }
 
-    function toggleVideoInputs(val) {
-      const textGroup = document.getElementById('postTextGroup');
-      const categoryGroup = document.getElementById('postCategoryGroup');
-      const imageGroup = document.getElementById('postImageGroup');
-      const imageLabel = document.getElementById('postImageLabel');
-      const jobTypeGroup = document.getElementById('jobTypeGroup');
-      const jobCompanyGroup = document.getElementById('jobCompanyGroup');
-      const jobLocationGroup = document.getElementById('jobLocationGroup');
-      const jobSalaryGroup = document.getElementById('jobSalaryGroup');
-      const jobContactGroup = document.getElementById('jobContactGroup');
-      const storyLabelGroup = document.getElementById('storyLabelGroup');
-      const storyMediaTypeGroup = document.getElementById('storyMediaTypeGroup');
-      const storyLinkTextGroup = document.getElementById('storyLinkTextGroup');
-      const storyLinkUrlGroup = document.getElementById('storyLinkUrlGroup');
-      const titleLabel = document.getElementById('postTitleLabel');
-      const textLabel = document.getElementById('postTextLabel');
-      const submitBtn = document.getElementById('createSubmitBtn');
-
-      const isVacancy = val === 'vacancy';
-      const isStory = val === 'story';
-
-      textGroup.style.display = (val === 'video') ? 'none' : 'flex';
-      categoryGroup.style.display = (isVacancy || isStory) ? 'none' : 'flex';
-      imageGroup.style.display = isVacancy ? 'none' : 'flex';
-      jobTypeGroup.style.display = isVacancy ? 'flex' : 'none';
-      jobCompanyGroup.style.display = isVacancy ? 'flex' : 'none';
-      jobLocationGroup.style.display = isVacancy ? 'flex' : 'none';
-      jobSalaryGroup.style.display = isVacancy ? 'flex' : 'none';
-      jobContactGroup.style.display = isVacancy ? 'flex' : 'none';
-      storyLabelGroup.style.display = isStory ? 'flex' : 'none';
-      storyMediaTypeGroup.style.display = isStory ? 'flex' : 'none';
-      storyLinkTextGroup.style.display = isStory ? 'flex' : 'none';
-      storyLinkUrlGroup.style.display = isStory ? 'flex' : 'none';
-
-      imageLabel.innerText = isStory ? 'Ссылка на изображение / видео истории' : 'Ссылка на обложку / видео';
-      titleLabel.innerText = isVacancy ? 'Название вакансии' : (isStory ? 'Заголовок новости' : 'Заголовок');
-      textLabel.innerText = isVacancy ? 'Описание вакансии' : (isStory ? 'Текст новости внизу истории' : 'Описание');
-      submitBtn.innerText = isVacancy ? 'Опубликовать вакансию' : (isStory ? 'Добавить историю' : (val === 'video' ? 'Опубликовать видео' : 'Опубликовать'));
-      submitBtn.classList.toggle('jobs-submit', isVacancy);
-      submitBtn.classList.toggle('videos-submit', val === 'video');
-      document.getElementById('createModalHeading').innerText = isVacancy ? 'Создать вакансию' : (isStory ? 'Добавить историю' : (val === 'video' ? 'Создать видео' : 'Создать пост'));
-
-      if (isVacancy) textGroup.style.display = 'flex';
-    }
-
+    
     function handleCreatePost(event) {
       event.preventDefault();
 
@@ -6765,7 +8500,7 @@
         return;
       }
 
-      if (type === 'vacancy') {
+      if (type === 'job') {
         const newJob = {
           id: Date.now(),
           jobType: document.getElementById('jobTypeSelect').value,
@@ -6785,6 +8520,41 @@
         document.getElementById('jobLocationInput').value = '';
         document.getElementById('jobSalaryInput').value = '';
         document.getElementById('jobContactInput').value = '';
+      } else if (type === 'article') {
+        // Article type: use inline editor content
+        const articleTitle = document.getElementById('articleTitleInput').value.trim();
+        const articleDesc = document.getElementById('articleDescInput').value.trim();
+        const articleContent = document.getElementById('articleEditor').innerHTML || articleTitle;
+        const articleCat = document.getElementById('articleCategorySelect').value;
+        const articleTags = document.getElementById('articleTagsInput').value.split(',').map(s => s.trim()).filter(Boolean);
+        const articleCover = document.getElementById('articleCoverUrl').value.trim() || articleCoverData;
+
+        if (!articleTitle) return;
+
+        const newArticle = {
+          id: Date.now(),
+          title: articleTitle,
+          desc: articleDesc,
+          content: articleContent,
+          category: articleCat,
+          tags: articleTags,
+          cover: articleCover,
+          author: 'Вы',
+          authorAvatar: 'https://api.dicebear.com/7.x/initials/svg?seed=ME',
+          date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }),
+          readTime: Math.max(1, Math.ceil(articleContent.replace(/<[^>]+>/g, '').length / 200)),
+          likes: 0,
+          isLiked: false
+        };
+
+        articles.unshift(newArticle);
+        renderArticlesList();
+
+        document.getElementById('articleTitleInput').value = '';
+        document.getElementById('articleDescInput').value = '';
+        document.getElementById('articleEditor').innerHTML = '';
+        document.getElementById('articleTagsInput').value = '';
+        articleCoverData = null;
       } else {
         const category = document.getElementById('postCategorySelect').value;
         const imageUrlInput = document.getElementById('postImageUrl').value.trim();
@@ -6826,40 +8596,15 @@
 
     function openArticleEditor(articleId) {
       editingArticleId = articleId || null;
-
-      if (articleId) {
-        const article = articles.find(a => a.id === articleId);
-        if (article) {
-          document.getElementById('articleTitleInput').value = article.title;
-          document.getElementById('articleDescInput').value = article.desc || '';
-          document.getElementById('articleCategorySelect').value = article.category || 'Новости';
-          document.getElementById('articleTagsInput').value = (article.tags || []).join(', ');
-          document.getElementById('articleEditor').innerHTML = article.content || '';
-          if (article.cover) {
-            articleCoverData = { url: article.cover };
-            const img = document.getElementById('articlePreviewImg');
-            img.src = article.cover;
-            img.style.display = 'block';
-            document.getElementById('articlePreviewPlaceholder').style.display = 'none';
-          }
-        }
-      } else {
-        document.getElementById('articleTitleInput').value = '';
-        document.getElementById('articleDescInput').value = '';
-        document.getElementById('articleCategorySelect').value = 'Новости';
-        document.getElementById('articleTagsInput').value = '';
-        document.getElementById('articleEditor').innerHTML = '';
-        articleCoverData = null;
-        document.getElementById('articlePreviewImg').style.display = 'none';
-        document.getElementById('articlePreviewPlaceholder').style.display = 'flex';
-      }
-
-      document.getElementById('articleEditorModal').classList.add('active');
+      const modal = document.getElementById('createModal');
+      modal.classList.add('active');
       document.body.style.overflow = 'hidden';
+      switchContentType('article');
     }
 
     function closeArticleEditor() {
-      document.getElementById('articleEditorModal').classList.remove('active');
+      const modal = document.getElementById('createModal');
+      modal.classList.remove('active');
       editingArticleId = null;
       articleCoverData = null;
       document.body.style.overflow = '';
@@ -6879,7 +8624,7 @@
         const img = document.getElementById('articlePreviewImg');
         img.src = e.target.result;
         img.style.display = 'block';
-        document.getElementById('articlePreviewPlaceholder').style.display = 'none';
+        showArticleCoverPreview();
       };
       reader.readAsDataURL(file);
     }
@@ -6891,11 +8636,10 @@
         const img = document.getElementById('articlePreviewImg');
         img.src = url;
         img.style.display = 'block';
-        document.getElementById('articlePreviewPlaceholder').style.display = 'none';
+        showArticleCoverPreview();
       } else {
         articleCoverData = null;
-        document.getElementById('articlePreviewImg').style.display = 'none';
-        document.getElementById('articlePreviewPlaceholder').style.display = 'flex';
+        hideArticleCoverPreview();
       }
     }
 
@@ -6936,7 +8680,8 @@
       }
 
       renderArticlesList();
-      closeArticleEditor();
+      closeAllCreateScreens();
+      resetArticleForm();
     }
 
     function renderArticlesList() {
@@ -7164,6 +8909,305 @@
         }, 500);
       }, { passive: true });
     })();
-  </script>
+  
+
+  // ===== Article editor (minimalist) helpers =====
+  function autoGrow(el){ if(!el) return; el.style.height='auto'; el.style.height=(el.scrollHeight)+'px'; }
+  function showArticleCoverPreview(){
+    const img=document.getElementById('articlePreviewImg'); if(img) img.style.display='block';
+    const e=document.getElementById('articleCoverEmpty'); if(e) e.style.display='none';
+    const uw=document.getElementById('articleCoverUrlWrap'); if(uw) uw.style.display='none';
+    const p=document.getElementById('articleCoverPreview'); if(p) p.style.display='block';
+  }
+  function hideArticleCoverPreview(){
+    const p=document.getElementById('articleCoverPreview'); if(p) p.style.display='none';
+    const e=document.getElementById('articleCoverEmpty'); if(e) e.style.display='flex';
+  }
+  function showCoverUrlInput(){
+    const uw=document.getElementById('articleCoverUrlWrap');
+    if(uw){ uw.style.display='block'; const i=document.getElementById('articleCoverUrl'); if(i) i.focus(); }
+  }
+  function removeArticleCover(){
+    articleCoverData=null;
+    const img=document.getElementById('articlePreviewImg'); if(img){ img.style.display='none'; img.src=''; }
+    const url=document.getElementById('articleCoverUrl'); if(url) url.value='';
+    hideArticleCoverPreview();
+  }
+  function toggleMoreTools(){
+    const m=document.getElementById('articleMoreTools'); if(!m) return;
+    m.style.display = (m.style.display==='block') ? 'none' : 'block';
+  }
+  function closeMoreTools(){ const m=document.getElementById('articleMoreTools'); if(m) m.style.display='none'; }
+  function updatePublishState(){
+    const t=document.getElementById('articleTitleInput');
+    const c=document.getElementById('articleEditor');
+    const b=document.getElementById('articlePublishBtn');
+    if(!t||!c||!b) return;
+    const ok = t.value.trim().length>0 && c.innerText.trim().length>0;
+    b.disabled = !ok;
+  }
+  (function initArticleEditor(){
+    const title=document.getElementById('articleTitleInput');
+    const desc=document.getElementById('articleDescInput');
+    const editor=document.getElementById('articleEditor');
+    const btn=document.getElementById('articlePublishBtn');
+    if(title){ title.addEventListener('input', function(){ autoGrow(title); updatePublishState(); }); autoGrow(title); }
+    if(desc){ desc.addEventListener('input', function(){ autoGrow(desc); }); autoGrow(desc); }
+    if(editor){ editor.addEventListener('input', updatePublishState); }
+    if(btn) btn.disabled=true;
+    document.addEventListener('click', function(e){
+      const m=document.getElementById('articleMoreTools'); if(!m) return;
+      if(m.style.display==='block' && !m.contains(e.target) && !(e.target.closest && e.target.closest('.ae-tool-more'))){
+        m.style.display='none';
+      }
+    });
+  })();
+
+
+  // ===== Story screen (minimalist helpers) =====
+  function storyMediaActivate(){ const fi=document.getElementById('storyFileInput'); if(fi) fi.click(); }
+  function revealStoryLink(){
+    const w=document.getElementById('storyLinkWrap'); if(w) w.style.display='block';
+    const i=document.getElementById('storyImageUrl'); if(i) i.focus();
+  }
+  function showStoryMediaPreview(){
+    const f=window._storyFile; if(!f) return;
+    const empty=document.getElementById('storyMediaEmpty'); if(empty) empty.style.display='none';
+    const prev=document.getElementById('storyMediaPreview'); if(prev) prev.style.display='block';
+    const img=document.getElementById('storyPreviewImg'); const vid=document.getElementById('storyPreviewVideo');
+    if(f.type==='video'){ if(vid){ vid.src=f.url; vid.style.display='block'; } if(img) img.style.display='none'; }
+    else { if(img){ img.src=f.url; img.style.display='block'; } if(vid) vid.style.display='none'; }
+    if(prev) prev.classList.add('show');
+  }
+  function hideStoryMediaPreview(){
+    const empty=document.getElementById('storyMediaEmpty'); if(empty) empty.style.display='flex';
+    const prev=document.getElementById('storyMediaPreview'); if(prev){ prev.style.display='none'; prev.classList.remove('show'); }
+    const img=document.getElementById('storyPreviewImg'); if(img) img.removeAttribute('src');
+    const vid=document.getElementById('storyPreviewVideo'); if(vid){ vid.removeAttribute('src'); vid.style.display='none'; }
+  }
+  function clearStoryMedia(){
+    window._storyFile=null;
+    const fi=document.getElementById('storyFileInput'); if(fi) fi.value='';
+    const ui=document.getElementById('storyImageUrl'); if(ui) ui.value='';
+    hideStoryMediaPreview();
+    updateStoryLivePreview(); updateStoryState();
+  }
+  function handleStoryUrl(){
+    const ui=document.getElementById('storyImageUrl');
+    const url=ui? ui.value.trim() : '';
+    if(url){
+      const isVid = window._storyMediaType==='video';
+      window._storyFile={ url:url, type: isVid?'video':'image' };
+      const fi=document.getElementById('storyFileInput'); if(fi) fi.value='';
+      showStoryMediaPreview();
+    } else {
+      if(!window._storyFile) hideStoryMediaPreview();
+    }
+    updateStoryLivePreview(); updateStoryState();
+  }
+  function setStoryMediaType(type, btn){
+    window._storyMediaType=type;
+    const seg=document.getElementById('storyMediaSeg');
+    if(seg){ seg.querySelectorAll('.st-seg-item').forEach(function(b){ b.classList.toggle('active', b.dataset.type===type); }); }
+    const fi=document.getElementById('storyFileInput');
+    if(fi) fi.accept = type==='video' ? 'video/*' : (type==='gif' ? 'image/gif' : 'image/*');
+  }
+  function toggleStoryButton(){
+    const t=document.getElementById('storyBtnToggle');
+    const on=t.classList.toggle('on');
+    t.setAttribute('aria-checked', on?'true':'false');
+    document.getElementById('storyBtnFields').style.display = on?'flex':'none';
+    updateStoryLivePreview(); updateStoryState();
+  }
+  function updateStoryState(){
+    const title=document.getElementById('storyTitleInput').value.trim();
+    const media = window._storyFile || (document.getElementById('storyImageUrl').value.trim() ? {url:document.getElementById('storyImageUrl').value.trim()} : null);
+    const btnOn=document.getElementById('storyBtnToggle').classList.contains('on');
+    const linkText=document.getElementById('storyLinkTextInput').value.trim();
+    let ok = !!title && !!media;
+    if(btnOn && !linkText) ok=false;
+    const pb=document.getElementById('storyPublishBtn');
+    const wasDisabled=pb.disabled;
+    pb.disabled=!ok;
+    if(ok && wasDisabled){ pb.classList.add('ready'); setTimeout(function(){ pb.classList.remove('ready'); }, 450); }
+  }
+  function updateStoryLivePreview(){
+    const title=document.getElementById('storyTitleInput').value.trim();
+    const caption=document.getElementById('storyLabelInput').value.trim();
+    const btnOn=document.getElementById('storyBtnToggle').classList.contains('on');
+    const linkText=document.getElementById('storyLinkTextInput').value.trim();
+    document.getElementById('storyLiveTitle').textContent=title;
+    document.getElementById('storyLiveCaption').textContent=caption;
+    const lb=document.getElementById('storyLiveBtn');
+    if(btnOn && linkText){ lb.style.display='inline-block'; lb.textContent=linkText; } else { lb.style.display='none'; }
+    const media=window._storyFile; const url=document.getElementById('storyImageUrl').value.trim();
+    const src = media? media.url : url;
+    const isVid = media && media.type==='video';
+    const lm=document.getElementById('storyLiveMedia');
+    if(src){ lm.innerHTML = isVid ? '<video src="'+src+'" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>' : '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;">'; }
+    else { lm.innerHTML='<span class="st-live-media-ph">Медиа появится здесь</span>'; }
+  }
+  function openStoryPreview(){
+    updateStoryLivePreview();
+    const media=window._storyFile; const url=document.getElementById('storyImageUrl').value.trim();
+    const src = media? media.url : url;
+    const isVid = media && media.type==='video';
+    const fm=document.getElementById('storyFsMedia');
+    if(src){ fm.innerHTML = isVid ? '<video src="'+src+'" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>' : '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;">'; }
+    else { fm.innerHTML=''; }
+    document.getElementById('storyFsTitle').textContent=document.getElementById('storyTitleInput').value.trim();
+    document.getElementById('storyFsCaption').textContent=document.getElementById('storyLabelInput').value.trim();
+    const btnOn=document.getElementById('storyBtnToggle').classList.contains('on');
+    const linkText=document.getElementById('storyLinkTextInput').value.trim();
+    const fb=document.getElementById('storyFsBtn');
+    if(btnOn && linkText){ fb.style.display='block'; fb.textContent=linkText; } else { fb.style.display='none'; }
+    document.getElementById('storyFsPreview').style.display='flex';
+  }
+  function closeStoryPreview(){ document.getElementById('storyFsPreview').style.display='none'; }
+  function resetStoryForm(){
+    window._storyFile=null; window._storyMediaType='image';
+    ['storyTitleInput','storyLabelInput','storyImageUrl','storyLinkTextInput','storyLinkUrlInput'].forEach(function(id){ const e=document.getElementById(id); if(e) e.value=''; });
+    const fi=document.getElementById('storyFileInput'); if(fi) fi.value='';
+    const empty=document.getElementById('storyMediaEmpty'); if(empty) empty.style.display='flex';
+    hideStoryMediaPreview();
+    const seg=document.getElementById('storyMediaSeg'); if(seg){ seg.querySelectorAll('.st-seg-item').forEach(function(b){ b.classList.toggle('active', b.dataset.type==='image'); }); }
+    const tog=document.getElementById('storyBtnToggle'); tog.classList.remove('on'); tog.setAttribute('aria-checked','false');
+    document.getElementById('storyBtnFields').style.display='none';
+    updateStoryLivePreview(); updateStoryState();
+  }
+
+
+  // ===== Vacancy screen (minimalist, sectioned) =====
+  function setVacType(type, btn){
+    window._vacType = type;
+    document.querySelectorAll('#vacTypeSeg .vc-seg-item').forEach(function(b){ b.classList.toggle('active', b.dataset.type===type); });
+    onVacInput();
+  }
+  function onVacInput(){
+    const c=document.getElementById('vacancyCompanyInput').value.trim();
+    const ini=document.getElementById('vacCompanyInitial');
+    if(!window._vacLogo && ini) ini.textContent = c ? c.charAt(0).toUpperCase() : 'C';
+    updateVacProgress();
+  }
+  function updateVacProgress(){
+    const title=document.getElementById('vacancyTitleInput').value.trim();
+    const company=document.getElementById('vacancyCompanyInput').value.trim();
+    const contact=document.getElementById('vacancyContactInput').value.trim();
+    const location=document.getElementById('vacancyLocationInput').value.trim();
+    const skip=document.getElementById('vacancySalarySkip').checked;
+    const salaryFilled = skip || document.getElementById('vacancySalaryFrom').value.trim() || document.getElementById('vacancySalaryTo').value.trim();
+    const resp=document.getElementById('vacancyRespInput').value.trim();
+    const req=document.getElementById('vacancyReqInput').value.trim();
+    const benefit=document.getElementById('vacancyBenefitInput').value.trim();
+    const fields=[title,company,contact,location,salaryFilled,resp,req,benefit];
+    const filled=fields.filter(Boolean).length;
+    const pct=Math.round(filled/fields.length*100);
+    const fill=document.getElementById('vacProgressFill'); if(fill) fill.style.width=pct+'%';
+    const txt=document.getElementById('vacProgressText'); if(txt) txt.textContent=pct+'% заполнено';
+    const ok = title && company && contact;
+    const btn=document.getElementById('vacancyPublishBtn');
+    const was=btn.disabled;
+    btn.disabled=!ok;
+    if(ok && was){ btn.classList.add('ready'); setTimeout(function(){ btn.classList.remove('ready'); }, 450); }
+  }
+  function toggleVacSalarySkip(){
+    const skip=document.getElementById('vacancySalarySkip').checked;
+    document.getElementById('vacSalaryWrap').classList.toggle('disabled', skip);
+    onVacInput();
+  }
+  function selectVacLocation(v, btn){
+    document.getElementById('vacancyLocationInput').value=v;
+    document.querySelectorAll('#vacLocationChips .vc-chip').forEach(function(c){ c.classList.toggle('active', c.textContent===v); });
+    updateVacProgress();
+  }
+  function updateVacLogo(e){
+    const f=e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=function(ev){ window._vacLogo=ev.target.result;
+      const el=document.getElementById('vacCompanyLogo'); el.style.backgroundImage='url('+ev.target.result+')';
+      const ini=document.getElementById('vacCompanyInitial'); if(ini) ini.style.display='none';
+    };
+    r.readAsDataURL(f);
+  }
+  function openVacPreview(){
+    document.getElementById('vacPrevCompany').textContent=document.getElementById('vacancyCompanyInput').value.trim()||'—';
+    const ini=document.getElementById('vacCompanyInitial');
+    const logoEl=document.getElementById('vacPrevLogo');
+    if(window._vacLogo){ logoEl.style.backgroundImage='url('+window._vacLogo+')'; logoEl.textContent=''; }
+    else { logoEl.style.backgroundImage=''; logoEl.textContent=ini?ini.textContent:'C'; }
+    document.getElementById('vacPrevType').textContent = (window._vacType==='seek')?'Ищу работу':'Предлагаю работу';
+    document.getElementById('vacPrevTitle').textContent=document.getElementById('vacancyTitleInput').value.trim()||'Заголовок вакансии';
+    const loc=document.getElementById('vacancyLocationInput').value.trim();
+    const skip=document.getElementById('vacancySalarySkip').checked;
+    let sal='';
+    if(!skip){ const f=document.getElementById('vacancySalaryFrom').value.trim(); const t=document.getElementById('vacancySalaryTo').value.trim(); const cur=document.getElementById('vacancySalaryCurrency').value; if(f||t) sal=(f?f:'?')+(t?'–'+t:'')+' '+cur; }
+    document.getElementById('vacPrevMeta').textContent=[loc,sal].filter(Boolean).join('  ·  ');
+    document.getElementById('vacPrevResp').textContent=document.getElementById('vacancyRespInput').value.trim()||'—';
+    document.getElementById('vacPrevReq').textContent=document.getElementById('vacancyReqInput').value.trim()||'—';
+    document.getElementById('vacPrevBenefit').textContent=document.getElementById('vacancyBenefitInput').value.trim()||'—';
+    const c=document.getElementById('vacancyContactInput').value.trim();
+    const cb=document.getElementById('vacPrevContact');
+    if(c){ cb.style.display='block'; cb.textContent='Связаться: '+c; } else { cb.style.display='none'; }
+    document.getElementById('vacancyPreviewScreen').style.display='flex';
+  }
+  function closeVacPreview(){ document.getElementById('vacancyPreviewScreen').style.display='none'; }
+  function resetVacancyForm(){
+    window._vacType='offer'; window._vacLogo=null;
+    ['vacancyTitleInput','vacancyCompanyInput','vacancyLocationInput','vacancySalaryFrom','vacancySalaryTo','vacancyContactInput','vacancyRespInput','vacancyReqInput','vacancyBenefitInput'].forEach(function(id){ const e=document.getElementById(id); if(e) e.value=''; });
+    const cur=document.getElementById('vacancySalaryCurrency'); if(cur) cur.value='сум';
+    const skip=document.getElementById('vacancySalarySkip'); if(skip) skip.checked=false;
+    const sw=document.getElementById('vacSalaryWrap'); if(sw) sw.classList.remove('disabled');
+    document.querySelectorAll('#vacTypeSeg .vc-seg-item').forEach(function(b){ b.classList.toggle('active', b.dataset.type==='offer'); });
+    document.querySelectorAll('#vacLocationChips .vc-chip').forEach(function(c){ c.classList.remove('active'); });
+    const logo=document.getElementById('vacCompanyLogo'); if(logo) logo.style.backgroundImage='';
+    const ini=document.getElementById('vacCompanyInitial'); if(ini){ ini.style.display='block'; ini.textContent='C'; }
+    updateVacProgress();
+  }
+</script>
+
+  <!-- ПРОСМОТР ИСТОРИЙ -->
+  <div class="story-viewer" id="storyViewer">
+    <div class="story-viewer-inner">
+      <div class="story-viewer-progress" id="storyViewerProgress"></div>
+
+      <div class="story-viewer-top">
+        <div class="story-viewer-label" id="storyViewerLabel"></div>
+        <div class="story-viewer-top-actions">
+          <button type="button" class="story-viewer-menu-btn" id="storyViewerMenuBtn" onclick="toggleStoryMenu(event)" aria-label="Меню">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+          </button>
+          <button type="button" class="story-viewer-close" onclick="closeStoryViewer()" aria-label="Закрыть">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="story-viewer-menu-dropdown" id="storyViewerMenuDropdown">
+          <div class="story-viewer-menu-item danger" onclick="deleteCurrentStory()">Удалить историю</div>
+        </div>
+      </div>
+
+      <div class="story-viewer-tapzones">
+        <div class="story-viewer-tapzone" onclick="storyViewerPrev()"></div>
+        <div class="story-viewer-tapzone" onclick="storyViewerNext()"></div>
+      </div>
+
+      <div class="story-viewer-bg">
+        <img class="story-viewer-bg-img" id="storyViewerBgImg" alt="">
+        <video class="story-viewer-bg-video" id="storyViewerBgVideo" muted playsinline></video>
+        <div class="story-viewer-bg-gradient"></div>
+      </div>
+
+      <div class="story-viewer-media-wrap">
+        <img class="story-viewer-img" id="storyViewerImg" alt="">
+        <video class="story-viewer-video" id="storyViewerVideo" muted playsinline></video>
+      </div>
+
+      <div class="story-viewer-bottom">
+        <div class="story-viewer-news-title" id="storyViewerNewsTitle"></div>
+        <div class="story-viewer-news-text" id="storyViewerNewsText"></div>
+        <button type="button" class="story-viewer-btn" id="storyViewerBtn" onclick="storyViewerGoTo()">Читать</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
