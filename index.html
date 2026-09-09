@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Video App - Glass Capsule UI</title>
+  <!-- Официальный VK Video Player API -->
+  <script src="https://vk.com/js/api/videoplayer.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #0d0e12;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      position: relative;
+      background-color: #0d0e12;
+      overflow: hidden;
+    }
+
+    /* --- Управление экранами --- */
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100vh;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================= 1. СТЕКЛЯННАЯ ВЕРХНЯЯ ШАПКА ================= */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 14, 18, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 50;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .header.hide {
+      transform: translateY(-100%);
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #5b41d9, #8c7ae6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(91, 65, 217, 0.35);
+    }
+
+    /* Жирное и выразительное поле поиска */
+    .search-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.16);
+      border-radius: 24px;
+      padding: 8px 16px;
+      gap: 10px;
+      transition: all 0.25s ease;
+    }
+
+    .search-box:focus-within {
+      border-color: rgba(140, 122, 230, 0.8);
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 14px rgba(140, 122, 230, 0.3);
+    }
+
+    .search-box input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600; /* Более жирный текст поиска */
+    }
+
+    .search-box input::placeholder {
+      color: #8e8e93;
+      font-weight: 500;
+    }
+
+    /* Иконка справа */
+    .search-box svg {
+      width: 18px;
+      height: 18px;
+      color: #8c7ae6;
+      flex-shrink: 0;
+      stroke-width: 2.8; /* Болдовая иконка */
+    }
+
+    /* --- Лента --- */
+    .feed {
+      padding: 72px 16px 100px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .video-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .thumbnail-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 14px;
+      overflow: hidden;
+      background-color: #1a1c23;
+    }
+
+    .thumbnail-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .play-icon {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .video-title {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .video-author, .video-stats {
+      font-size: 13px;
+      color: #747d8c;
+    }
+
+    /* ================= 2. ЭКРАН SHORTS / КЛИПЫ ================= */
+    .shorts-feed {
+      width: 100%;
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      background: #000;
+    }
+
+    .shorts-feed::-webkit-scrollbar {
+      display: none;
+    }
+
+    .short-item {
+      width: 100%;
+      height: 100vh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      position: relative;
+      background: #000;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+      pointer-events: none;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      padding: 4px;
+    }
+
+    .back-btn svg {
+      width: 28px;
+      height: 28px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    }
+
+    .iframe-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: #000;
+    }
+
+    .iframe-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Зона тапа для паузы (от шапки до названия) */
+    .touch-layer {
+      position: absolute;
+      top: 70px;
+      bottom: 140px;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      cursor: pointer;
+    }
+
+    .custom-pause-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .custom-pause-mask.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .play-icon-circle {
+      width: 64px;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    }
+
+    .pause-text {
+      font-size: 13px;
+      color: #a4b0be;
+      font-weight: 500;
+    }
+
+    .bottom-info {
+      position: absolute;
+      bottom: 80px;
+      left: 16px;
+      right: 16px;
+      z-index: 20;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .short-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .short-author {
+      font-size: 13px;
+      color: #dcdde1;
+      font-weight: 500;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+    }
+
+    /* ================= 3. СТЕКЛЯННОЕ НИЖНЕЕ МЕНЮ (КАПСУЛА) ================= */
+    .bottom-nav {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 440px;
+      height: 58px;
+      background: rgba(22, 24, 32, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 32px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+      padding: 0 8px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .bottom-nav.hide {
+      transform: translate(-50%, calc(100% + 30px));
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: #8e8e93;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-item.active {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-item svg {
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- ================= 1. ГЛАВНЫЙ ЭКРАН ================= -->
+    <div id="home-screen" class="screen active">
+      <header class="header">
+        <div class="logo">#</div>
+        
+        <!-- Поиск с иконкой СПРАВА -->
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Поиск видео..." oninput="handleSearch(this.value)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+      </header>
+
+      <main class="feed" id="video-feed">
+        <!-- Видео генерируются динамически -->
+      </main>
+    </div>
+
+    <!-- ================= 2. ЭКРАН SHORTS / КЛИПЫ ================= -->
+    <div id="shorts-screen" class="screen">
+      <div class="top-bar">
+        <button class="back-btn" onclick="closeShorts()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <div class="shorts-feed" id="shorts-feed">
+        <!-- Секция клипов -->
+      </div>
+    </div>
+
+    <!-- ================= 3. ПАРЯЩАЯ СТЕКЛЯННАЯ КАПСУЛА ================= -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="showHomeScreen()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-9.5z"/></svg>
+      </button>
+
+      <button class="nav-item" onclick="openShortsFeed(0)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"></rect><path d="M3 9h18"></path><path d="M8 3l3 6"></path><path d="M16 3l3 6"></path><polygon points="10,12 15,15 10,18" fill="currentColor" stroke="none"></polygon></svg>
+      </button>
+
+      <button class="nav-item" onclick="openProfile()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3.5" y="3.5" width="7" height="7" rx="2"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="2"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="2"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="2"></rect></svg>
+      </button>
+    </nav>
+
+  </div>
+
+  <script>
+    const playlist = [
+      {
+        embedUrl: "https://vk.com/video_ext.php?oid=-237335724&id=456239086",
+        title: "Тестовое видео VK (237335724_456239086)",
+        author: "VK Video",
+        stats: "12.4K Views • 2026",
+        thumb: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop"
+      },
+      {
+        embedUrl: "https://vk.com/video_ext.php?oid=-220000000&id=456239001",
+        title: "Muxlisbek Qurbonov - Yuragimning yarmi (Qastingiz bormu 2)",
+        author: "admin",
+        stats: "45.1K Views • 15.11.2023",
+        thumb: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop"
+      }
+    ];
+
+    const homeScreen = document.getElementById('home-screen');
+    const shortsScreen = document.getElementById('shorts-screen');
+    const shortsFeed = document.getElementById('shorts-feed');
+    const videoFeed = document.getElementById('video-feed');
+    const bottomNav = document.querySelector('.bottom-nav');
+    const header = document.querySelector('.header');
+
+    const vkPlayers = new Map();
+    let observer;
+    let lastScrollTop = 0;
+
+    // Скрытие шапки и меню при скролле
+    videoFeed.addEventListener('scroll', () => {
+      const scrollTop = videoFeed.scrollTop;
+
+      if (scrollTop <= 10) {
+        header.classList.remove('hide');
+        bottomNav.classList.remove('hide');
+        lastScrollTop = scrollTop;
+        return;
+      }
+
+      if (scrollTop > lastScrollTop && scrollTop > 40) {
+        header.classList.add('hide');
+        bottomNav.classList.add('hide');
+      } else if (scrollTop < lastScrollTop) {
+        header.classList.remove('hide');
+        bottomNav.classList.remove('hide');
+      }
+
+      lastScrollTop = scrollTop;
+    });
+
+    function showHomeScreen() {
+      closeShorts();
+      setActiveNavItem(0);
+    }
+
+    // Сообщение о скором появлении функции при клике на Каталог
+    function openProfile() {
+      setActiveNavItem(2);
+      alert('Скоро появится функция');
+    }
+
+    function setActiveNavItem(index) {
+      const items = document.querySelectorAll('.bottom-nav .nav-item');
+      items.forEach((item, i) => {
+        if (i === index) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+
+    function renderFeed(items) {
+      videoFeed.innerHTML = '';
+      if (items.length === 0) {
+        videoFeed.innerHTML = '<p style="text-align:center; color:#747d8c; margin-top:20px;">Ничего не найдено</p>';
+        return;
+      }
+
+      items.forEach((item, index) => {
+        const article = document.createElement('article');
+        article.className = 'video-card';
+        article.onclick = () => openShortsFeed(index);
+        article.innerHTML = `
+          <div class="thumbnail-wrapper">
+            <img src="${item.thumb}" alt="Thumb">
+            <div class="play-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </div>
+          </div>
+          <div class="video-info">
+            <h3 class="video-title">${item.title}</h3>
+            <p class="video-author">${item.author}</p>
+            <p class="video-stats">${item.stats}</p>
+          </div>
+        `;
+        videoFeed.appendChild(article);
+      });
+    }
+
+    function handleSearch(query) {
+      const q = query.toLowerCase().trim();
+      const filtered = playlist.filter(video => 
+        video.title.toLowerCase().includes(q) || 
+        video.author.toLowerCase().includes(q)
+      );
+      renderFeed(filtered);
+    }
+
+    document.addEventListener('touchstart', unlockAudio, { once: true });
+    document.addEventListener('click', unlockAudio, { once: true });
+
+    function unlockAudio() {
+      unmuteCurrentVideo();
+    }
+
+    function renderShorts() {
+      shortsFeed.innerHTML = '';
+      playlist.forEach((video) => {
+        const item = document.createElement('div');
+        item.className = 'short-item';
+
+        item.innerHTML = `
+          <div class="iframe-wrapper">
+            <iframe 
+              data-src="${video.embedUrl}&js_api=1" 
+              allow="autoplay; encrypted-media; fullscreen; picture-in-picture;" 
+              allowfullscreen>
+            </iframe>
+
+            <div class="touch-layer" onclick="togglePlayPause(this)"></div>
+
+            <div class="custom-pause-mask" onclick="togglePlayPause(this)">
+              <div class="play-icon-circle">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </div>
+              <span class="pause-text">Нажмите, чтобы продолжить</span>
+            </div>
+          </div>
+
+          <div class="bottom-info">
+            <h2 class="short-title">${video.title}</h2>
+            <span class="short-author">${video.author}</span>
+          </div>
+        `;
+        shortsFeed.appendChild(item);
+      });
+    }
+
+    function getPlayer(iframe) {
+      if (vkPlayers.has(iframe)) return vkPlayers.get(iframe);
+      if (typeof VK !== 'undefined' && VK.VideoPlayer) {
+        const player = VK.VideoPlayer(iframe);
+        vkPlayers.set(iframe, player);
+        return player;
+      }
+      return null;
+    }
+
+    function unmuteVideo(iframe) {
+      const player = getPlayer(iframe);
+      if (player) {
+        if (typeof player.unmute === 'function') player.unmute();
+        if (typeof player.setVolume === 'function') player.setVolume(1);
+      }
+      const win = iframe.contentWindow;
+      if (win) {
+        const cmds = [
+          { type: 'player:unmute' },
+          { type: 'player:setVolume', volume: 1 },
+          { method: 'unmute' },
+          { action: 'unmute' }
+        ];
+        cmds.forEach(cmd => win.postMessage(JSON.stringify(cmd), '*'));
+      }
+    }
+
+    function unmuteCurrentVideo() {
+      const activeItem = document.querySelector('.short-item');
+      if (activeItem) {
+        const iframe = activeItem.querySelector('iframe');
+        if (iframe) unmuteVideo(iframe);
+      }
+    }
+
+    function sendVkCommand(iframe, action) {
+      const win = iframe.contentWindow;
+      if (!win) return;
+      const cmds = [
+        { type: `player:${action}` },
+        { method: action },
+        { action: action }
+      ];
+      cmds.forEach(cmd => win.postMessage(JSON.stringify(cmd), '*'));
+    }
+
+    function togglePlayPause(element) {
+      unlockAudio();
+      const item = element.closest('.short-item');
+      const iframe = item.querySelector('iframe');
+      const mask = item.querySelector('.custom-pause-mask');
+      const player = getPlayer(iframe);
+
+      if (mask.classList.contains('active')) {
+        mask.classList.remove('active');
+        if (player) player.play();
+        sendVkCommand(iframe, 'play');
+        unmuteVideo(iframe);
+      } else {
+        mask.classList.add('active');
+        if (player) player.pause();
+        sendVkCommand(iframe, 'pause');
+      }
+    }
+
+    function openShortsFeed(startIndex = 0) {
+      renderShorts();
+      setActiveNavItem(1);
+      
+      homeScreen.classList.remove('active');
+      shortsScreen.classList.add('active');
+      bottomNav.style.display = 'none';
+
+      setupObserver();
+
+      const items = shortsFeed.querySelectorAll('.short-item');
+      if (items[startIndex]) {
+        items[startIndex].scrollIntoView();
+      }
+    }
+
+    function closeShorts() {
+      document.querySelectorAll('.short-item iframe').forEach(iframe => iframe.src = '');
+      vkPlayers.clear();
+      if (observer) observer.disconnect();
+
+      shortsScreen.classList.remove('active');
+      homeScreen.classList.add('active');
+      bottomNav.style.display = 'flex';
+      header.classList.remove('hide');
+      bottomNav.classList.remove('hide');
+      setActiveNavItem(0);
+    }
+
+    function setupObserver() {
+      if (observer) observer.disconnect();
+
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const iframe = entry.target.querySelector('iframe');
+          const mask = entry.target.querySelector('.custom-pause-mask');
+          const baseUrl = iframe.getAttribute('data-src');
+
+          if (entry.isIntersecting) {
+            mask.classList.remove('active');
+            iframe.src = `${baseUrl}&autoplay=1`;
+            iframe.onload = () => {
+              setTimeout(() => unmuteVideo(iframe), 300);
+            };
+          } else {
+            mask.classList.remove('active');
+            iframe.src = '';
+            vkPlayers.delete(iframe);
+          }
+        });
+      }, { root: shortsFeed, threshold: 0.6 });
+
+      document.querySelectorAll('.short-item').forEach(item => observer.observe(item));
+    }
+
+    renderFeed(playlist);
+  </script>
+
+</body>
+</html>
