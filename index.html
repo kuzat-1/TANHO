@@ -788,10 +788,7 @@
 
   <!-- Вкладка 2: ИНТЕРЕСНОЕ (Лента + Reels) -->
   <div class="reels-screen-container" id="pageReels">
-    <div class="reels-tabs-header">
-      <button class="seg-btn active" id="segFeedBtn" onclick="switchReelsTab('feed')">Лента<span class="seg-underline"></span></button>
-      <button class="seg-btn" id="segReelsBtn" onclick="switchReelsTab('reels')">Reels<span class="seg-underline"></span></button>
-    </div>
+    <!-- reels-tabs-header removed: Интересное без шапки -->
     <!-- ЛЕНТА - YouTube стиль -->
     <div class="reels-tab-content active" id="reelsFeedTab">
       <div class="yt-feed" id="ytFeed"></div>
@@ -1595,10 +1592,10 @@
     if (!feedTab || !reelsTab) return;
     if (tab === 'feed') {
       feedTab.classList.add('active'); reelsTab.classList.remove('active');
-      feedBtn.classList.add('active'); reelsBtn.classList.remove('active');
+      if (feedBtn) feedBtn.classList.add('active'); if (reelsBtn) reelsBtn.classList.remove('active');
     } else {
       reelsTab.classList.add('active'); feedTab.classList.remove('active');
-      reelsBtn.classList.add('active'); feedBtn.classList.remove('active');
+      if (reelsBtn) reelsBtn.classList.add('active'); if (feedBtn) feedBtn.classList.remove('active');
     }
     if (!skipPersist) {
       try { localStorage.setItem('tanho_reels_tab', tab); localStorage.setItem('tanho_page', 'pageReels'); } catch(e){}
@@ -1618,7 +1615,8 @@
       const dx=sx-ex, dy=sy-ey;
       if(Math.abs(dx)<60 || Math.abs(dx) < Math.abs(dy)) return;
       if(!container.classList.contains('active')) return;
-      const cur = document.getElementById('segFeedBtn')?.classList.contains('active') ? 'feed' : 'reels';
+      const feedActive = document.getElementById('reelsFeedTab')?.classList.contains('active');
+      const cur = feedActive ? 'feed' : 'reels';
       if(dx>0 && cur==='feed') switchReelsTab('reels');
       else if(dx<0 && cur==='reels') switchReelsTab('feed');
     }, {passive:true});
@@ -1629,7 +1627,8 @@
       const dx=mSx - e.clientX;
       if(Math.abs(dx)<60) return;
       if(!container.classList.contains('active')) return;
-      const cur=document.getElementById('segFeedBtn')?.classList.contains('active')?'feed':'reels';
+      const feedActive2 = document.getElementById('reelsFeedTab')?.classList.contains('active');
+      const cur=feedActive2?'feed':'reels';
       if(dx>0 && cur==='feed') switchReelsTab('reels');
       else if(dx<0 && cur==='reels') switchReelsTab('feed');
     });
