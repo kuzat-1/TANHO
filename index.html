@@ -212,9 +212,12 @@
     }
 
     .reels-tabs-header {
-      height: 42px; display: flex; align-items: center; justify-content: center; gap: 36px;
-      background: transparent; border-bottom: none; flex-shrink: 0; z-index: 5;
+      position: absolute; top: 0; left: 0; right: 0; height: 42px; display: flex; align-items: center; justify-content: center; gap: 36px;
+      background: transparent !important; border-bottom: none !important; flex-shrink: 0; z-index: 5;
+      box-shadow: none !important; pointer-events: auto;
     }
+    .reels-screen-container { background: transparent !important; position: absolute; inset: 0; bottom: 70px; }
+    .reels-tab-content { padding-top: 42px; }
     .seg-btn {
       position: relative; background: none; border: none; padding: 10px 2px; cursor: pointer;
       color: var(--text-muted); font-size: 14px; font-weight: 500; transition: color 0.2s ease;
@@ -227,11 +230,11 @@
     }
     .seg-btn.active .seg-underline { transform: scaleX(1); }
 
-    .reels-tab-content { display: none; flex: 1; overflow-y: auto; scrollbar-width: none; flex-direction: column; }
+    .reels-tab-content { display: none; flex: 1; overflow-y: auto; scrollbar-width: none; flex-direction: column; padding-top: 0; }
     .reels-tab-content.active { display: flex; }
     .reels-tab-content::-webkit-scrollbar { display: none; }
-    #reelsFeedTab { background: var(--bg-dark); }
-    #reelsReelsTab { background: #000; }
+    #reelsFeedTab { background: var(--bg-dark); padding-top: 42px; }
+    #reelsReelsTab { background: #000; padding-top: 42px; }
 
     /* YouTube feed */
     .yt-feed { display: flex; flex-direction: column; gap: 0; background: var(--bg-dark); padding-bottom: 8px; }
