@@ -199,7 +199,6 @@
     .reels-screen-container {
       position: absolute; inset: 0; bottom: 0; width: 100%; height: 100%;
       background: transparent; z-index: 40; display: none; flex-direction: column; overflow: hidden;
-      padding-bottom: 86px;
     }
     .reels-screen-container.active { display: flex; }
 
@@ -238,7 +237,7 @@
     #reelsReelsTab { background: #000; padding-top: 0; }
 
     /* YouTube feed — без белого фона над капсулой */
-    .yt-feed { display: flex; flex-direction: column; gap: 0; background: transparent; padding-bottom: 8px; }
+    .yt-feed { display: flex; flex-direction: column; gap: 0; background: transparent; padding-bottom: 86px; }
     .yt-card { background: var(--bg-main); border-bottom: 1px solid var(--border-color); padding-bottom: 8px; cursor: pointer; }
     .yt-thumb { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; }
     .yt-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -2167,13 +2166,18 @@
     const reelsTab = document.getElementById('reelsReelsTab');
     const feedBtn = document.getElementById('segFeedBtn');
     const reelsBtn = document.getElementById('segReelsBtn');
+    const header = document.querySelector('.reels-tabs-header');
     if (!feedTab || !reelsTab) return;
     if (tab === 'feed') {
       feedTab.classList.add('active'); reelsTab.classList.remove('active');
       if (feedBtn) feedBtn.classList.add('active'); if (reelsBtn) reelsBtn.classList.remove('active');
+      if (header) header.style.display = 'flex';
+      feedTab.style.paddingTop = '42px';
     } else {
       reelsTab.classList.add('active'); feedTab.classList.remove('active');
       if (reelsBtn) reelsBtn.classList.add('active'); if (feedBtn) feedBtn.classList.remove('active');
+      if (header) header.style.display = 'none';
+      reelsTab.style.paddingTop = '0';
     }
     if (!skipPersist) {
       try { localStorage.setItem('tanho_reels_tab', tab); localStorage.setItem('tanho_page', 'pageReels'); } catch(e){}
