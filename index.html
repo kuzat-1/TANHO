@@ -259,7 +259,13 @@
 
     /* reel-center-action / use-idea-btn removed */
 
-    .reel-bottom-content { display: flex; flex-direction: column; gap: 12px; z-index: 10; margin-top: auto; }
+    .reel-bottom-content { display: flex; flex-direction: column; gap: 12px; z-index: 10; margin-top: auto; padding-bottom: 90px; }
+    .reel-timeline { position: absolute; bottom: 88px; left: 16px; right: 16px; height: 28px; display: flex; align-items: center; gap: 10px; z-index: 11; pointer-events: none; }
+    .reel-timeline-track { flex: 1; height: 3px; background: rgba(255,255,255,0.25); border-radius: 999px; overflow: hidden; position: relative; }
+    .reel-timeline-progress { position: absolute; left: 0; top: 0; bottom: 0; width: 42%; background: #fff; border-radius: 999px; }
+    .reel-timeline-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+    .reel-timeline-username { font-size: 11px; font-weight: 700; color: #fff; line-height: 1; }
+    .reel-timeline-desc { font-size: 11px; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
     .reel-actions-row { display: flex; align-items: center; gap: 14px; }
     .reel-action-chip { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; }
     .reel-author-info { display: flex; flex-direction: column; gap: 4px; }
@@ -856,13 +862,20 @@
     <div class="reels-tab-content" id="reelsReelsTab">
       <div class="reels-vertical-feed" id="reelsVerticalFeed">
         <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800');">
+          <div class="reel-timeline">
+            <div class="reel-timeline-track"><div class="reel-timeline-progress" style="width: 38%;"></div></div>
+            <div class="reel-timeline-info">
+              <div class="reel-timeline-username">@CaliraVal</div>
+              <div class="reel-timeline-desc">Летнее видео у моря • TANHO Reels 🌊#travel</div>
+            </div>
+          </div>
           <div class="reel-bottom-content">
             <div class="reel-actions-row">
               <div class="reel-action-chip" onclick="toggleReelLike(this)">
                 <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 <span class="reel-likes-val">2.4K</span>
               </div>
-              <div class="reel-action-chip"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M7 15h10"/><path d="M7 9h4"/></svg><span>HD</span></div>
+              <div class="reel-action-chip" onclick="sharePost(this)" title="Репост"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Репост</span></div>
             </div>
             <div class="reel-author-info">
               <div class="reel-author-handle">@CaliraVal</div>
@@ -871,13 +884,20 @@
           </div>
         </div>
         <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800');">
+          <div class="reel-timeline">
+            <div class="reel-timeline-track"><div class="reel-timeline-progress" style="width: 62%;"></div></div>
+            <div class="reel-timeline-info">
+              <div class="reel-timeline-username">@urbancore</div>
+              <div class="reel-timeline-desc">Ночной город не спит • time-lapse 4K 🌃</div>
+            </div>
+          </div>
           <div class="reel-bottom-content">
             <div class="reel-actions-row">
               <div class="reel-action-chip" onclick="toggleReelLike(this)">
                 <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 <span class="reel-likes-val">8.1K</span>
               </div>
-              <div class="reel-action-chip"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M7 15h10"/><path d="M7 9h4"/></svg><span>HD</span></div>
+              <div class="reel-action-chip" onclick="sharePost(this)" title="Репост"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Репост</span></div>
             </div>
             <div class="reel-author-info">
               <div class="reel-author-handle">@urbancore</div>
@@ -886,13 +906,20 @@
           </div>
         </div>
         <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800');">
+          <div class="reel-timeline">
+            <div class="reel-timeline-track"><div class="reel-timeline-progress" style="width: 15%;"></div></div>
+            <div class="reel-timeline-info">
+              <div class="reel-timeline-username">@naturevibe</div>
+              <div class="reel-timeline-desc">Утро в горах • дыхание природы 🏔️</div>
+            </div>
+          </div>
           <div class="reel-bottom-content">
             <div class="reel-actions-row">
               <div class="reel-action-chip" onclick="toggleReelLike(this)">
                 <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 <span class="reel-likes-val">312</span>
               </div>
-              <div class="reel-action-chip"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M7 15h10"/><path d="M7 9h4"/></svg><span>HD</span></div>
+              <div class="reel-action-chip" onclick="sharePost(this)" title="Репост"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Репост</span></div>
             </div>
             <div class="reel-author-info">
               <div class="reel-author-handle">@naturevibe</div>
@@ -1322,7 +1349,7 @@
   /* КОНТЕЙНЕР МЕНЮ */
   .floating-nav-container {
     position: fixed;
-    bottom: 20px;
+    bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 28px);
@@ -2173,16 +2200,18 @@
     const reelsBtn = document.getElementById('segReelsBtn');
     const header = document.querySelector('.reels-tabs-header');
     if (!feedTab || !reelsTab) return;
-    if (tab === 'feed') {
+        if (tab === 'feed') {
       feedTab.classList.add('active'); reelsTab.classList.remove('active');
       if (feedBtn) feedBtn.classList.add('active'); if (reelsBtn) reelsBtn.classList.remove('active');
       if (header) header.style.display = 'flex';
       feedTab.style.paddingTop = '42px';
+      reelsTab.style.paddingTop = '0';
     } else {
       reelsTab.classList.add('active'); feedTab.classList.remove('active');
+      if (header) header.style.display = 'flex';
       if (reelsBtn) reelsBtn.classList.add('active'); if (feedBtn) feedBtn.classList.remove('active');
-      if (header) header.style.display = 'none';
-      reelsTab.style.paddingTop = '0';
+      reelsTab.style.paddingTop = '42px';
+      feedTab.style.paddingTop = '42px';
     }
     if (!skipPersist) {
       try { localStorage.setItem('tanho_reels_tab', tab); localStorage.setItem('tanho_page', 'pageReels'); } catch(e){}
