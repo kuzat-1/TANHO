@@ -196,18 +196,20 @@
     }
 
     .reels-tabs-header {
-      height: 46px; display: flex; align-items: center; justify-content: center;
-      background: rgba(8, 9, 16, 0.96); backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; z-index: 5;
-    }
-    .reels-segmented {
-      display: flex; background: rgba(255,255,255,0.08); border-radius: 999px; padding: 3px; gap: 3px;
+      height: 44px; display: flex; align-items: center; justify-content: center; gap: 36px;
+      background: var(--bg-dark); border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 5;
     }
     .seg-btn {
-      padding: 7px 20px; border-radius: 999px; border: none; background: transparent;
-      color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+      position: relative; background: none; border: none; padding: 10px 2px; cursor: pointer;
+      color: var(--text-muted); font-size: 14px; font-weight: 500; transition: color 0.2s ease;
     }
-    .seg-btn.active { background: var(--primary-accent); color: #fff; box-shadow: 0 2px 10px rgba(124,58,237,0.35); }
+    .seg-btn.active { color: var(--text-main); font-weight: 700; }
+    .seg-btn .seg-underline {
+      position: absolute; left: 0; right: 0; bottom: -1px; height: 2.5px;
+      background: var(--primary-accent); border-radius: 999px;
+      transform: scaleX(0); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    .seg-btn.active .seg-underline { transform: scaleX(1); }
 
     .reels-tab-content { display: none; flex: 1; overflow-y: auto; scrollbar-width: none; flex-direction: column; }
     .reels-tab-content.active { display: flex; }
@@ -769,10 +771,8 @@
   <!-- Вкладка 2: ИНТЕРЕСНОЕ (Лента + Reels) -->
   <div class="reels-screen-container" id="pageReels">
     <div class="reels-tabs-header">
-      <div class="reels-segmented">
-        <button class="seg-btn active" id="segFeedBtn" onclick="switchReelsTab('feed')">Лента</button>
-        <button class="seg-btn" id="segReelsBtn" onclick="switchReelsTab('reels')">Reels</button>
-      </div>
+      <button class="seg-btn active" id="segFeedBtn" onclick="switchReelsTab('feed')">Лента<span class="seg-underline"></span></button>
+      <button class="seg-btn" id="segReelsBtn" onclick="switchReelsTab('reels')">Reels<span class="seg-underline"></span></button>
     </div>
     <!-- ЛЕНТА - YouTube стиль -->
     <div class="reels-tab-content active" id="reelsFeedTab">
@@ -1588,6 +1588,34 @@
       if (location.hash.slice(1)!==hash) history.replaceState(null,'','#'+hash);
     }
   }
+
+  // ↔️ свайп влево/вправо для переключения Лента <-> Reels
+  (function setupReelsSwipe(){
+    let sx=0, sy=0;
+    const container = document.getElementById('pageReels');
+    if(!container) return;
+    container.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }, {passive:true});
+    container.addEventListener('touchend', e=>{
+      const ex=e.changedTouches[0].clientX, ey=e.changedTouches[0].clientY;
+      const dx=sx-ex, dy=sy-ey;
+      if(Math.abs(dx)<60 || Math.abs(dx) < Math.abs(dy)) return;
+      if(!container.classList.contains('active')) return;
+      const cur = document.getElementById('segFeedBtn')?.classList.contains('active') ? 'feed' : 'reels';
+      if(dx>0 && cur==='feed') switchReelsTab('reels');
+      else if(dx<0 && cur==='reels') switchReelsTab('feed');
+    }, {passive:true});
+    let mDown=false, mSx=0;
+    container.addEventListener('mousedown', e=>{ mDown=true; mSx=e.clientX; });
+    container.addEventListener('mouseup', e=>{
+      if(!mDown) return; mDown=false;
+      const dx=mSx - e.clientX;
+      if(Math.abs(dx)<60) return;
+      if(!container.classList.contains('active')) return;
+      const cur=document.getElementById('segFeedBtn')?.classList.contains('active')?'feed':'reels';
+      if(dx>0 && cur==='feed') switchReelsTab('reels');
+      else if(dx<0 && cur==='reels') switchReelsTab('feed');
+    });
+  })();
 
   const ytVideosData = [
     { id:1, title: 'Обзор нового TANHO — как работает лента и чат', channel: 'TANHO Official', avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100', thumb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800', duration: '8:42', views: '124K', time: '3 дня назад' },
