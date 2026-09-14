@@ -1034,7 +1034,7 @@
 
     <!-- Список сообщений Общего Чатa -->
     <div class="chat-messages-container" id="chatMessagesContainer">
-      <div class="message-bubble incoming" onclick="setReply('Алишер', 'Всем салом! Добро пожаловать в общий чат TANHO 👋')">
+      <div class="message-bubble incoming">
         <span class="message-sender-name">Алишер</span>
         <div class="message-content-box" ondblclick="event.stopPropagation(); this.parentElement.querySelector('.reaction-picker').classList.toggle('active')">
           Всем салом! Добро пожаловать в общий чат TANHO 👋
@@ -1052,7 +1052,7 @@
         </div>
       </div>
 
-      <div class="message-bubble incoming" onclick="setReply('Мадина', 'Привет всем! Дизайн приложения просто пушка 🚀')">
+      <div class="message-bubble incoming">
         <span class="message-sender-name" style="color:#38bdf8;">Мадина</span>
         <div class="message-content-box" ondblclick="event.stopPropagation(); this.parentElement.querySelector('.reaction-picker').classList.toggle('active')">
           Привет всем! Дизайн приложения просто пушка 🚀
@@ -1070,7 +1070,7 @@
         </div>
       </div>
 
-      <div class="message-bubble outgoing" onclick="setReply('Вы', 'Привет! Рада видеть всех здесь! ✨')">
+      <div class="message-bubble outgoing">
         <div class="message-content-box" ondblclick="event.stopPropagation(); this.parentElement.querySelector('.reaction-picker').classList.toggle('active')">
           Привет! Рада видеть всех здесь! ✨
           <span class="message-time-stamp">21:45</span>
@@ -1090,9 +1090,12 @@
 
     <!-- Превью ответа -->
     <div class="reply-preview" id="replyPreview">
-      <div class="reply-preview-content">
-        <div class="reply-preview-name" id="replyPreviewName"></div>
-        <div class="reply-preview-text" id="replyPreviewText"></div>
+      <div style="display:flex; flex-direction:column; gap:1px; flex:1; overflow:hidden;">
+        <div style="font-size:10px; color:var(--text-muted);">Ответить</div>
+        <div class="reply-preview-content">
+          <div class="reply-preview-name" id="replyPreviewName"></div>
+          <div class="reply-preview-text" id="replyPreviewText"></div>
+        </div>
       </div>
       <button class="reply-preview-close" onclick="clearReply()" title="Отменить">×</button>
     </div>
@@ -1442,7 +1445,7 @@
     const quoted = replyTo ? '<div class="quoted-reply"><div class="quoted-reply-name">'+escReplyName+'</div><div class="quoted-reply-text">'+escReplyText+'</div></div>' : '';
     const safeText = escText.replace(/'/g, "&#39;");
     const msgHTML = `
-      <div class="message-bubble outgoing" onclick="setReply('Вы', '`+safeText+`')">
+      <div class="message-bubble outgoing">
         <div class="message-content-box" ondblclick="event.stopPropagation(); this.parentElement.querySelector('.reaction-picker').classList.toggle('active')">
           `+quoted+escText+`
           <span class="message-time-stamp">`+timeStr+`</span>
