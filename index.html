@@ -724,7 +724,7 @@
     .photo-item { position: relative; width: 100%; height: 100%; min-height: 100px; background: #1a1c29; overflow: hidden; }
     .photo-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    .bottom-section { margin-top: auto; display: flex; flex-direction: column; gap: 8px; position: relative; }
+    .bottom-section { margin-top: auto; display: flex; flex-direction: column; gap: 8px; position: sticky; bottom: 0; background: var(--bg-main); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5; }
     .glass-dock {
       display: flex; align-items: center; justify-content: space-between;
       background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(30px);
@@ -1828,30 +1828,35 @@
     document.getElementById('editorModal').classList.remove('keyboard-open');
     setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); 
   }
-  // клавиатура — держать док над ней
-  if (window.visualViewport) {
+  // клавиатура — держать док над ней (улучшено)
+  (function(){
     const editorEl = document.getElementById('editorModal');
-    let lastHeight = window.visualViewport.height;
-    window.visualViewport.addEventListener('resize', () => {
-      if (!editorEl || !editorEl.classList.contains('open')) return;
-      const curH = window.visualViewport.height;
-      const diff = window.innerHeight - curH;
-      if (diff > 120) { // клавиатура открыта
-        editorEl.classList.add('keyboard-open');
-        editorEl.style.height = curH + 'px';
-        // прокрутить к инпутам
-        document.getElementById('article-title')?.scrollIntoView({block:'center', behavior:'smooth'});
-      } else {
-        editorEl.classList.remove('keyboard-open');
-        editorEl.style.height = '';
-      }
-    });
-    window.visualViewport.addEventListener('scroll', () => {
-      if (editorEl && editorEl.classList.contains('open')) {
-        editorEl.style.height = window.visualViewport.height + 'px';
-      }
-    });
-  }
+    if (!editorEl || !window.visualViewport) return;
+    const vv = window.visualViewport;
+    let ticking = false;
+    const handler = () => {
+      if (!editorEl.classList.contains('open')) return;
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(()=>{
+        const curH = vv.height;
+        const diff = window.innerHeight - curH;
+        const bottomSection = editorEl.querySelector('.bottom-section');
+        if (diff > 100) {
+          editorEl.classList.add('keyboard-open');
+          editorEl.style.height = curH + 'px';
+          if (bottomSection) bottomSection.style.transform = `translateY(-${Math.max(0, diff - 20)}px)`;
+        } else {
+          editorEl.classList.remove('keyboard-open');
+          editorEl.style.height = '';
+          if (bottomSection) bottomSection.style.transform = '';
+        }
+        ticking = false;
+      });
+    };
+    vv.addEventListener('resize', handler);
+    vv.addEventListener('scroll', handler);
+  })();
   // также слушать focus на инпутах чтобы поднять док
   document.getElementById('article-title')?.addEventListener('focus', ()=>{
     setTimeout(()=>{
