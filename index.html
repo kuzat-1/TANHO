@@ -474,11 +474,12 @@
     .quoted-reply-text { color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .outgoing .quoted-reply-text { color: rgba(255,255,255,0.9); }
 
-    .message-reactions { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+    .message-reactions { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; align-items: center; min-height: 4px; }
     .reaction-chip { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 2px 7px; font-size: 12px; display: flex; align-items: center; gap: 3px; cursor: pointer; color: var(--text-main); }
     .reaction-chip.active { background: rgba(108,92,231,0.18); border-color: var(--primary-accent); color: var(--primary-accent); }
-    .reaction-add { background: var(--card-bg); border: 1px dashed var(--border-color); border-radius: 12px; padding: 2px 7px; font-size: 12px; cursor: pointer; color: var(--text-muted); }
-    .reaction-picker { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 8px; display: none; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 10; white-space: nowrap; }
+    .quick-like { width: 26px; height: 26px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; color: var(--text-muted); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .quick-like:active { transform: scale(0.9); }
+    .reaction-picker { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 8px; display: none; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 10; white-space: nowrap; }
     .reaction-picker.active { display: flex; }
     .reaction-picker button { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px 6px; border-radius: 50%; transition: transform 0.15s; }
     .reaction-picker button:hover { transform: scale(1.2); background: rgba(255,255,255,0.06); }
@@ -1041,7 +1042,7 @@
           <span class="message-time-stamp">21:40</span>
         </div>
         <button class="reply-btn" onclick="event.stopPropagation(); setReply('Алишер', 'Всем салом! Добро пожаловать в общий чат TANHO 👋')" title="Ответить"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>
-        <div class="message-reactions"></div>
+        <div class="message-reactions"><button class="quick-like" onclick="event.stopPropagation(); this.closest('.message-bubble').querySelector('.reaction-picker').classList.toggle('active')" title="Реакция">👍</button></div>
         <div class="reaction-picker">
           <button onclick="addReaction(this.closest('.message-bubble'),'❤️')">❤️</button>
           <button onclick="addReaction(this.closest('.message-bubble'),'👍')">👍</button>
@@ -1059,7 +1060,7 @@
           <span class="message-time-stamp">21:42</span>
         </div>
         <button class="reply-btn" onclick="event.stopPropagation(); setReply('Мадина', 'Привет всем! Дизайн приложения просто пушка 🚀')" title="Ответить"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>
-        <div class="message-reactions"></div>
+        <div class="message-reactions"><button class="quick-like" onclick="event.stopPropagation(); this.closest('.message-bubble').querySelector('.reaction-picker').classList.toggle('active')" title="Реакция">👍</button></div>
         <div class="reaction-picker">
           <button onclick="addReaction(this.closest('.message-bubble'),'❤️')">❤️</button>
           <button onclick="addReaction(this.closest('.message-bubble'),'👍')">👍</button>
@@ -1076,7 +1077,7 @@
           <span class="message-time-stamp">21:45</span>
         </div>
         <button class="reply-btn" onclick="event.stopPropagation(); setReply('Вы', 'Привет! Рада видеть всех здесь! ✨')" title="Ответить"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>
-        <div class="message-reactions"></div>
+        <div class="message-reactions"><button class="quick-like" onclick="event.stopPropagation(); this.closest('.message-bubble').querySelector('.reaction-picker').classList.toggle('active')" title="Реакция">👍</button></div>
         <div class="reaction-picker">
           <button onclick="addReaction(this.closest('.message-bubble'),'❤️')">❤️</button>
           <button onclick="addReaction(this.closest('.message-bubble'),'👍')">👍</button>
@@ -1451,7 +1452,7 @@
           <span class="message-time-stamp">`+timeStr+`</span>
         </div>
         <button class="reply-btn" onclick="event.stopPropagation(); setReply('Вы', '`+safeText+`')" title="Ответить"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>
-        <div class="message-reactions"></div>
+        <div class="message-reactions"><button class="quick-like" onclick="event.stopPropagation(); this.closest('.message-bubble').querySelector('.reaction-picker').classList.toggle('active')" title="Реакция">👍</button></div>
         <div class="reaction-picker">
           <button onclick="addReaction(this.closest('.message-bubble'),'❤️')">❤️</button>
           <button onclick="addReaction(this.closest('.message-bubble'),'👍')">👍</button>
