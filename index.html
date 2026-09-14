@@ -788,10 +788,7 @@
 
   <!-- Вкладка 2: ИНТЕРЕСНОЕ (Лента + Reels) -->
   <div class="reels-screen-container" id="pageReels">
-    <div class="reels-tabs-header">
-      <button class="seg-btn active" id="segFeedBtn" onclick="switchReelsTab('feed')">Лента<span class="seg-underline"></span></button>
-      <button class="seg-btn" id="segReelsBtn" onclick="switchReelsTab('reels')">Reels<span class="seg-underline"></span></button>
-    </div>
+    <!-- reels-tabs-header removed per task -->
     <!-- ЛЕНТА - YouTube стиль -->
     <div class="reels-tab-content active" id="reelsFeedTab">
       <div class="yt-feed" id="ytFeed"></div>
@@ -1172,11 +1169,6 @@
     <button class="nav-tab-btn active" onclick="switchPage('pageMain', this)">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
       <span>Главная</span>
-    </button>
-
-    <button class="nav-tab-btn" onclick="switchPage('pageReels', this)">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-      <span>Интересное</span>
     </button>
 
     <button class="nav-center-add" onclick="openEditor()" title="Добавить пост">
