@@ -473,7 +473,9 @@
     .reaction-chip.active { background: rgba(108,92,231,0.18); border-color: var(--primary-accent); color: var(--primary-accent); }
     .quick-like { width: 26px; height: 26px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; color: var(--text-muted); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
     .quick-like:active { transform: scale(0.9); }
-    .reaction-picker { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 8px; display: none; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 10; white-space: nowrap; transform-origin: bottom center; max-width: min(320px, 90vw); flex-wrap: wrap; justify-content: center; }
+    .reaction-picker { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 8px; display: none; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 20; white-space: nowrap; transform-origin: bottom center; max-width: min(320px, calc(100vw - 24px)); width: max-content; flex-wrap: wrap; justify-content: center; box-sizing: border-box; }
+    @media (min-width: 480px) { .reaction-picker { max-width: 320px; } }
+    @media (max-width: 360px) { .reaction-picker { gap: 4px; padding: 4px 6px; } .reaction-picker button { font-size: 16px; padding: 3px 5px; } }
     .reaction-picker.active { display: flex; }
     .reaction-picker button { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px 6px; border-radius: 50%; transition: transform 0.15s; }
     .reaction-picker button:hover { transform: scale(1.2); background: rgba(255,255,255,0.06); }
@@ -1537,6 +1539,10 @@
 
   function closeGeneralChat(skipPersist) {
     document.getElementById('generalChatScreen').classList.remove('active');
+    // всегда показать капсулу, сбросить превью ответа
+    try { document.getElementById('replyPreview')?.classList.remove('active'); document.getElementById('replyPreview').style.display='none'; } catch(e){}
+    // убрать все пикеры реакций
+    document.querySelectorAll('.reaction-picker.active').forEach(p=>p.classList.remove('active'));
     if (!skipPersist) {
       try {
         const last = localStorage.getItem('tanho_page_before_chat') || 'pageMain';
@@ -1544,28 +1550,37 @@
         const map={pageMain:'main',pageReels:'reels',pageProfile:'profile'};
         const h = map[last] || 'main';
         if (location.hash.slice(1)==='chat') history.replaceState(null,'', h==='main' ? '#main' : '#'+h);
-        // восстановить активную пилюлю под предыдущую страницу
+        // надёжно восстановить страницу и пилюлю
         const btnMap = {
           pageMain: document.querySelector('.floating-nav-container .nav-item-pill:nth-child(1)'),
           pageReels: document.querySelector('.floating-nav-container .nav-item-pill:nth-child(2)'),
           pageProfile: document.querySelector('.floating-nav-container .nav-item-pill:last-child')
         };
         const btn = btnMap[last];
-        if (btn) {
-          document.querySelectorAll('.nav-item-pill').forEach(b=>b.classList.remove('active'));
-          btn.classList.add('active');
-          // убедиться что страница показана (на случай если была скрыта)
-          const pageEl = document.getElementById(last);
-          const reelsEl = document.getElementById('pageReels');
-          if (pageEl || reelsEl) {
-            document.querySelectorAll('.page-screen').forEach(p=>p.classList.remove('active'));
-            if (reelsEl) reelsEl.classList.remove('active');
-            if (last === 'pageReels' && reelsEl) reelsEl.classList.add('active');
-            else if (pageEl) pageEl.classList.add('active');
-            const appHeader = document.getElementById('appHeader');
-            if (appHeader) appHeader.style.display = (last==='pageReels' || last==='pageProfile') ? 'none' : 'flex';
-          }
+        // сбросить все пилюли и поставить нужную
+        document.querySelectorAll('.nav-item-pill').forEach(b=>b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        else {
+          // fallback по hash
+          const fallback = document.querySelector(`.floating-nav-container .nav-item-pill[onclick*="${last}"]`);
+          if(fallback) fallback.classList.add('active');
         }
+        // показать правильную страницу
+        const pageEl = document.getElementById(last);
+        const reelsEl = document.getElementById('pageReels');
+        document.querySelectorAll('.page-screen').forEach(p=>p.classList.remove('active'));
+        if (reelsEl) reelsEl.classList.remove('active');
+        if (last === 'pageReels' && reelsEl) {
+          reelsEl.classList.add('active');
+          // восстановить вкладку Лента/Reels внутри
+          try{ const sub = localStorage.getItem('tanho_reels_tab') || 'feed'; if(typeof switchReelsTab==='function') switchReelsTab(sub, true); }catch(e){}
+        } else if (pageEl) {
+          pageEl.classList.add('active');
+        }
+        const appHeader = document.getElementById('appHeader');
+        if (appHeader) appHeader.style.display = (last==='pageReels' || last==='pageProfile') ? 'none' : 'flex';
+        const headerLogo = document.getElementById('headerLogo');
+        if (headerLogo && last!=='pageReels' && last!=='pageProfile') headerLogo.innerText='TANHO';
       } catch(e){}
     }
     setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
