@@ -1438,16 +1438,25 @@
 </style>
 
 <script>
-  // Универсальный клик по меню с вызовом логики переключения
+  function updateFloatingNavVisibility(){
+    const nav = document.querySelector('.floating-nav-container');
+    if(!nav) return;
+    const chatActive = document.getElementById('generalChatScreen')?.classList.contains('active');
+    const editorOpen = document.getElementById('editorModal')?.classList.contains('open');
+    const settingsActive = document.getElementById('settingsPage')?.classList.contains('active');
+    if(chatActive || editorOpen || settingsActive) nav.style.display = 'none';
+    else nav.style.display = 'flex';
+  }
+  // Универсальный клик по меню — надёжно
   function switchNavTab(btnEl, target) {
     document.querySelectorAll('.nav-item-pill').forEach(btn => btn.classList.remove('active'));
     btnEl.classList.add('active');
-
     if (target === 'openChat') {
       if (typeof openGeneralChat === 'function') openGeneralChat();
     } else {
       if (typeof switchPage === 'function') switchPage(target, btnEl);
     }
+    setTimeout(updateFloatingNavVisibility, 30);
   }
 </script>
 
@@ -1531,6 +1540,7 @@
       try { localStorage.setItem('tanho_page', 'generalChat'); } catch(e){}
       if (location.hash.slice(1) !== 'chat') history.replaceState(null,'','#chat');
     }
+    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
   }
 
   function closeGeneralChat(skipPersist) {
@@ -1544,6 +1554,7 @@
         if (location.hash.slice(1)==='chat') history.replaceState(null,'', h==='main' ? '#main' : '#'+h);
       } catch(e){}
     }
+    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
   }
 
   let replyTo = null;
@@ -1684,8 +1695,8 @@
   const closeSettingsBtn = document.getElementById('closeSettingsBtn');
   const settingsPage = document.getElementById('settingsPage');
 
-  openSettingsBtn.addEventListener('click', () => { settingsPage.classList.add('active'); });
-  closeSettingsBtn.addEventListener('click', () => { settingsPage.classList.remove('active'); });
+  openSettingsBtn.addEventListener('click', () => { settingsPage.classList.add('active'); setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); });
+  closeSettingsBtn.addEventListener('click', () => { settingsPage.classList.remove('active'); setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); });
 
   function saveSettingsChanges() {
     const firstName = document.getElementById('inputFirstName').value.trim();
@@ -1740,6 +1751,7 @@
       headerLogo.innerText = 'TANHO';
     }
     if (btnEl) btnEl.classList.add('active');
+    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
     // persistence: hash + localStorage
     try {
       localStorage.setItem('tanho_page', pageId);
@@ -1776,8 +1788,8 @@
   }
 
   function toggleTheme() { document.body.classList.toggle('light-theme'); }
-  function openEditor() { document.getElementById('editorModal').classList.add('open'); }
-  function closeEditor() { document.getElementById('editorModal').classList.remove('open'); }
+  function openEditor() { document.getElementById('editorModal').classList.add('open'); setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); }
+  function closeEditor() { document.getElementById('editorModal').classList.remove('open'); setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); }
 
   function toggleTextPosition() {
     const iconSpan = document.getElementById('headerTogglePosIcon');
