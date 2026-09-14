@@ -1339,7 +1339,7 @@
     z-index: 1000;
   }
 
-  /* КАПСУЛА (Высота 54px) */
+  /* КАПСУЛА (Высота 54px) — адаптивна к теме */
   .nav-capsule-box {
     flex: 1;
     height: 54px;
@@ -1351,6 +1351,15 @@
     justify-content: space-around;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+  body:not(.light-theme) .nav-capsule-box {
+    background: rgba(30, 32, 48, 0.96);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.20);
+  }
+  body.light-theme .nav-capsule-box {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.06);
   }
 
   /* ВКЛАДКА И ЕЁ ЭЛЕМЕНТЫ */
@@ -1364,11 +1373,13 @@
     border-radius: 999px;
     border: none;
     background: transparent;
-    color: #0f172a;
+    color: #64748b;
     cursor: pointer;
     transition: all 0.22s ease;
     outline: none;
   }
+  body:not(.light-theme) .nav-item-pill { color: #8a92a6; }
+  body.light-theme .nav-item-pill { color: #64748b; }
 
   .nav-item-pill .nav-text {
     font-size: 13.5px;
@@ -1379,11 +1390,18 @@
     letter-spacing: -0.2px;
   }
 
-  /* АКТИВНОЕ СОСТОЯНИЕ */
+  /* АКТИВНОЕ СОСТОЯНИЕ — работает в обеих темах */
   .nav-item-pill.active {
     background: #f3e8ff;
     padding: 0 16px;
+    color: #7c3aed;
   }
+  body:not(.light-theme) .nav-item-pill.active {
+    background: rgba(124, 58, 237, 0.18);
+    color: #a78bfa;
+  }
+  body:not(.light-theme) .nav-item-pill.active .nav-text { color: #a78bfa; }
+  body:not(.light-theme) .nav-item-pill.active .nav-icon { color: #a78bfa; }
 
   .nav-item-pill.active .nav-icon {
     color: #7c3aed;
