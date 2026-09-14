@@ -678,13 +678,6 @@
     </div>
 
     <div class="header-actions" id="headerActions">
-      <!-- 🔥 КНОПКА ОТКРЫТИЯ ОБЩЕГО ЧАТА -->
-      <button class="icon-btn-circle" onclick="openGeneralChat()" title="Общий чат">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-      </button>
-
       <button class="icon-btn-circle" onclick="openSearch()" title="Поиск">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
@@ -702,19 +695,16 @@
   <!-- Вкладка 1: ГЛАВНАЯ (ПОСТЫ В ЛЕНТЕ) -->
   <main class="page-screen active" id="pageMain">
     <div class="posts-feed" id="postsContainer">
-      <article class="post-card" data-channel-id="tanho_off">
+      <article class="post-card">
         <div class="post-header">
-          <div class="post-author" onclick="openChannel('tanho_off')">
+          <div class="post-author" onclick="switchPage('pageProfile', document.querySelector('.bottom-nav .nav-tab-btn:last-child'))">
             <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100');"></div>
             <div class="author-meta">
               <div class="author-name">TANHO Official</div>
               <div class="post-location-tag">@tanho_official</div>
             </div>
           </div>
-          
-          <button class="channel-action-btn subscribe" id="mainFeedBtn_tanho_off" onclick="handleMainFeedChannelBtn('tanho_off')">
-            + Подписаться
-          </button>
+          <span class="post-time-top">2 часа назад</span>
         </div>
 
         <div class="post-slider-wrapper" onclick="togglePostExpand(this)">
@@ -783,22 +773,7 @@
     </div>
   </div>
 
-  <!-- Вкладка 3: СПИСОК КАНАЛОВ И ЗАКРЕПЛЕННЫЙ ОБЩИЙ ЧАТ -->
-  <section class="page-screen" id="pageChannels">
-    <div class="channels-list" id="channelsListContainer">
-      <!-- ОБЩИЙ ЧАТ НА ПЕРВОМ МЕСТЕ -->
-      <div class="channel-card featured-chat" onclick="openGeneralChat()">
-        <div class="channel-avatar" style="background: linear-gradient(135deg, #a855f7, #38bdf8); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold;">💬</div>
-        <div class="channel-info">
-          <div class="channel-title" style="color:#a855f7;">Общий чат TANHO 🔥</div>
-          <div class="channel-subscribers" id="channelsTabChatSub">1,284 участников • 142 онлайн</div>
-          <div class="channel-last-post">Алишер: Всем привет в новом чате!</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Вкладка 4: ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ -->
+  <!-- Вкладка 3: ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ -->
   <section class="page-screen" id="pageProfile">
     <div class="banner-bg"><div class="banner-overlay"></div></div>
 
@@ -1106,56 +1081,6 @@
     </div>
   </div>
 
-  <!-- TELEGRAM ЭКРАН КАНАЛА -->
-  <div class="channel-view-screen" id="channelViewScreen">
-    <div class="tg-channel-header">
-      <button class="tg-back-btn" onclick="closeChannelView()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      </button>
-
-      <div class="tg-channel-meta" onclick="alert('Информация о канале')">
-        <div class="tg-channel-avatar-head" id="tgHeaderAvatar"></div>
-        <div class="tg-channel-titles">
-          <div class="tg-channel-name-head" id="tgHeaderTitle">TANHO Official</div>
-          <div class="tg-channel-subs-head" id="tgHeaderSubs">45.2K подписчиков</div>
-        </div>
-      </div>
-
-      <button class="tg-back-btn" onclick="toggleTgChannelSearch()" title="Поиск в канале">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </button>
-
-      <button class="tg-back-btn" onclick="toggleTgMenu()" title="Меню">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
-      </button>
-
-      <div class="tg-dropdown-menu" id="tgDropdownMenu">
-        <button class="tg-menu-item" onclick="alert('🚩 Жалоба отправлена администраторам'); hideTgMenu();">
-          <span>🚩 Пожаловаться</span>
-        </button>
-        <button class="tg-menu-item danger" id="tgMenuUnsubBtn" onclick="unsubscribeCurrentChannel()">
-          <span>🚪 Отписаться</span>
-        </button>
-
-        <div style="height:1px; background:var(--glass-border); margin:4px 0;"></div>
-        
-        <button class="tg-menu-item" onclick="openEditChannelModal()">
-          <span>✏️ Редактировать канал (Админ)</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="tg-channel-search-bar" id="tgChannelSearchBar">
-      <input type="text" class="tg-search-input-field" id="tgChannelSearchInput" placeholder="Поиск постов в канале..." oninput="searchInChannel(this.value)">
-    </div>
-
-    <div class="tg-channel-content" id="tgChannelPostsContainer"></div>
-
-    <div class="tg-channel-bottom-bar" id="tgChannelBottomBar">
-      <button class="tg-subscribe-big-btn" onclick="subscribeCurrentChannel()">ПОДПИСАТЬСЯ</button>
-    </div>
-  </div>
-
   <!-- ========================================== -->
   <!-- 7. НИЖНЕЕ МЕНЮ (BOTTOM NAVIGATION)         -->
   <!-- ========================================== -->
@@ -1174,9 +1099,9 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </button>
 
-    <button class="nav-tab-btn" onclick="switchPage('pageChannels', this)">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-      <span>Подписки</span>
+    <button class="nav-tab-btn" onclick="openGeneralChat()" title="Общий чат">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Чат</span>
     </button>
 
     <button class="nav-tab-btn" onclick="switchPage('pageProfile', this)">
@@ -1229,17 +1154,6 @@
         <div class="dock-btn btn-location" id="btn-location"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
         <div class="send-btn" onclick="publishArticle()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
       </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="edit-channel-modal">
-    <div class="dialog-box">
-      <div class="dialog-title">Настройки канала (Админ)</div>
-      <input type="text" class="dialog-input" id="edit-ch-name" placeholder="Название канала">
-      <input type="text" class="dialog-input" id="edit-ch-username" placeholder="@username канала">
-      <input type="text" class="dialog-input" id="edit-ch-avatar" placeholder="URL картинки аватарки">
-      <div class="dialog-option" onclick="saveChannelEdits()" style="justify-content:center; background:var(--primary-accent); font-weight:700;">Сохранить изменения</div>
-      <div class="dialog-option" onclick="closeModals()" style="justify-content:center; color:rgba(255,255,255,0.4);">Отмена</div>
     </div>
   </div>
 
@@ -1346,28 +1260,6 @@
     chipEl.classList.add('active');
   }
 
-  // БАЗА КАНАЛОВ
-  let channelsData = {
-    'tanho_off': {
-      id: 'tanho_off',
-      name: 'TANHO Official',
-      username: '@tanho_official',
-      avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100',
-      subsCount: 45200,
-      isSubscribed: false,
-      posts: [
-        {
-          id: 1,
-          title: 'Обновление профиля и системы каналов!',
-          content: 'Теперь профиль выполнен без внешней шапки, с баннером, полной статистикой и настройками аккаунта.',
-          time: '2 часа назад',
-          image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600'
-        }
-      ]
-    }
-  };
-
-  let activeChannelId = null;
   let selectedTextPosition = 'bottom';
 
   function switchPage(pageId, btnEl) {
@@ -1387,181 +1279,9 @@
     } else {
       appHeader.style.display = 'flex';
       document.getElementById(pageId).classList.add('active');
-
-      if (pageId === 'pageChannels') {
-        headerLogo.innerText = 'Подписки';
-        renderChannelsList();
-      } else {
-        headerLogo.innerText = 'TANHO';
-      }
+      headerLogo.innerText = 'TANHO';
     }
-    btnEl.classList.add('active');
-  }
-
-  function renderChannelsList() {
-    const container = document.getElementById('channelsListContainer');
-    const chatCardHTML = container.querySelector('.featured-chat') ? container.querySelector('.featured-chat').outerHTML : '';
-    container.innerHTML = chatCardHTML;
-
-    Object.values(channelsData).forEach(ch => {
-      const card = document.createElement('div');
-      card.className = 'channel-card';
-      card.onclick = () => openChannel(ch.id);
-      card.innerHTML = `
-        <div class="channel-avatar" style="background-image: url('${ch.avatar}');"></div>
-        <div class="channel-info">
-          <div class="channel-title">${ch.name}</div>
-          <div class="channel-subscribers">${formatSubs(ch.subsCount)} подписчиков</div>
-          <div class="channel-last-post">${ch.posts[0] ? ch.posts[0].title : 'Канал открыт'}</div>
-        </div>
-      `;
-      container.appendChild(card);
-    });
-  }
-
-  function formatSubs(count) {
-    return count >= 1000 ? (count / 1000).toFixed(1) + 'K' : count;
-  }
-
-  function openChannel(chId) {
-    activeChannelId = chId;
-    const ch = channelsData[chId];
-    if (!ch) return;
-
-    document.getElementById('tgHeaderAvatar').style.backgroundImage = `url('${ch.avatar}')`;
-    document.getElementById('tgHeaderTitle').innerText = ch.name;
-    document.getElementById('tgHeaderSubs').innerText = `${formatSubs(ch.subsCount)} подписчиков • ${ch.username}`;
-
-    updateChannelSubscribeUI();
-    renderChannelPosts(ch.posts);
-    document.getElementById('channelViewScreen').classList.add('active');
-  }
-
-  function closeChannelView() {
-    document.getElementById('channelViewScreen').classList.remove('active');
-    hideTgMenu();
-    document.getElementById('tgChannelSearchBar').classList.remove('active');
-  }
-
-  function updateChannelSubscribeUI() {
-    const ch = channelsData[activeChannelId];
-    const bottomBar = document.getElementById('tgChannelBottomBar');
-    const mainFeedBtn = document.getElementById(`mainFeedBtn_${activeChannelId}`);
-
-    if (ch.isSubscribed) {
-      bottomBar.classList.add('hidden');
-      if (mainFeedBtn) {
-        mainFeedBtn.className = 'channel-action-btn open';
-        mainFeedBtn.innerText = 'Открыть';
-      }
-    } else {
-      bottomBar.classList.remove('hidden');
-      if (mainFeedBtn) {
-        mainFeedBtn.className = 'channel-action-btn subscribe';
-        mainFeedBtn.innerText = '+ Подписаться';
-      }
-    }
-  }
-
-  function subscribeCurrentChannel() {
-    if (!activeChannelId) return;
-    channelsData[activeChannelId].isSubscribed = true;
-    channelsData[activeChannelId].subsCount += 1;
-    document.getElementById('tgHeaderSubs').innerText = `${formatSubs(channelsData[activeChannelId].subsCount)} подписчиков`;
-    updateChannelSubscribeUI();
-  }
-
-  function unsubscribeCurrentChannel() {
-    if (!activeChannelId) return;
-    channelsData[activeChannelId].isSubscribed = false;
-    channelsData[activeChannelId].subsCount = Math.max(0, channelsData[activeChannelId].subsCount - 1);
-    document.getElementById('tgHeaderSubs').innerText = `${formatSubs(channelsData[activeChannelId].subsCount)} подписчиков`;
-    updateChannelSubscribeUI();
-    hideTgMenu();
-  }
-
-  function handleMainFeedChannelBtn(chId) {
-    const ch = channelsData[chId];
-    if (!ch) return;
-    if (ch.isSubscribed) {
-      openChannel(chId);
-    } else {
-      ch.isSubscribed = true;
-      ch.subsCount += 1;
-      updateChannelSubscribeUI();
-    }
-  }
-
-  function renderChannelPosts(postsList) {
-    const container = document.getElementById('tgChannelPostsContainer');
-    container.innerHTML = '';
-    postsList.forEach(p => {
-      const card = document.createElement('article');
-      card.className = 'post-card';
-      card.innerHTML = `
-        <div class="post-header">
-          <div class="post-author">
-            <div class="author-avatar" style="background-image: url('${channelsData[activeChannelId].avatar}');"></div>
-            <div class="author-meta">
-              <div class="author-name">${channelsData[activeChannelId].name}</div>
-              <div class="post-location-tag">${p.time}</div>
-            </div>
-          </div>
-        </div>
-        ${p.image ? `<div class="post-slider-wrapper"><div class="slide-item"><img src="${p.image}"></div></div>` : ''}
-        <div class="post-content-text">
-          <h2 class="post-title-text">${p.title}</h2>
-          <p class="caption">${p.content}</p>
-        </div>
-      `;
-      container.appendChild(card);
-    });
-  }
-
-  function toggleTgChannelSearch() {
-    const searchBar = document.getElementById('tgChannelSearchBar');
-    searchBar.classList.toggle('active');
-    if (searchBar.classList.contains('active')) {
-      document.getElementById('tgChannelSearchInput').focus();
-    }
-  }
-
-  function searchInChannel(query) {
-    if (!activeChannelId) return;
-    const q = query.toLowerCase().trim();
-    const filtered = channelsData[activeChannelId].posts.filter(p => 
-      p.title.toLowerCase().includes(q) || p.content.toLowerCase().includes(q)
-    );
-    renderChannelPosts(filtered);
-  }
-
-  function toggleTgMenu() { document.getElementById('tgDropdownMenu').classList.toggle('active'); }
-  function hideTgMenu() { document.getElementById('tgDropdownMenu').classList.remove('active'); }
-
-  function openEditChannelModal() {
-    hideTgMenu();
-    const ch = channelsData[activeChannelId];
-    document.getElementById('edit-ch-name').value = ch.name;
-    document.getElementById('edit-ch-username').value = ch.username;
-    document.getElementById('edit-ch-avatar').value = ch.avatar;
-    document.getElementById('edit-channel-modal').classList.add('active');
-  }
-
-  function saveChannelEdits() {
-    const newName = document.getElementById('edit-ch-name').value.trim();
-    const newUsername = document.getElementById('edit-ch-username').value.trim();
-    const newAvatar = document.getElementById('edit-ch-avatar').value.trim();
-
-    if (newName && activeChannelId) {
-      channelsData[activeChannelId].name = newName;
-      channelsData[activeChannelId].username = newUsername;
-      if (newAvatar) channelsData[activeChannelId].avatar = newAvatar;
-
-      document.getElementById('tgHeaderTitle').innerText = newName;
-      document.getElementById('tgHeaderAvatar').style.backgroundImage = `url('${channelsData[activeChannelId].avatar}')`;
-      closeModals();
-      renderChannelsList();
-    }
+    if (btnEl) btnEl.classList.add('active');
   }
 
   // ОБЩИЕ ФУНКЦИИ
@@ -1728,7 +1448,6 @@
   function closeModals() { 
     document.getElementById('location-modal').classList.remove('active'); 
     document.getElementById('video-modal').classList.remove('active'); 
-    document.getElementById('edit-channel-modal').classList.remove('active');
   }
 
   function toggleLike(btn) {
@@ -1817,7 +1536,7 @@
     const newPostCardHTML = `
       <article class="post-card">
         <div class="post-header">
-          <div class="post-author" onclick="switchPage('pageProfile', document.querySelectorAll('.nav-tab-btn')[4])">
+          <div class="post-author" onclick="switchPage('pageProfile', document.querySelector('.bottom-nav .nav-tab-btn:last-child'))">
             <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100');"></div>
             <div class="author-meta">
               <div class="author-name">${currentUserName}</div>
