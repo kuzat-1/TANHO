@@ -45,6 +45,22 @@
       --glass-border: rgba(0, 0, 0, 0.1);
       --input-bg: #e2e8f0;
     }
+    /* светлая тема: нижнее меню всегда тёмное, Reels всегда тёмный */
+    body.light-theme .bottom-nav {
+      background: rgba(8, 9, 16, 0.92) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    }
+    body.light-theme .bottom-nav .nav-tab-btn { color: #64748b !important; }
+    body.light-theme .bottom-nav .nav-tab-btn.active { color: #a855f7 !important; }
+    body.light-theme #reelsReelsTab { background: #000 !important; }
+    body.light-theme #reelsReelsTab .reel-card { color: #fff; }
+    body.light-theme #reelsReelsTab .reel-author-handle,
+    body.light-theme #reelsReelsTab .reel-caption-text,
+    body.light-theme #reelsReelsTab .reel-action-chip { color: #fff !important; }
+    /* Лента в светлой теме следует теме, шапка прозрачная */
+    body.light-theme .reels-tabs-header { background: transparent !important; }
+    body.light-theme .reels-tabs-header .seg-btn { color: #64748b !important; }
+    body.light-theme .reels-tabs-header .seg-btn.active { color: #0f172a !important; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: var(--font-stack); }
 
@@ -182,7 +198,7 @@
     /* --- ЭКРАН 2: РИЛСЫ --- */
     .reels-screen-container {
       position: absolute; inset: 0; bottom: 70px; width: 100%; height: calc(100% - 70px);
-      background: var(--bg-dark); z-index: 40; display: none; flex-direction: column; overflow: hidden;
+      background: transparent; z-index: 40; display: none; flex-direction: column; overflow: hidden;
     }
     .reels-screen-container.active { display: flex; }
 
@@ -214,6 +230,8 @@
     .reels-tab-content { display: none; flex: 1; overflow-y: auto; scrollbar-width: none; flex-direction: column; }
     .reels-tab-content.active { display: flex; }
     .reels-tab-content::-webkit-scrollbar { display: none; }
+    #reelsFeedTab { background: var(--bg-dark); }
+    #reelsReelsTab { background: #000; }
 
     /* YouTube feed */
     .yt-feed { display: flex; flex-direction: column; gap: 0; background: var(--bg-dark); padding-bottom: 8px; }
