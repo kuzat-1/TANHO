@@ -442,6 +442,38 @@
       font-size: 10px; color: rgba(255, 255, 255, 0.6); text-align: right; margin-top: 4px; display: block;
     }
 
+    .reply-preview {
+      display: none; align-items: center; gap: 10px; padding: 8px 12px;
+      background: var(--card-bg); border-top: 1px solid var(--border-color);
+      border-left: 3px solid var(--primary-accent); flex-shrink: 0;
+    }
+    .reply-preview.active { display: flex; }
+    .reply-preview-content { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 1px; }
+    .reply-preview-name { font-size: 12px; font-weight: 700; color: var(--primary-accent); }
+    .reply-preview-text { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .reply-preview-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 0 4px; }
+
+    .message-bubble { position: relative; }
+    .reply-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 28px; height: 28px; border-radius: 50%; background: var(--card-bg);
+      border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: opacity 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.15); color: var(--text-muted);
+    }
+    .incoming .reply-btn { right: -36px; }
+    .outgoing .reply-btn { left: -36px; }
+    .message-bubble:hover .reply-btn, .message-bubble:active .reply-btn { opacity: 1; }
+    @media (max-width: 480px) { .reply-btn { opacity: 0.9; } }
+    .quoted-reply {
+      background: rgba(255,255,255,0.07); border-left: 3px solid var(--primary-accent);
+      padding: 6px 8px; border-radius: 8px; margin-bottom: 6px; font-size: 12px; text-align: left;
+    }
+    .outgoing .quoted-reply { background: rgba(255,255,255,0.18); border-left-color: #fff; }
+    .quoted-reply-name { font-weight: 700; font-size: 11px; color: var(--primary-accent); margin-bottom: 1px; }
+    .outgoing .quoted-reply-name { color: #fff; }
+    .quoted-reply-text { color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .outgoing .quoted-reply-text { color: rgba(255,255,255,0.9); }
+
     .chat-input-bar {
       padding: 10px 14px; background: var(--nav-bg); backdrop-filter: blur(20px);
       border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; flex-shrink: 0;
@@ -992,28 +1024,40 @@
 
     <!-- Список сообщений Общего Чатa -->
     <div class="chat-messages-container" id="chatMessagesContainer">
-      <div class="message-bubble incoming">
+      <div class="message-bubble incoming" onclick="setReply('Алишер', 'Всем салом! Добро пожаловать в общий чат TANHO 👋')">
         <span class="message-sender-name">Алишер</span>
         <div class="message-content-box">
           Всем салом! Добро пожаловать в общий чат TANHO 👋
           <span class="message-time-stamp">21:40</span>
         </div>
+        <button class="reply-btn" onclick="event.stopPropagation(); setReply('Алишер', 'Всем салом! Добро пожаловать в общий чат TANHO 👋')" title="Ответить"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>
       </div>
 
-      <div class="message-bubble incoming">
+      <div class="message-bubble incoming" onclick="setReply('Мадина', 'Привет всем! Дизайн приложения просто пушка 🚀')">
         <span class="message-sender-name" style="color:#38bdf8;">Мадина</span>
         <div class="message-content-box">
           Привет всем! Дизайн приложения просто пушка 🚀
           <span class="message-time-stamp">21:42</span>
         </div>
+        <button class="reply-btn" onclick="event.stopPropagation(); setReply('Мадина', 'Привет всем! Дизайн приложения просто пушка 🚀')" title="Ответить"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>
       </div>
 
-      <div class="message-bubble outgoing">
+      <div class="message-bubble outgoing" onclick="setReply('Вы', 'Привет! Рада видеть всех здесь! ✨')">
         <div class="message-content-box">
           Привет! Рада видеть всех здесь! ✨
           <span class="message-time-stamp">21:45</span>
         </div>
+        <button class="reply-btn" onclick="event.stopPropagation(); setReply('Вы', 'Привет! Рада видеть всех здесь! ✨')" title="Ответить"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>
       </div>
+    </div>
+
+    <!-- Превью ответа -->
+    <div class="reply-preview" id="replyPreview">
+      <div class="reply-preview-content">
+        <div class="reply-preview-name" id="replyPreviewName"></div>
+        <div class="reply-preview-text" id="replyPreviewText"></div>
+      </div>
+      <button class="reply-preview-close" onclick="clearReply()" title="Отменить">×</button>
     </div>
 
     <!-- Поле ввода сообщений -->
@@ -1292,25 +1336,45 @@
     }
   }
 
+  let replyTo = null;
+  function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function setReply(name, text){
+    replyTo = {name, text};
+    document.getElementById('replyPreviewName').textContent = name;
+    document.getElementById('replyPreviewText').textContent = text;
+    document.getElementById('replyPreview').classList.add('active');
+    document.getElementById('replyPreview').style.display = 'flex';
+    document.getElementById('chatTextInput').focus();
+  }
+  function clearReply(){
+    replyTo = null;
+    document.getElementById('replyPreview').classList.remove('active');
+    document.getElementById('replyPreview').style.display = 'none';
+  }
+
   function sendChatMessage() {
     const input = document.getElementById('chatTextInput');
     const text = input.value.trim();
     if (!text) return;
-
     const container = document.getElementById('chatMessagesContainer');
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
+    const escText = escapeHtml(text);
+    const escReplyName = replyTo ? escapeHtml(replyTo.name) : '';
+    const escReplyText = replyTo ? escapeHtml(replyTo.text) : '';
+    const quoted = replyTo ? '<div class="quoted-reply"><div class="quoted-reply-name">'+escReplyName+'</div><div class="quoted-reply-text">'+escReplyText+'</div></div>' : '';
+    const safeText = escText.replace(/'/g, "&#39;");
     const msgHTML = `
-      <div class="message-bubble outgoing">
+      <div class="message-bubble outgoing" onclick="setReply('Вы', '`+safeText+`')">
         <div class="message-content-box">
-          ${text}
-          <span class="message-time-stamp">${timeStr}</span>
+          `+quoted+escText+`
+          <span class="message-time-stamp">`+timeStr+`</span>
         </div>
+        <button class="reply-btn" onclick="event.stopPropagation(); setReply('Вы', '`+safeText+`')" title="Ответить"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>
       </div>
     `;
-
     container.insertAdjacentHTML('beforeend', msgHTML);
     input.value = '';
+    clearReply();
     container.scrollTop = container.scrollHeight;
   }
 
