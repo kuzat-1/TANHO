@@ -197,8 +197,9 @@
 
     /* --- ЭКРАН 2: РИЛСЫ --- */
     .reels-screen-container {
-      position: absolute; inset: 0; bottom: 70px; width: 100%; height: calc(100% - 70px);
+      position: absolute; inset: 0; bottom: 0; width: 100%; height: 100%;
       background: transparent; z-index: 40; display: none; flex-direction: column; overflow: hidden;
+      padding-bottom: 86px;
     }
     .reels-screen-container.active { display: flex; }
 
@@ -216,7 +217,7 @@
       background: transparent !important; border-bottom: none !important; flex-shrink: 0; z-index: 5;
       box-shadow: none !important; pointer-events: auto;
     }
-    .reels-screen-container { background: transparent !important; position: absolute; inset: 0; bottom: 70px; }
+    /* container already defined above */
     .reels-tab-content { padding-top: 42px; }
     .seg-btn {
       position: relative; background: none; border: none; padding: 10px 2px; cursor: pointer;
@@ -233,11 +234,11 @@
     .reels-tab-content { display: none; flex: 1; overflow-y: auto; scrollbar-width: none; flex-direction: column; padding-top: 0; }
     .reels-tab-content.active { display: flex; }
     .reels-tab-content::-webkit-scrollbar { display: none; }
-    #reelsFeedTab { background: var(--bg-dark); padding-top: 42px; }
-    #reelsReelsTab { background: #000; padding-top: 42px; }
+    #reelsFeedTab { background: transparent; padding-top: 42px; }
+    #reelsReelsTab { background: #000; padding-top: 0; }
 
-    /* YouTube feed */
-    .yt-feed { display: flex; flex-direction: column; gap: 0; background: var(--bg-dark); padding-bottom: 8px; }
+    /* YouTube feed — без белого фона над капсулой */
+    .yt-feed { display: flex; flex-direction: column; gap: 0; background: transparent; padding-bottom: 8px; }
     .yt-card { background: var(--bg-main); border-bottom: 1px solid var(--border-color); padding-bottom: 8px; cursor: pointer; }
     .yt-thumb { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; }
     .yt-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -664,13 +665,20 @@
       box-shadow: 0 0 16px rgba(168, 85, 247, 0.5); margin-top: -16px; cursor: pointer; border: none;
     }
 
-    /* РЕДАКТОР ПОСТА (МОДАЛКА) */
+    /* РЕДАКТОР ПОСТА (МОДАЛКА) — над клавиатурой */
     .editor-modal {
       position: fixed; inset: 0; background: var(--bg-main); z-index: 200;
       display: none; flex-direction: column; padding: 12px 16px 16px 16px;
       transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      height: 100dvh; max-height: 100dvh;
     }
     .editor-modal.open { display: flex; transform: translateY(0); }
+    .editor-modal.keyboard-open {
+      padding-bottom: calc(16px + env(keyboard-inset-height, 0px));
+    }
+    @supports (height: 100dvh) {
+      .editor-modal { height: 100dvh; }
+    }
 
     .editor-header { display: flex; align-items: center; justify-content: space-between; position: relative; padding: 8px 0 12px 0; z-index: 10; }
     .close-editor-btn { background: none; border: none; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; }
@@ -1788,8 +1796,60 @@
   }
 
   function toggleTheme() { document.body.classList.toggle('light-theme'); }
-  function openEditor() { document.getElementById('editorModal').classList.add('open'); setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); }
-  function closeEditor() { document.getElementById('editorModal').classList.remove('open'); setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); }
+  function openEditor() { 
+    document.getElementById('editorModal').classList.add('open'); 
+    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
+    // фокус на заголовок с задержкой чтобы клавиатура успела открыться
+    setTimeout(()=> document.getElementById('article-title')?.focus(), 350);
+  }
+  function closeEditor() { 
+    document.getElementById('editorModal').classList.remove('open'); 
+    document.getElementById('editorModal').classList.remove('keyboard-open');
+    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); 
+  }
+  // клавиатура — держать док над ней
+  if (window.visualViewport) {
+    const editorEl = document.getElementById('editorModal');
+    let lastHeight = window.visualViewport.height;
+    window.visualViewport.addEventListener('resize', () => {
+      if (!editorEl || !editorEl.classList.contains('open')) return;
+      const curH = window.visualViewport.height;
+      const diff = window.innerHeight - curH;
+      if (diff > 120) { // клавиатура открыта
+        editorEl.classList.add('keyboard-open');
+        editorEl.style.height = curH + 'px';
+        // прокрутить к инпутам
+        document.getElementById('article-title')?.scrollIntoView({block:'center', behavior:'smooth'});
+      } else {
+        editorEl.classList.remove('keyboard-open');
+        editorEl.style.height = '';
+      }
+    });
+    window.visualViewport.addEventListener('scroll', () => {
+      if (editorEl && editorEl.classList.contains('open')) {
+        editorEl.style.height = window.visualViewport.height + 'px';
+      }
+    });
+  }
+  // также слушать focus на инпутах чтобы поднять док
+  document.getElementById('article-title')?.addEventListener('focus', ()=>{
+    setTimeout(()=>{
+      const ed = document.getElementById('editorModal');
+      if(ed && ed.classList.contains('open') && window.visualViewport){
+        ed.style.height = window.visualViewport.height + 'px';
+        ed.classList.add('keyboard-open');
+      }
+    }, 300);
+  });
+  document.getElementById('article-content')?.addEventListener('focus', ()=>{
+    setTimeout(()=>{
+      const ed = document.getElementById('editorModal');
+      if(ed && ed.classList.contains('open') && window.visualViewport){
+        ed.style.height = window.visualViewport.height + 'px';
+        ed.classList.add('keyboard-open');
+      }
+    }, 300);
+  });
 
   function toggleTextPosition() {
     const iconSpan = document.getElementById('headerTogglePosIcon');
