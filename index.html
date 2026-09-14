@@ -788,7 +788,10 @@
 
   <!-- Вкладка 2: ИНТЕРЕСНОЕ (Лента + Reels) -->
   <div class="reels-screen-container" id="pageReels">
-    <!-- reels-tabs-header removed: Интересное без шапки -->
+    <div class="reels-tabs-header">
+      <button class="seg-btn active" id="segFeedBtn" onclick="switchReelsTab('feed')">Лента<span class="seg-underline"></span></button>
+      <button class="seg-btn" id="segReelsBtn" onclick="switchReelsTab('reels')">Reels<span class="seg-underline"></span></button>
+    </div>
     <!-- ЛЕНТА - YouTube стиль -->
     <div class="reels-tab-content active" id="reelsFeedTab">
       <div class="yt-feed" id="ytFeed"></div>
