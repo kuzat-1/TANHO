@@ -1,1071 +1,1859 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Video App - Glass Capsule UI</title>
-  <!-- Официальный VK Video Player API -->
-  <script src="https://vk.com/js/api/videoplayer.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TANHO — Video & Social Platform</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      -webkit-tap-highlight-color: transparent;
+    :root {
+      --bg-dark: #080910;
+      --bg-main: #080910;
+      --card-bg: #121522;
+      --panel-bg: #191c2b;
+      --btn-secondary: #191c2b;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #ffffff;
+      --text-sub: #8a92a6;
+      --text-muted: #8a92a6;
+      --primary-accent: #6c5ce7;
+      --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+      --danger-color: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.1);
+      --tg-blue: #229ed9;
+      --like-red: #ff3040;
+      --header-bg: rgba(8, 9, 16, 0.94);
+      --nav-bg: rgba(8, 9, 16, 0.94);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --input-bg: #161927;
+      --error-color: #ff4d4d;
+      --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
     }
+
+    /* ☀️ СВЕТЛАЯ ТЕМА */
+    body.light-theme {
+      --bg-main: #f4f5f9;
+      --bg-dark: #f4f5f9;
+      --card-bg: #ffffff;
+      --panel-bg: #eef0f6;
+      --btn-secondary: #e2e8f0;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --text-muted: #64748b;
+      --header-bg: rgba(255, 255, 255, 0.94);
+      --nav-bg: rgba(255, 255, 255, 0.94);
+      --glass-border: rgba(0, 0, 0, 0.1);
+      --input-bg: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: var(--font-stack); }
 
     body {
-      background-color: #0d0e12;
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      overflow-x: hidden;
+      background-color: #030407; color: var(--text-main);
+      display: flex; justify-content: center; min-height: 100vh;
+      transition: background-color 0.3s ease;
     }
 
-    .app-container {
-      width: 100%;
-      max-width: 480px;
-      height: 100vh;
-      position: relative;
-      background-color: #0d0e12;
-      overflow: hidden;
+    .app-screen {
+      width: 100%; max-width: 430px; background-color: var(--bg-dark);
+      height: 100vh; height: 100dvh; display: flex; flex-direction: column; position: relative;
+      overflow-x: hidden; overflow-y: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.9);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* --- Управление экранами --- */
-    .screen {
-      display: none;
-      width: 100%;
-      height: 100vh;
-      flex-direction: column;
+    /* ---------------- 1. ШАПКА ПРИЛОЖЕНИЯ (HEADER) ---------------- */
+    .app-header {
+      height: 58px; padding: 0 16px; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border-color); background: var(--header-bg); backdrop-filter: blur(20px);
+      position: relative; z-index: 50; flex-shrink: 0; transition: background 0.3s ease;
     }
 
-    .screen.active {
-      display: flex;
+    .header-logo {
+      font-size: 20px; font-weight: 800; letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #a855f7, #38bdf8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    /* ================= 1. СТЕКЛЯННАЯ ВЕРХНЯЯ ШАПКА (ГЛАВНАЯ) ================= */
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(13, 14, 18, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      z-index: 50;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+
+    .icon-btn-circle {
+      width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color); color: var(--text-main);
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .icon-btn-circle:active { transform: scale(0.92); }
+
+    .header-search-box {
+      display: none; width: 100%; height: 40px; background: var(--input-bg);
+      border-radius: 12px; padding: 0 12px; align-items: center; gap: 8px;
+      border: 1px solid var(--border-color);
+    }
+    .header-search-box.active { display: flex; }
+    .header-search-input {
+      width: 100%; background: transparent; border: none; outline: none;
+      color: var(--text-main); font-size: 14px;
     }
 
-    .header.hide {
-      transform: translateY(-100%);
+    /* ---------------- 2. СТРАНИЦЫ ПРИЛОЖЕНИЯ ---------------- */
+    .page-screen { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding-bottom: 75px; position: relative; }
+    .page-screen.active { display: flex; }
+
+    /* --- ЭКРАН 1: ГЛАВНАЯ (ПОСТЫ) --- */
+    .posts-feed { display: flex; flex-direction: column; }
+    
+    .post-card {
+      border-bottom: 1px solid var(--border-color); background-color: var(--bg-main);
+      display: flex; flex-direction: column; padding-bottom: 12px; margin-bottom: 4px;
     }
 
-    .logo {
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, #5b41d9, #8c7ae6);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 18px;
-      flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(91, 65, 217, 0.35);
+    .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 8px 14px; }
+    .post-author { display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; }
+    .author-avatar { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+    .author-meta { display: flex; flex-direction: column; gap: 1px; }
+    .author-name { font-size: 14px; font-weight: 700; color: var(--text-main); }
+    .post-location-tag { font-size: 11px; color: #38bdf8; font-weight: 500; }
+    .post-time-top { font-size: 10.5px; color: var(--text-muted); }
+
+    .channel-action-btn {
+      padding: 6px 14px; border-radius: 18px; font-size: 12px; font-weight: 700;
+      border: none; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 4px;
+    }
+    .channel-action-btn.subscribe { background: var(--tg-blue); color: #ffffff; }
+    .channel-action-btn.open { background: rgba(255, 255, 255, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+
+    .icon-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; }
+
+    .post-slider-wrapper { position: relative; width: 100%; background-color: #000; overflow: hidden; }
+    .post-media-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
+    .post-media-slider::-webkit-scrollbar { display: none; }
+
+    .slide-item {
+      width: 100%; height: 260px; flex-shrink: 0; scroll-snap-align: start;
+      position: relative; display: flex; align-items: center; justify-content: center;
+    }
+    .slide-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .post-card.expanded .slide-item { height: auto; max-height: 480px; }
+    .post-card.expanded .slide-item img { object-fit: contain; max-height: 480px; }
+
+    .slider-badge {
+      position: absolute; top: 10px; right: 12px; background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px; pointer-events: none; z-index: 2;
+    }
+    .slider-dots {
+      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 5px; background: rgba(0, 0, 0, 0.4); padding: 4px 8px; border-radius: 10px; backdrop-filter: blur(4px); z-index: 2;
+    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.4); transition: all 0.2s; }
+    .dot.active { background: #a855f7; width: 14px; border-radius: 4px; }
+
+    .post-attachments-bottom { padding: 8px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .tg-audio-card {
+      display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px 14px; width: 100%;
+    }
+    .tg-play-btn {
+      width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
+      border: none; display: flex; align-items: center; justify-content: center; color: #ffffff; cursor: pointer; flex-shrink: 0;
+    }
+    .tg-audio-body { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+    .tg-audio-title { font-size: 13px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tg-audio-time { font-size: 11px; color: var(--text-muted); }
+
+    .post-content-text { padding: 8px 14px; display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
+    .post-title-text { font-size: 16px; font-weight: 700; color: var(--text-main); line-height: 1.35; }
+    .caption { font-size: 13.5px; line-height: 1.45; color: var(--text-main); opacity: 0.88; }
+    .post-card:not(.expanded) .caption { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .post-card.expanded .caption { display: block; }
+    .expand-toggle-btn {
+      background: none; border: none; color: #a855f7; font-weight: 600;
+      font-size: 12.5px; cursor: pointer; padding-top: 2px; text-align: left; display: inline-block;
     }
 
-    .search-box {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1.5px solid rgba(255, 255, 255, 0.16);
-      border-radius: 24px;
-      padding: 8px 16px;
-      gap: 10px;
-      transition: all 0.25s ease;
+    .post-actions { padding: 10px 14px 4px 14px; display: flex; justify-content: space-between; align-items: center; }
+    .action-group { display: flex; gap: 10px; align-items: center; }
+    .action-with-count {
+      display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06); border: none; color: var(--text-main); cursor: pointer; transition: transform 0.15s ease;
+    }
+    .action-with-count:active { transform: scale(0.92); }
+    .likes-count, .comments-count { font-size: 13px; font-weight: 600; }
+
+    /* --- ЭКРАН 2: РИЛСЫ --- */
+    .reels-screen-container {
+      position: absolute; inset: 0; bottom: 70px; width: 100%; height: calc(100% - 70px);
+      background: #000; z-index: 40; display: none; flex-direction: column; overflow: hidden;
+    }
+    .reels-screen-container.active { display: flex; }
+
+    .reels-vertical-feed { width: 100%; height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; }
+    .reels-vertical-feed::-webkit-scrollbar { display: none; }
+
+    .reel-card {
+      width: 100%; height: 100%; scroll-snap-align: start; position: relative;
+      background-size: cover; background-position: center; display: flex; flex-direction: column;
+      justify-content: space-between; padding: 16px 16px 20px 16px;
     }
 
-    .search-box:focus-within {
-      border-color: rgba(140, 122, 230, 0.8);
-      background: rgba(255, 255, 255, 0.12);
-      box-shadow: 0 0 14px rgba(140, 122, 230, 0.3);
+    .reel-top-bar { display: flex; justify-content: space-between; align-items: center; z-index: 10; padding-top: 8px; }
+    .reel-icon-btn {
+      width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
 
-    .search-box input {
-      width: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 600;
+    .reel-center-action { position: absolute; bottom: 110px; left: 50%; transform: translateX(-50%); z-index: 10; }
+    .use-idea-btn {
+      background: rgba(45, 45, 55, 0.85); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.18); color: #fff; font-size: 13.5px; font-weight: 600;
+      padding: 10px 20px; border-radius: 999px; display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); cursor: pointer; white-space: nowrap;
     }
 
-    .search-box input::placeholder {
-      color: #8e8e93;
-      font-weight: 500;
+    .reel-bottom-content { display: flex; flex-direction: column; gap: 12px; z-index: 10; margin-top: auto; }
+    .reel-actions-row { display: flex; align-items: center; gap: 14px; }
+    .reel-action-chip { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+    .reel-author-info { display: flex; flex-direction: column; gap: 4px; }
+    .reel-author-handle { font-size: 14px; font-weight: 700; color: #fff; }
+    .reel-caption-text { font-size: 13px; color: rgba(255, 255, 255, 0.88); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* --- ЭКРАН 3: СПИСОК КАНАЛОВ И ЧАТОВ --- */
+    .channels-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .channel-card {
+      display: flex; align-items: center; gap: 12px; padding: 12px; background-color: var(--card-bg);
+      border-radius: 16px; border: 1px solid var(--border-color); cursor: pointer;
+    }
+    .channel-card.featured-chat {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(79, 70, 229, 0.15) 100%);
+      border-color: rgba(168, 85, 247, 0.3);
+    }
+    .channel-avatar { width: 48px; height: 48px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+    .channel-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .channel-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
+    .channel-subscribers { font-size: 12px; color: var(--text-muted); }
+    .channel-last-post { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+
+    /* ---------------- 4. ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ---------------- */
+    .banner-bg {
+      position: absolute; top: 0; left: 0; right: 0; height: 220px;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800') center/cover no-repeat;
+      z-index: 1;
     }
 
-    .search-box svg {
-      width: 18px;
-      height: 18px;
-      color: #8c7ae6;
-      flex-shrink: 0;
-      stroke-width: 2.8;
+    .banner-overlay {
+      position: absolute; top: 0; left: 0; right: 0; height: 220px;
+      background: linear-gradient(to bottom, rgba(8, 9, 16, 0.2) 0%, rgba(8, 9, 16, 0.85) 70%, var(--bg-dark) 100%);
     }
 
-    /* --- Лента --- */
-    .feed {
-      padding: 72px 16px 100px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      flex: 1;
-      overflow-y: auto;
-      scroll-behavior: smooth;
+    .top-nav-profile {
+      height: 56px; padding: 0 16px; display: flex; justify-content: flex-end; align-items: center;
+      position: relative; z-index: 10;
+    }
+    .top-nav-right { display: flex; align-items: center; gap: 10px; }
+
+    .icon-btn-blur {
+      width: 40px; height: 40px; border-radius: 50%; background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.12); color: #fff;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
 
-    .video-card {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      cursor: pointer;
+    .profile-header { position: relative; z-index: 10; padding: 10px 20px 0 20px; }
+    .user-hero { display: flex; align-items: flex-start; gap: 16px; }
+
+    .avatar-ring {
+      width: 84px; height: 84px; border-radius: 50%; padding: 3px;
+      background: linear-gradient(135deg, #a855f7, #06b6d4);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); flex-shrink: 0; position: relative;
+    }
+    .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background-color: #1c2030; }
+
+    .user-details { flex: 1; padding-top: 2px; }
+    .user-name-row { display: flex; align-items: center; gap: 6px; }
+    .user-name { font-size: 20px; font-weight: 700; color: var(--text-main); }
+
+    .verified-badge {
+      width: 18px; height: 18px; background: #38bdf8; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: bold;
     }
 
-    .thumbnail-wrapper {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border-radius: 14px;
-      overflow: hidden;
-      background-color: #1a1c23;
+    .user-handle { font-size: 13px; color: var(--text-sub); margin-top: 2px; margin-bottom: 6px; }
+    .user-bio { font-size: 13px; color: #e2e8f0; margin-bottom: 6px; line-height: 1.35; }
+
+    .meta-info { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-sub); }
+    .meta-item { display: flex; align-items: center; gap: 6px; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-top: 20px; padding: 0 10px; }
+    .stat-value { font-size: 18px; font-weight: 700; color: var(--text-main); }
+    .stat-label { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+
+    .action-buttons { display: flex; gap: 12px; margin-top: 18px; }
+
+    .btn {
+      height: 44px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600; color: #fff;
+      display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; flex: 1;
+    }
+    .btn-primary { background: var(--primary-gradient); box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35); }
+    .btn-secondary { background-color: var(--btn-secondary); border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text-main); }
+
+    .filter-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 20px 20px 10px 20px; scrollbar-width: none; }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+
+    .chip {
+      padding: 8px 18px; border-radius: 10px; background-color: var(--btn-secondary);
+      color: var(--text-sub); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .chip.active { background-color: var(--primary-accent); color: #fff; font-weight: 600; }
+
+    .feed-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 20px; }
+    .feed-card {
+      background-color: var(--card-bg); border-radius: 16px; overflow: hidden;
+      display: flex; flex-direction: column; border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .card-media { position: relative; width: 100%; height: 130px; background-color: #1a1d2e; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; }
+
+    .badge-type {
+      position: absolute; top: 8px; left: 8px; background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px); padding: 3px 8px; border-radius: 6px; font-size: 11px; color: #fff;
+    }
+    .badge-time {
+      position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px); padding: 3px 8px; border-radius: 6px; font-size: 10px; color: rgba(255, 255, 255, 0.85);
+    }
+    .card-body { padding: 10px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
+    .card-title {
+      font-size: 12px; font-weight: 600; line-height: 1.35; margin-bottom: 10px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main);
+    }
+    .card-stats { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-sub); }
+    .stat-group { display: flex; align-items: center; gap: 10px; }
+    .stat-icon-val { display: flex; align-items: center; gap: 4px; }
+
+    /* ---------------- 💬 5. 🔥 ПОЛНОЭКРАННЫЙ ОБЩИЙ ЧАТ ---------------- */
+    .general-chat-screen {
+      position: absolute; inset: 0; background-color: var(--bg-dark); z-index: 170;
+      display: none; flex-direction: column; overflow: hidden;
+    }
+    .general-chat-screen.active { display: flex; }
+
+    .chat-header {
+      height: 60px; padding: 0 12px; display: flex; align-items: center; gap: 10px;
+      background: var(--header-bg); border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(20px); z-index: 20; flex-shrink: 0;
     }
 
-    .thumbnail-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .chat-header-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #a855f7, #38bdf8);
+      display: flex; align-items: center; justify-content: center; color: #fff;
+      font-weight: 700; flex-shrink: 0;
     }
 
-    .play-icon {
-      position: absolute;
-      bottom: 12px;
-      left: 12px;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .chat-header-titles { display: flex; flex-direction: column; flex: 1; }
+    .chat-header-name { font-size: 15px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+    .chat-header-status { font-size: 11.5px; color: #38bdf8; font-weight: 500; transition: all 0.2s ease; }
+    .chat-header-status.typing { color: #a855f7; font-weight: 700; animation: pulseText 1.2s infinite; }
+
+    @keyframes pulseText { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+    .chat-messages-container {
+      flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+      background-size: 24px 24px;
     }
 
-    .video-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .message-bubble {
+      display: flex; flex-direction: column; max-width: 80%; gap: 2px;
+    }
+    .message-bubble.incoming { align-self: flex-start; }
+    .message-bubble.outgoing { align-self: flex-end; }
+
+    .message-sender-name { font-size: 11px; font-weight: 700; color: #a855f7; margin-left: 4px; margin-bottom: 2px; }
+
+    .message-content-box {
+      padding: 10px 14px; border-radius: 18px; font-size: 13.5px; line-height: 1.4; position: relative;
+    }
+    .incoming .message-content-box {
+      background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main);
+      border-top-left-radius: 4px;
+    }
+    .outgoing .message-content-box {
+      background: var(--primary-gradient); color: #ffffff;
+      border-top-right-radius: 4px; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
     }
 
-    .video-title {
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.3;
+    .message-time-stamp {
+      font-size: 10px; color: rgba(255, 255, 255, 0.6); text-align: right; margin-top: 4px; display: block;
     }
 
-    .video-author, .video-stats {
-      font-size: 13px;
-      color: #747d8c;
+    .chat-input-bar {
+      padding: 10px 14px; background: var(--nav-bg); backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; flex-shrink: 0;
     }
 
-    /* ================= 2. ЭКРАН КАТАЛОГА ================= */
-    .catalog-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      background: rgba(13, 14, 18, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      position: sticky;
-      top: 0;
-      z-index: 50;
+    .chat-text-input {
+      flex: 1; background: var(--input-bg); border: 1px solid var(--glass-border);
+      border-radius: 20px; padding: 10px 16px; color: var(--text-main); font-size: 14px; outline: none;
+    }
+    .chat-send-btn {
+      width: 42px; height: 42px; border-radius: 50%; background: var(--primary-gradient);
+      border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
     }
 
-    .catalog-title-header {
-      font-size: 17px;
-      font-weight: 700;
-      color: #fff;
+    /* ---------------- ⚙️ 6. СТРАНИЦА НАСТРОЕК ---------------- */
+    .page-settings {
+      position: absolute; inset: 0; background-color: var(--bg-dark); z-index: 180;
+      transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px;
+    }
+    .page-settings.active { transform: translateX(0); }
+
+    .settings-header {
+      height: 56px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06); position: sticky; top: 0;
+      background: rgba(8, 9, 16, 0.95); backdrop-filter: blur(15px); z-index: 20;
+    }
+    .settings-title-box { display: flex; align-items: center; gap: 12px; }
+    .settings-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+
+    .settings-content { padding: 20px 16px; display: flex; flex-direction: column; gap: 24px; }
+
+    .edit-media-card {
+      background-color: var(--card-bg); border-radius: 18px; overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05); position: relative;
+    }
+    .edit-banner-preview {
+      height: 120px; background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800') center/cover no-repeat;
+      position: relative; display: flex; align-items: center; justify-content: center;
+    }
+    .edit-banner-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); }
+    .change-banner-btn {
+      position: relative; z-index: 2; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 8px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; cursor: pointer;
     }
 
-    /* Сияющий незажимаемый блок под шапкой */
-    .catalog-quick-actions {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      padding: 20px 16px;
-      background: rgba(255, 255, 255, 0.02);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    .edit-avatar-container {
+      padding: 0 16px 16px 16px; margin-top: -36px; display: flex; align-items: flex-end;
+      justify-content: space-between; position: relative; z-index: 5;
+    }
+    .edit-avatar-wrapper {
+      position: relative; width: 76px; height: 76px; border-radius: 50%; padding: 3px;
+      background: linear-gradient(135deg, #a855f7, #06b6d4);
+    }
+    .edit-avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .avatar-upload-icon {
+      position: absolute; bottom: 0; right: 0; width: 26px; height: 26px;
+      background: var(--primary-accent); border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; border: 2px solid var(--card-bg); color: #fff; cursor: pointer;
     }
 
-    .action-item-disabled {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      pointer-events: none;
-      user-select: none;
+    .section-block { display: flex; flex-direction: column; gap: 14px; }
+    .section-label { font-size: 13px; font-weight: 700; color: var(--primary-accent); text-transform: uppercase; letter-spacing: 0.8px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-label { font-size: 12px; color: var(--text-sub); font-weight: 500; }
+    .custom-input {
+      width: 100%; height: 46px; background-color: var(--input-bg); border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px; padding: 0 14px; color: #fff; font-size: 14px; outline: none; transition: border-color 0.2s;
+    }
+    .custom-input:focus { border-color: var(--primary-accent); }
+    textarea.custom-input { height: 80px; padding: 12px 14px; resize: none; }
+
+    .settings-card-list { background-color: var(--card-bg); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; }
+    .settings-item {
+      display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04); cursor: pointer;
+    }
+    .settings-item:last-child { border-bottom: none; }
+    .item-left { display: flex; align-items: center; gap: 12px; }
+    .item-icon {
+      width: 34px; height: 34px; border-radius: 10px; background-color: var(--btn-secondary);
+      display: flex; align-items: center; justify-content: center; color: var(--text-sub);
+    }
+    .item-title { font-size: 14px; font-weight: 500; color: var(--text-main); }
+    .item-sub { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+    .item-arrow { color: var(--text-sub); opacity: 0.6; }
+    .danger-item { color: var(--danger-color); }
+    .danger-item .item-icon { background-color: var(--danger-bg); color: var(--danger-color); }
+
+    .device-card {
+      display: flex; align-items: center; justify-content: space-between; padding: 12px 14px;
+      background-color: var(--input-bg); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .device-info { display: flex; align-items: center; gap: 12px; }
+    .device-status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
+
+    .btn-terminate {
+      width: 100%; height: 42px; border-radius: 12px; background-color: var(--btn-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.06); color: var(--danger-color); font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 4px;
     }
 
-    .icon-glow-wrapper {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(140, 122, 230, 0.35) 0%, rgba(13, 14, 18, 0.8) 100%);
-      border: 1.5px solid rgba(140, 122, 230, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #8c7ae6;
-      box-shadow: 0 0 18px rgba(140, 122, 230, 0.65), inset 0 0 10px rgba(140, 122, 230, 0.3);
-      animation: neonPulse 2.5s infinite alternate ease-in-out;
+    .save-main-btn {
+      height: 48px; border-radius: 14px; background: var(--primary-gradient); border: none;
+      color: #fff; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.4); margin-top: 10px;
     }
 
-    .icon-glow-wrapper svg {
-      width: 24px;
-      height: 24px;
-      filter: drop-shadow(0 0 6px #8c7ae6);
+    /* TELEGRAM ЭКРАН КАНАЛА */
+    .channel-view-screen {
+      position: absolute; inset: 0; background: var(--bg-main); z-index: 150;
+      display: none; flex-direction: column; overflow: hidden;
+    }
+    .channel-view-screen.active { display: flex; }
+
+    .tg-channel-header {
+      height: 60px; padding: 0 12px; display: flex; align-items: center; gap: 10px;
+      background: var(--header-bg); border-bottom: 1px solid var(--border-color); backdrop-filter: blur(20px); position: relative; z-index: 20;
+    }
+    .tg-back-btn { background: none; border: none; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; }
+    .tg-channel-meta { flex: 1; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .tg-channel-avatar-head { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+    .tg-channel-titles { display: flex; flex-direction: column; }
+    .tg-channel-name-head { font-size: 15px; font-weight: 700; color: var(--text-main); }
+    .tg-channel-subs-head { font-size: 11.5px; color: var(--text-muted); }
+
+    .tg-channel-search-bar { display: none; padding: 8px 14px; background: var(--panel-bg); border-bottom: 1px solid var(--border-color); }
+    .tg-channel-search-bar.active { display: flex; }
+    .tg-search-input-field {
+      width: 100%; background: var(--input-bg); border: 1px solid var(--glass-border);
+      border-radius: 12px; padding: 8px 12px; color: var(--text-main); font-size: 13.5px; outline: none;
     }
 
-    @keyframes neonPulse {
-      0% {
-        box-shadow: 0 0 12px rgba(140, 122, 230, 0.4), inset 0 0 6px rgba(140, 122, 230, 0.2);
-        border-color: rgba(140, 122, 230, 0.4);
-      }
-      100% {
-        box-shadow: 0 0 24px rgba(140, 122, 230, 0.9), inset 0 0 14px rgba(140, 122, 230, 0.5);
-        border-color: rgba(140, 122, 230, 0.9);
-      }
+    .tg-channel-content { flex: 1; overflow-y: auto; padding-bottom: 16px; display: flex; flex-direction: column; }
+
+    .tg-channel-bottom-bar {
+      padding: 10px 16px; background: var(--nav-bg); backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-color); display: flex; justify-content: center;
+    }
+    .tg-channel-bottom-bar.hidden { display: none !important; }
+
+    .tg-subscribe-big-btn {
+      width: 100%; padding: 14px; border-radius: 14px; background: var(--tg-blue);
+      border: none; color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer;
+      text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(34, 158, 217, 0.3);
     }
 
-    .action-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #dcdde1;
+    .tg-dropdown-menu {
+      position: absolute; top: 54px; right: 12px; background: rgba(22, 25, 39, 0.98);
+      backdrop-filter: blur(30px); border: 1px solid var(--glass-border); border-radius: 16px;
+      padding: 6px; display: none; flex-direction: column; gap: 4px; z-index: 100; min-width: 190px;
+    }
+    .tg-dropdown-menu.active { display: flex; }
+    .tg-menu-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+      font-size: 13px; font-weight: 500; color: var(--text-main); cursor: pointer; background: none; border: none; width: 100%; text-align: left;
     }
 
-    .soon-badge {
-      font-size: 10px;
-      font-weight: 800;
-      color: #8c7ae6;
-      background: rgba(140, 122, 230, 0.15);
-      border: 1px solid rgba(140, 122, 230, 0.4);
-      padding: 2px 8px;
-      border-radius: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      box-shadow: 0 0 8px rgba(140, 122, 230, 0.3);
-    }
-
-    .catalog-body {
-      flex: 1;
-      padding: 20px 16px 100px 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .catalog-section-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #8e8e93;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-
-    .menu-card-btn {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 16px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .menu-card-btn:active {
-      transform: scale(0.98);
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .menu-btn-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .menu-btn-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: rgba(140, 122, 230, 0.15);
-      color: #8c7ae6;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .menu-btn-icon svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    .menu-btn-text {
-      font-size: 15px;
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    .version-badge {
-      font-size: 13px;
-      font-weight: 700;
-      color: #8c7ae6;
-      background: rgba(140, 122, 230, 0.15);
-      padding: 4px 10px;
-      border-radius: 12px;
-    }
-
-    /* Модальное окно */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
-      z-index: 200;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-box {
-      background: #161820;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 400px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.8);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      padding-bottom: 10px;
-    }
-
-    .modal-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .close-modal-btn {
-      background: none;
-      border: none;
-      color: #8e8e93;
-      font-size: 22px;
-      cursor: pointer;
-    }
-
-    .modal-body-text {
-      font-size: 13px;
-      color: #a4b0be;
-      line-height: 1.5;
-    }
-
-    /* ================= 3. ЭКРАН SHORTS / КЛИПЫ ================= */
-    .shorts-feed {
-      width: 100%;
-      height: 100vh;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-      scrollbar-width: none;
-      background: #000;
-    }
-
-    .shorts-feed::-webkit-scrollbar {
-      display: none;
-    }
-
-    .short-item {
-      width: 100%;
-      height: 100vh;
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-      position: relative;
-      background: #000;
-    }
-
-    .top-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 30;
-      display: flex;
-      align-items: center;
-      padding: 16px;
-      background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-      pointer-events: none;
-    }
-
-    .back-btn {
-      background: none;
-      border: none;
-      color: #ffffff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: auto;
-      padding: 4px;
-    }
-
-    .back-btn svg {
-      width: 28px;
-      height: 28px;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-    }
-
-    .iframe-wrapper {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      background: #000;
-    }
-
-    .iframe-wrapper iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .touch-layer {
-      position: absolute;
-      top: 70px;
-      bottom: 140px;
-      left: 0;
-      width: 100%;
-      z-index: 10;
-      cursor: pointer;
-    }
-
-    .custom-pause-mask {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.92);
-      z-index: 15;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-
-    .custom-pause-mask.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .play-icon-circle {
-      width: 64px;
-      height: 64px;
-      background: rgba(255, 255, 255, 0.15);
-      border: 2px solid rgba(255, 255, 255, 0.8);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-    }
-
-    .pause-text {
-      font-size: 13px;
-      color: #a4b0be;
-      font-weight: 500;
-    }
-
-    .bottom-info {
-      position: absolute;
-      bottom: 80px;
-      left: 16px;
-      right: 16px;
-      z-index: 20;
-      pointer-events: none;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .short-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #ffffff;
-      line-height: 1.3;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .short-author {
-      font-size: 13px;
-      color: #dcdde1;
-      font-weight: 500;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
-    }
-
-    /* ================= 4. СТЕКЛЯННОЕ НИЖНЕЕ МЕНЮ (КАПСУЛА) ================= */
+    /* ---------------- 7. НИЖНЕЕ МЕНЮ (BOTTOM NAVIGATION) ---------------- */
     .bottom-nav {
-      position: fixed;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 32px);
-      max-width: 440px;
-      height: 58px;
-      background: rgba(22, 24, 32, 0.75);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 32px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 100;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
-      padding: 0 8px;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: absolute; bottom: 0; left: 0; right: 0; height: 70px;
+      background: rgba(8, 9, 16, 0.92); backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex;
+      justify-content: space-around; align-items: center; z-index: 100;
     }
 
-    .bottom-nav.hide {
-      transform: translate(-50%, calc(100% + 30px));
+    .nav-tab-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      color: #64748b; font-size: 10px; font-weight: 500; background: none; border: none; cursor: pointer;
+    }
+    .nav-tab-btn.active { color: #a855f7; font-weight: 700; }
+
+    .nav-center-add {
+      width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #6366f1);
+      display: flex; align-items: center; justify-content: center; color: #fff;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.5); margin-top: -16px; cursor: pointer; border: none;
     }
 
-    .nav-item {
-      background: none;
-      border: none;
-      color: #8e8e93;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    /* РЕДАКТОР ПОСТА (МОДАЛКА) */
+    .editor-modal {
+      position: fixed; inset: 0; background: var(--bg-main); z-index: 200;
+      display: none; flex-direction: column; padding: 12px 16px 16px 16px;
+      transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .editor-modal.open { display: flex; transform: translateY(0); }
+
+    .editor-header { display: flex; align-items: center; justify-content: space-between; position: relative; padding: 8px 0 12px 0; z-index: 10; }
+    .close-editor-btn { background: none; border: none; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; }
+    .editor-header-title { position: absolute; left: 0; right: 0; text-align: center; font-size: 18px; font-weight: 700; color: var(--text-main); pointer-events: none; }
+
+    .editor-body { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; scrollbar-width: none; }
+    .editor-body::-webkit-scrollbar { display: none; }
+
+    .text-inputs-box { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .input-title { width: 100%; background: transparent; border: none; outline: none; color: var(--text-main); font-size: 20px; font-weight: 700; }
+    .input-title::placeholder { color: var(--text-muted); opacity: 0.6; }
+
+    .input-content { width: 100%; min-height: 70px; background: transparent; border: none; outline: none; color: var(--text-main); font-size: 15px; line-height: 1.4; resize: none; }
+    .input-content::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+    .attachments-preview { display: flex; flex-direction: column; gap: 12px; }
+
+    .stickers-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sticker-chip {
+      position: relative; width: 60px; height: 60px;
+      background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border);
+      border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    }
+    .sticker-chip img { width: 80%; height: 80%; object-fit: contain; }
+
+    .remove-badge-btn {
+      position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background: #ef4444;
+      border: 2px solid var(--bg-main); border-radius: 50%; color: #fff; font-size: 12px;
+      font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;
     }
 
-    .nav-item.active {
-      color: #ffffff;
-      background: rgba(255, 255, 255, 0.12);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    .gallery-container {
+      display: none; flex-direction: column; gap: 8px; background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px;
+    }
+    .gallery-container.active { display: flex; }
+    .gallery-header { display: flex; align-items: center; justify-content: space-between; }
+    .gallery-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
+    .photo-grid { display: grid; gap: 4px; border-radius: 12px; overflow: hidden; min-height: 100px; }
+    .photo-grid[data-count="1"] { grid-template-columns: 1fr; }
+    .photo-grid[data-count="2"] { grid-template-columns: 1fr 1fr; }
+
+    .photo-item { position: relative; width: 100%; height: 100%; min-height: 100px; background: #1a1c29; overflow: hidden; }
+    .photo-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .bottom-section { margin-top: auto; display: flex; flex-direction: column; gap: 8px; position: relative; }
+    .glass-dock {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(30px);
+      border: 1px solid var(--glass-border); border-radius: 999px; padding: 6px 8px; width: 100%;
+    }
+    .dock-btn { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .btn-sticker { background: radial-gradient(circle, #facc15 0%, #ca8a04 100%); }
+    .btn-image   { background: linear-gradient(135deg, #c084fc 0%, #9333ea 100%); }
+    .btn-music   { background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%); }
+    .btn-video   { background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%); }
+    .btn-location{ background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); }
+
+    .send-btn {
+      width: 46px; height: 46px; border-radius: 50%; background: var(--primary-gradient);
+      border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
 
-    .nav-item svg {
-      width: 24px;
-      height: 24px;
+    .sticker-popover {
+      position: absolute; bottom: 64px; left: 0; right: 0; background: rgba(18, 20, 32, 0.95);
+      backdrop-filter: blur(35px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px;
+      display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; z-index: 30;
     }
+    .sticker-popover.active { display: grid; }
+    .sticker-item { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); }
+    .sticker-item img { width: 85%; height: 85%; object-fit: contain; }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(15px);
+      display: none; align-items: center; justify-content: center; z-index: 250; padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .dialog-box {
+      background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 24px;
+      width: 100%; max-width: 360px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .dialog-title { font-size: 16px; font-weight: 700; color: var(--text-main); }
+    .dialog-input { width: 100%; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; color: var(--text-main); font-size: 14px; outline: none; }
+    .dialog-option { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px; color: var(--text-main); font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .error-text { font-size: 12px; color: var(--error-color); display: none; }
   </style>
 </head>
 <body>
 
-  <div class="app-container">
-    
-    <!-- ================= 1. ГЛАВНЫЙ ЭКРАН ================= -->
-    <div id="home-screen" class="screen active">
-      <header class="header">
-        <div class="logo">#</div>
-        
-        <div class="search-box">
-          <input type="text" id="search-input" placeholder="Поиск видео..." oninput="handleSearch(this.value)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        </div>
-      </header>
+<div class="app-screen" id="appScreen">
 
-      <main class="feed" id="video-feed">
-        <!-- Видео генерируются динамически -->
-      </main>
+  <!-- ========================================== -->
+  <!-- 1. ШАПКА TANHO (ИКОНКА ЧАТА ДОБАВЛЕНА!)    -->
+  <!-- ========================================== -->
+  <header class="app-header" id="appHeader">
+    <div class="header-logo" id="headerLogo">TANHO</div>
+
+    <div class="header-search-box" id="headerSearchBox">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="header-search-input" id="headerSearchInput" placeholder="Поиск постов и каналов...">
+      <button class="icon-btn-circle" style="width:26px; height:26px;" onclick="closeSearch()">×</button>
     </div>
 
-    <!-- ================= 2. ЭКРАН КАТАЛОГА ================= -->
-    <div id="catalog-screen" class="screen">
-      <header class="catalog-header">
-        <span class="catalog-title-header">Каталог</span>
-      </header>
+    <div class="header-actions" id="headerActions">
+      <!-- 🔥 КНОПКА ОТКРЫТИЯ ОБЩЕГО ЧАТА -->
+      <button class="icon-btn-circle" onclick="openGeneralChat()" title="Общий чат">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </button>
 
-      <!-- Сияющий блок с Профилем и Чатом (не кликается) -->
-      <div class="catalog-quick-actions">
-        <!-- Профиль -->
-        <div class="action-item-disabled">
-          <div class="icon-glow-wrapper">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+      <button class="icon-btn-circle" onclick="openSearch()" title="Поиск">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+
+      <button class="icon-btn-circle" onclick="toggleTheme()" title="Сменить тему">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- 2. СТРАНИЦЫ ПРИЛОЖЕНИЯ                     -->
+  <!-- ========================================== -->
+
+  <!-- Вкладка 1: ГЛАВНАЯ (ПОСТЫ В ЛЕНТЕ) -->
+  <main class="page-screen active" id="pageMain">
+    <div class="posts-feed" id="postsContainer">
+      <article class="post-card" data-channel-id="tanho_off">
+        <div class="post-header">
+          <div class="post-author" onclick="openChannel('tanho_off')">
+            <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100');"></div>
+            <div class="author-meta">
+              <div class="author-name">TANHO Official</div>
+              <div class="post-location-tag">@tanho_official</div>
+            </div>
           </div>
-          <span class="action-title">Профиль</span>
-          <span class="soon-badge">Скоро</span>
+          
+          <button class="channel-action-btn subscribe" id="mainFeedBtn_tanho_off" onclick="handleMainFeedChannelBtn('tanho_off')">
+            + Подписаться
+          </button>
         </div>
 
-        <!-- Чат -->
-        <div class="action-item-disabled">
-          <div class="icon-glow-wrapper">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
+        <div class="post-slider-wrapper" onclick="togglePostExpand(this)">
+          <div class="post-media-slider" onscroll="handleSliderScroll(this)">
+            <div class="slide-item"><img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600" alt=""></div>
+            <div class="slide-item"><img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600" alt=""></div>
           </div>
-          <span class="action-title">Чат</span>
-          <span class="soon-badge">Скоро</span>
+          <div class="slider-badge">1/2</div>
+          <div class="slider-dots"><span class="dot active"></span><span class="dot"></span></div>
+        </div>
+
+        <div class="post-content-text" onclick="togglePostExpand(this)">
+          <h2 class="post-title-text">Запущен Общий чат TANHO!</h2>
+          <p class="caption">Общайтесь со всеми пользователями платформы в реальном времени. Включает онлайн-статус и живые уведомления.</p>
+          <button class="expand-toggle-btn">Читать полностью ↓</button>
+        </div>
+
+        <div class="post-actions">
+          <div class="action-group">
+            <button class="action-with-count" onclick="toggleLike(this)"><svg class="heart-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="likes-count">482</span></button>
+            <button class="action-with-count" onclick="alert('💬 Комментарии')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="comments-count">84</span></button>
+            <button class="icon-btn" onclick="alert('✈️ Пересылка')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+          </div>
+          <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <!-- Вкладка 2: РИЛСЫ -->
+  <div class="reels-screen-container" id="pageReels">
+    <div class="reels-vertical-feed">
+      <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800');">
+        
+        <div class="reel-top-bar">
+          <button class="reel-icon-btn" onclick="switchPage('pageMain', document.querySelectorAll('.nav-tab-btn')[0])">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+          <button class="reel-icon-btn">⋮</button>
+        </div>
+
+        <div class="reel-center-action">
+          <button class="use-idea-btn" onclick="openEditor()">
+            <span>✨ Использовать идею</span>
+          </button>
+        </div>
+
+        <div class="reel-bottom-content">
+          <div class="reel-actions-row">
+            <div class="reel-action-chip" onclick="toggleReelLike(this)">
+              <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <span class="reel-likes-val">15</span>
+            </div>
+            <div class="reel-action-chip">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M7 15h10"/><path d="M7 9h4"/></svg>
+              <span>HD</span>
+            </div>
+          </div>
+          <div class="reel-author-info">
+            <div class="reel-author-handle">@CaliraVal</div>
+            <div class="reel-caption-text">Летнее видео от канала TANHO...</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Вкладка 3: СПИСОК КАНАЛОВ И ЗАКРЕПЛЕННЫЙ ОБЩИЙ ЧАТ -->
+  <section class="page-screen" id="pageChannels">
+    <div class="channels-list" id="channelsListContainer">
+      <!-- ОБЩИЙ ЧАТ НА ПЕРВОМ МЕСТЕ -->
+      <div class="channel-card featured-chat" onclick="openGeneralChat()">
+        <div class="channel-avatar" style="background: linear-gradient(135deg, #a855f7, #38bdf8); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold;">💬</div>
+        <div class="channel-info">
+          <div class="channel-title" style="color:#a855f7;">Общий чат TANHO 🔥</div>
+          <div class="channel-subscribers" id="channelsTabChatSub">1,284 участников • 142 онлайн</div>
+          <div class="channel-last-post">Алишер: Всем привет в новом чате!</div>
         </div>
       </div>
-
-      <main class="catalog-body">
-        <div class="catalog-section-title">Информация и опции</div>
-
-        <!-- 1. Кнопка "О приложении" -->
-        <div class="menu-card-btn" onclick="toggleAboutApp()">
-          <div class="menu-btn-left">
-            <div class="menu-btn-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            </div>
-            <span class="menu-btn-text">О приложении</span>
-          </div>
-          <span class="version-badge">v1.0.0</span>
-        </div>
-
-        <!-- 2. Кнопка "Правообладателям" -->
-        <div class="menu-card-btn" onclick="openCopyrightModal()">
-          <div class="menu-btn-left">
-            <div class="menu-btn-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            </div>
-            <span class="menu-btn-text">Правообладателям</span>
-          </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </div>
-
-        <!-- 3. Кнопка "Поделиться приложением" (НОВАЯ) -->
-        <div class="menu-card-btn" onclick="shareApp()">
-          <div class="menu-btn-left">
-            <div class="menu-btn-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-            </div>
-            <span class="menu-btn-text">Поделиться приложением</span>
-          </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </div>
-
-        <!-- 4. Кнопка "Оценить приложение" (НОВАЯ) -->
-        <div class="menu-card-btn" onclick="rateApp()">
-          <div class="menu-btn-left">
-            <div class="menu-btn-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-            </div>
-            <span class="menu-btn-text">Оценить приложение</span>
-          </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </div>
-      </main>
     </div>
+  </section>
 
-    <!-- ================= 3. ЭКРАН SHORTS / КЛИПЫ ================= -->
-    <div id="shorts-screen" class="screen">
-      <div class="top-bar">
-        <button class="back-btn" onclick="closeShorts()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
+  <!-- Вкладка 4: ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ -->
+  <section class="page-screen" id="pageProfile">
+    <div class="banner-bg"><div class="banner-overlay"></div></div>
+
+    <div class="top-nav-profile">
+      <div class="top-nav-right">
+        <button class="icon-btn-blur" onclick="alert('✈️ Поделиться профилем')" aria-label="Поделиться">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+        </button>
+
+        <button class="icon-btn-blur" id="openSettingsBtn" aria-label="Настройки">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
         </button>
       </div>
-
-      <div class="shorts-feed" id="shorts-feed">
-        <!-- Секция клипов -->
-      </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРАВООБЛАДАТЕЛЯМ -->
-    <div id="copyright-modal" class="modal-overlay">
-      <div class="modal-box">
-        <div class="modal-header">
-          <span class="modal-title">Правообладателям</span>
-          <button class="close-modal-btn" onclick="closeCopyrightModal()">&times;</button>
+    <div class="profile-header">
+      <div class="user-hero">
+        <div class="avatar-ring">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300" class="avatar-img" id="displayProfileAvatar" alt="Khadija">
         </div>
-        <p class="modal-body-text">
-          Все видеозаписи предоставляются публичными сервисными API сторонних платформ (VK Video ).<br><br>
-          Если вы являетесь обладателем исключительных прав на контент и хотите направить запрос на ограничение доступа, пожалуйста, свяжитесь со службой поддержки: <strong>ceonoyob@gmail.com</strong></strong>
-        </p>
+        <div class="user-details">
+          <div class="user-name-row">
+            <span class="user-name" id="displayProfileName">Khadija_92</span>
+            <div class="verified-badge">✓</div>
+          </div>
+          <div class="user-handle" id="displayProfileHandle">@khadija_92</div>
+          <div class="user-bio" id="displayProfileBio">Мечтай. Действуй. Будь собой ✨</div>
+          <div class="meta-info">
+            <div class="meta-item">📍 Узбекистан</div>
+            <div class="meta-item">📅 В приложении с 2025</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div><div class="stat-value">342</div><div class="stat-label">Публикации</div></div>
+        <div><div class="stat-value">12.4K</div><div class="stat-label">Подписчики</div></div>
+        <div><div class="stat-value">156</div><div class="stat-label">Подписки</div></div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="openGeneralChat()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Общий чат
+        </button>
+        <button class="btn btn-secondary" onclick="alert('✅ Вы подписаны')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Подписаться
+        </button>
       </div>
     </div>
 
-    <!-- ================= 4. ПАРЯЩАЯ СТЕКЛЯННАЯ КАПСУЛА ================= -->
-    <nav class="bottom-nav">
-      <!-- 1. Главная -->
-      <button class="nav-item active" onclick="showHomeScreen()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-9.5z"/></svg>
+    <div class="filter-tabs">
+      <div class="chip active" onclick="filterProfileFeed(this)">Все</div>
+      <div class="chip" onclick="filterProfileFeed(this)">Видео</div>
+      <div class="chip" onclick="filterProfileFeed(this)">Новости</div>
+      <div class="chip" onclick="filterProfileFeed(this)">Фото</div>
+      <div class="chip" onclick="filterProfileFeed(this)">Музыка</div>
+    </div>
+
+    <div class="feed-grid">
+      <div class="feed-card">
+        <div class="card-media">
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500" class="card-img" alt="Фото">
+          <div class="badge-type">🖼 Фото</div>
+          <div class="badge-time">2 дня назад</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Природа всегда вдохновляет ❤️</div>
+          <div class="card-stats">
+            <div class="stat-group">
+              <span class="stat-icon-val">♡ 245</span>
+              <span class="stat-icon-val">💬 32</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feed-card">
+        <div class="card-media">
+          <img src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=500" class="card-img" alt="Видео">
+          <div class="badge-type">▶ Видео</div>
+          <div class="badge-time">4 дня назад</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Красивый закат в Ташкенте</div>
+          <div class="card-stats">
+            <div class="stat-group">
+              <span class="stat-icon-val">♡ 562</span>
+              <span class="stat-icon-val">💬 48</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 💬 5. 🔥 ПОЛНОЭКРАННЫЙ ОБЩИЙ ЧАТПРИЛОЖЕНИЯ -->
+  <!-- ========================================== -->
+  <div class="general-chat-screen" id="generalChatScreen">
+    
+    <!-- Шапка ЧАТА -->
+    <div class="chat-header">
+      <button class="tg-back-btn" onclick="closeGeneralChat()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </button>
 
-      <!-- 2. Reels -->
-      <button class="nav-item" onclick="openShortsFeed(0)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"></rect><path d="M3 9h18"></path><path d="M8 3l3 6"></path><path d="M16 3l3 6"></path><polygon points="10,12 15,15 10,18" fill="currentColor" stroke="none"></polygon></svg>
-      </button>
+      <div class="chat-header-avatar">💬</div>
 
-      <!-- 3. Каталог -->
-      <button class="nav-item" onclick="openCatalogScreen()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3.5" y="3.5" width="7" height="7" rx="2"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="2"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="2"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="2"></rect></svg>
-      </button>
-    </nav>
+      <div class="chat-header-titles">
+        <div class="chat-header-name">
+          Общий чат TANHO
+          <span style="font-size:10px; background:rgba(124,58,237,0.3); color:#a855f7; padding:2px 6px; border-radius:6px;">LIVE</span>
+        </div>
+        <!-- Статус онлайна и кто печатает -->
+        <div class="chat-header-status" id="chatHeaderStatus">1,284 участников • 142 онлайн</div>
+      </div>
 
+      <button class="tg-back-btn" onclick="alert('ℹ️ Информация об общем чате')" title="Информация">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </button>
+    </div>
+
+    <!-- Список сообщений Общего Чатa -->
+    <div class="chat-messages-container" id="chatMessagesContainer">
+      <div class="message-bubble incoming">
+        <span class="message-sender-name">Алишер</span>
+        <div class="message-content-box">
+          Всем салом! Добро пожаловать в общий чат TANHO 👋
+          <span class="message-time-stamp">21:40</span>
+        </div>
+      </div>
+
+      <div class="message-bubble incoming">
+        <span class="message-sender-name" style="color:#38bdf8;">Мадина</span>
+        <div class="message-content-box">
+          Привет всем! Дизайн приложения просто пушка 🚀
+          <span class="message-time-stamp">21:42</span>
+        </div>
+      </div>
+
+      <div class="message-bubble outgoing">
+        <div class="message-content-box">
+          Привет! Рада видеть всех здесь! ✨
+          <span class="message-time-stamp">21:45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Поле ввода сообщений -->
+    <div class="chat-input-bar">
+      <input type="text" class="chat-text-input" id="chatTextInput" placeholder="Написать в общий чат..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+      <button class="chat-send-btn" onclick="sendChatMessage()" title="Отправить">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
   </div>
 
-  <script>
-    const playlist = [
-      {
-        embedUrl: "https://vk.com/video_ext.php?oid=-237335724&id=456239086",
-        title: "Тестовое видео VK (237335724_456239086)",
-        author: "VK Video",
-        stats: "12.4K Views • 2026",
-        thumb: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop"
-      },
-      {
-        embedUrl: "https://vk.com/video_ext.php?oid=-220000000&id=456239001",
-        title: "Muxlisbek Qurbonov - Yuragimning yarmi (Qastingiz bormu 2)",
-        author: "admin",
-        stats: "45.1K Views • 15.11.2023",
-        thumb: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop"
-      }
-    ];
+  <!-- ========================================== -->
+  <!-- ⚙️ 6. СТРАНИЦА НАСТРОЕК                    -->
+  <!-- ========================================== -->
+  <div class="page-settings" id="settingsPage">
+    <div class="settings-header">
+      <div class="settings-title-box">
+        <button class="icon-btn-blur" id="closeSettingsBtn" aria-label="Назад">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <span class="settings-title">Настройки</span>
+      </div>
+    </div>
 
-    const homeScreen = document.getElementById('home-screen');
-    const catalogScreen = document.getElementById('catalog-screen');
-    const shortsScreen = document.getElementById('shorts-screen');
-    const shortsFeed = document.getElementById('shorts-feed');
-    const videoFeed = document.getElementById('video-feed');
-    const bottomNav = document.querySelector('.bottom-nav');
-    const header = document.querySelector('.header');
-
-    const vkPlayers = new Map();
-    let observer;
-    let lastScrollTop = 0;
-
-    // Скрытие шапки и меню при скролле
-    videoFeed.addEventListener('scroll', () => {
-      const scrollTop = videoFeed.scrollTop;
-
-      if (scrollTop <= 10) {
-        header.classList.remove('hide');
-        bottomNav.classList.remove('hide');
-        lastScrollTop = scrollTop;
-        return;
-      }
-
-      if (scrollTop > lastScrollTop && scrollTop > 40) {
-        header.classList.add('hide');
-        bottomNav.classList.add('hide');
-      } else if (scrollTop < lastScrollTop) {
-        header.classList.remove('hide');
-        bottomNav.classList.remove('hide');
-      }
-
-      lastScrollTop = scrollTop;
-    });
-
-    // Навигация
-    function showHomeScreen() {
-      closeShorts();
-      catalogScreen.classList.remove('active');
-      homeScreen.classList.add('active');
-      setActiveNavItem(0);
-    }
-
-    function openCatalogScreen() {
-      closeShorts();
-      homeScreen.classList.remove('active');
-      catalogScreen.classList.add('active');
-      setActiveNavItem(2);
-    }
-
-    function toggleAboutApp() {
-      alert('Приложение Video App\nВерсия: 1.0.0 (Build 2026)');
-    }
-
-    function openCopyrightModal() {
-      document.getElementById('copyright-modal').classList.add('active');
-    }
-
-    function closeCopyrightModal() {
-      document.getElementById('copyright-modal').classList.remove('active');
-    }
-
-    function shareApp() {
-      if (navigator.share) {
-        navigator.share({
-          title: 'Video App',
-          text: 'Смотри классные видео и клипы в Video App!',
-          url: window.location.href
-        }).catch(() => {});
-      } else {
-        alert('Ссылка на приложение скопирована в буфер обмена!');
-      }
-    }
-
-    function rateApp() {
-      alert('Спасибо за вашу оценку! Функция перенаправления в Google Play / App Store скоро будет активирована.');
-    }
-
-    function setActiveNavItem(index) {
-      const items = document.querySelectorAll('.bottom-nav .nav-item');
-      items.forEach((item, i) => {
-        if (i === index) {
-          item.classList.add('active');
-        } else {
-          item.classList.remove('active');
-        }
-      });
-    }
-
-    function renderFeed(items) {
-      videoFeed.innerHTML = '';
-      if (items.length === 0) {
-        videoFeed.innerHTML = '<p style="text-align:center; color:#747d8c; margin-top:20px;">Ничего не найдено</p>';
-        return;
-      }
-
-      items.forEach((item, index) => {
-        const article = document.createElement('article');
-        article.className = 'video-card';
-        article.onclick = () => openShortsFeed(index);
-        article.innerHTML = `
-          <div class="thumbnail-wrapper">
-            <img src="${item.thumb}" alt="Thumb">
-            <div class="play-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-            </div>
+    <div class="settings-content">
+      <div class="section-block">
+        <div class="section-label">Редактировать профиль</div>
+        
+        <div class="edit-media-card">
+          <div class="edit-banner-preview">
+            <div class="edit-banner-overlay"></div>
+            <button class="change-banner-btn" onclick="alert('🖼️ Выберите новое изображение для фона')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              Сменить фон
+            </button>
           </div>
-          <div class="video-info">
-            <h3 class="video-title">${item.title}</h3>
-            <p class="video-author">${item.author}</p>
-            <p class="video-stats">${item.stats}</p>
-          </div>
-        `;
-        videoFeed.appendChild(article);
-      });
-    }
 
-    function handleSearch(query) {
-      const q = query.toLowerCase().trim();
-      const filtered = playlist.filter(video => 
-        video.title.toLowerCase().includes(q) || 
-        video.author.toLowerCase().includes(q)
-      );
-      renderFeed(filtered);
-    }
-
-    document.addEventListener('touchstart', unlockAudio, { once: true });
-    document.addEventListener('click', unlockAudio, { once: true });
-
-    function unlockAudio() {
-      unmuteCurrentVideo();
-    }
-
-    function renderShorts() {
-      shortsFeed.innerHTML = '';
-      playlist.forEach((video) => {
-        const item = document.createElement('div');
-        item.className = 'short-item';
-
-        item.innerHTML = `
-          <div class="iframe-wrapper">
-            <iframe 
-              data-src="${video.embedUrl}&js_api=1" 
-              allow="autoplay; encrypted-media; fullscreen; picture-in-picture;" 
-              allowfullscreen>
-            </iframe>
-
-            <div class="touch-layer" onclick="togglePlayPause(this)"></div>
-
-            <div class="custom-pause-mask" onclick="togglePlayPause(this)">
-              <div class="play-icon-circle">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <div class="edit-avatar-container">
+            <div class="edit-avatar-wrapper">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300" class="edit-avatar-img" id="editAvatarPreview" alt="Аватар">
+              <div class="avatar-upload-icon" onclick="alert('📷 Загрузить новую аватарку')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
               </div>
-              <span class="pause-text">Нажмите, чтобы продолжить</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">Имя</label>
+          <input type="text" class="custom-input" id="inputFirstName" value="Khadija">
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">Фамилия</label>
+          <input type="text" class="custom-input" id="inputLastName" placeholder="Введите фамилию" value="">
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">Username (Имя пользователя)</label>
+          <input type="text" class="custom-input" id="inputUsername" value="@khadija_92">
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">О себе (Bio)</label>
+          <textarea class="custom-input" id="inputBio">Мечтай. Действуй. Будь собой ✨</textarea>
+        </div>
+
+        <button class="save-main-btn" onclick="saveSettingsChanges()">
+          Сохранить изменения
+        </button>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Данные аккаунта</div>
+
+        <div class="settings-card-list">
+          <div class="settings-item" onclick="alert('✉️ Форма смены Email')">
+            <div class="item-left">
+              <div class="item-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <div class="item-title">Email почта</div>
+                <div class="item-sub">khadija.user@gmail.com</div>
+              </div>
+            </div>
+            <div class="item-arrow">›</div>
+          </div>
+
+          <div class="settings-item" onclick="alert('🔒 Форма смены Пароля')">
+            <div class="item-left">
+              <div class="item-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div>
+                <div class="item-title">Пароль</div>
+                <div class="item-sub">Изменен 3 месяца назад</div>
+              </div>
+            </div>
+            <div class="item-arrow">›</div>
+          </div>
+
+          <div class="settings-item danger-item" onclick="alert('⚠️ Подтверждение удаления профиля')">
+            <div class="item-left">
+              <div class="item-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </div>
+              <div>
+                <div class="item-title">Удалить профиль</div>
+                <div class="item-sub" style="color: rgba(239, 68, 68, 0.7);">Безвозвратное удаление</div>
+              </div>
+            </div>
+            <div class="item-arrow" style="color: var(--danger-color);">›</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-label">Активные устройства (2)</div>
+
+        <div class="settings-card-list" style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+          <div class="device-card">
+            <div class="device-info">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6c5ce7" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              <div>
+                <div class="item-title" style="display: flex; align-items: center; gap: 6px;">
+                  Samsung Galaxy S23
+                  <span class="device-status-dot" title="Онлайн"></span>
+                </div>
+                <div class="item-sub">Ташкент, Узбекистан • Приложение</div>
+              </div>
             </div>
           </div>
 
-          <div class="bottom-info">
-            <h2 class="short-title">${video.title}</h2>
-            <span class="short-author">${video.author}</span>
+          <div class="device-card">
+            <div class="device-info">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8a92a6" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <div>
+                <div class="item-title">Chrome Browser (Windows)</div>
+                <div class="item-sub">Ташкент, Узбекистан • Вчера в 21:40</div>
+              </div>
+            </div>
           </div>
-        `;
-        shortsFeed.appendChild(item);
-      });
+
+          <button class="btn-terminate" onclick="alert('🚪 Все остальные сеансы успешно завершены')">
+            Завершить все остальные сеансы
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELEGRAM ЭКРАН КАНАЛА -->
+  <div class="channel-view-screen" id="channelViewScreen">
+    <div class="tg-channel-header">
+      <button class="tg-back-btn" onclick="closeChannelView()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+
+      <div class="tg-channel-meta" onclick="alert('Информация о канале')">
+        <div class="tg-channel-avatar-head" id="tgHeaderAvatar"></div>
+        <div class="tg-channel-titles">
+          <div class="tg-channel-name-head" id="tgHeaderTitle">TANHO Official</div>
+          <div class="tg-channel-subs-head" id="tgHeaderSubs">45.2K подписчиков</div>
+        </div>
+      </div>
+
+      <button class="tg-back-btn" onclick="toggleTgChannelSearch()" title="Поиск в канале">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+
+      <button class="tg-back-btn" onclick="toggleTgMenu()" title="Меню">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </button>
+
+      <div class="tg-dropdown-menu" id="tgDropdownMenu">
+        <button class="tg-menu-item" onclick="alert('🚩 Жалоба отправлена администраторам'); hideTgMenu();">
+          <span>🚩 Пожаловаться</span>
+        </button>
+        <button class="tg-menu-item danger" id="tgMenuUnsubBtn" onclick="unsubscribeCurrentChannel()">
+          <span>🚪 Отписаться</span>
+        </button>
+
+        <div style="height:1px; background:var(--glass-border); margin:4px 0;"></div>
+        
+        <button class="tg-menu-item" onclick="openEditChannelModal()">
+          <span>✏️ Редактировать канал (Админ)</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="tg-channel-search-bar" id="tgChannelSearchBar">
+      <input type="text" class="tg-search-input-field" id="tgChannelSearchInput" placeholder="Поиск постов в канале..." oninput="searchInChannel(this.value)">
+    </div>
+
+    <div class="tg-channel-content" id="tgChannelPostsContainer"></div>
+
+    <div class="tg-channel-bottom-bar" id="tgChannelBottomBar">
+      <button class="tg-subscribe-big-btn" onclick="subscribeCurrentChannel()">ПОДПИСАТЬСЯ</button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 7. НИЖНЕЕ МЕНЮ (BOTTOM NAVIGATION)         -->
+  <!-- ========================================== -->
+  <nav class="bottom-nav">
+    <button class="nav-tab-btn active" onclick="switchPage('pageMain', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Главная</span>
+    </button>
+
+    <button class="nav-tab-btn" onclick="switchPage('pageReels', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      <span>Интересное</span>
+    </button>
+
+    <button class="nav-center-add" onclick="openEditor()" title="Добавить пост">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+
+    <button class="nav-tab-btn" onclick="switchPage('pageChannels', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      <span>Подписки</span>
+    </button>
+
+    <button class="nav-tab-btn" onclick="switchPage('pageProfile', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Профиль</span>
+    </button>
+  </nav>
+
+  <!-- РЕДАКТОР ПОСТА (МОДАЛКА) -->
+  <div class="editor-modal" id="editorModal">
+    <div class="editor-header">
+      <button class="close-editor-btn" onclick="closeEditor()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <h1 class="editor-header-title">Новый пост</h1>
+      <button class="icon-btn-circle" onclick="toggleTextPosition()"><svg id="headerTogglePosIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button>
+    </div>
+
+    <div class="editor-body" id="editorBody">
+      <div class="attachments-preview" id="attachmentsPreview">
+        <div class="stickers-row" id="stickers-row"></div>
+        <div class="gallery-container" id="gallery-container">
+          <div class="gallery-header"><span class="gallery-title">Фотографии (<span id="photo-count">0</span>)</span></div>
+          <div class="photo-grid" id="photo-grid" data-count="0"></div>
+        </div>
+        <div id="music-container"></div>
+        <div id="video-container"></div>
+        <div id="location-container"></div>
+      </div>
+
+      <div class="text-inputs-box" id="textInputsBox">
+        <input type="text" class="input-title" id="article-title" placeholder="Заголовок поста...">
+        <textarea class="input-content" id="article-content" placeholder="Напишите текст публикации..."></textarea>
+      </div>
+    </div>
+
+    <div class="bottom-section">
+      <div class="sticker-popover" id="sticker-popover">
+        <div class="sticker-item" data-src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f525/512.webp"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f525/512.webp" alt="🔥"></div>
+        <div class="sticker-item" data-src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f680/512.webp"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f680/512.webp" alt="🚀"></div>
+        <div class="sticker-item" data-src="https://fonts.gstatic.com/s/e/notoemoji/latest/2764_fe0f/512.webp"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/2764_fe0f/512.webp" alt="❤️"></div>
+        <div class="sticker-item" data-src="https://fonts.gstatic.com/s/e/notoemoji/latest/26a1/512.webp"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/26a1/512.webp" alt="⚡"></div>
+      </div>
+
+      <div class="glass-dock">
+        <div class="dock-btn btn-sticker" id="btn-sticker"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg></div>
+        <div class="dock-btn btn-image" id="btn-image"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+        <input type="file" id="image-file-input" accept="image/*" multiple style="display: none;">
+        <div class="dock-btn btn-music" id="btn-music"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+        <input type="file" id="music-file-input" accept="audio/*" style="display: none;">
+        <div class="dock-btn btn-video" id="btn-video"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>
+        <div class="dock-btn btn-location" id="btn-location"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div class="send-btn" onclick="publishArticle()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="edit-channel-modal">
+    <div class="dialog-box">
+      <div class="dialog-title">Настройки канала (Админ)</div>
+      <input type="text" class="dialog-input" id="edit-ch-name" placeholder="Название канала">
+      <input type="text" class="dialog-input" id="edit-ch-username" placeholder="@username канала">
+      <input type="text" class="dialog-input" id="edit-ch-avatar" placeholder="URL картинки аватарки">
+      <div class="dialog-option" onclick="saveChannelEdits()" style="justify-content:center; background:var(--primary-accent); font-weight:700;">Сохранить изменения</div>
+      <div class="dialog-option" onclick="closeModals()" style="justify-content:center; color:rgba(255,255,255,0.4);">Отмена</div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="location-modal">
+    <div class="dialog-box">
+      <div class="dialog-title">Локация</div>
+      <input type="text" class="dialog-input" id="custom-location-input" placeholder="Напишите город/страну...">
+      <div class="dialog-option" onclick="attachCustomLocation()" style="justify-content:center; background:var(--primary-accent);">Добавить</div>
+      <div class="dialog-option" onclick="closeModals()" style="justify-content:center; color:rgba(255,255,255,0.4);">Отмена</div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="video-modal">
+    <div class="dialog-box">
+      <div class="dialog-title">Ссылка на VK Video или MP4</div>
+      <input type="text" class="dialog-input" id="video-url-input" placeholder="https://vk.com/video_ext.php?... или .mp4">
+      <input type="text" class="dialog-input" id="video-name-input" placeholder="Название видео">
+      <div class="error-text" id="youtube-error">❌ Ссылки на YouTube запрещены! Используйте VK Video или MP4.</div>
+      <div class="dialog-option" onclick="attachVideoFromInput()" style="justify-content:center; background:var(--primary-accent);">Встроить</div>
+      <div class="dialog-option" onclick="closeModals()" style="justify-content:center; color:rgba(255,255,255,0.4);">Отмена</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- СКТРИПТЫ И ИНТЕРАКТИВ -->
+<script>
+  // 💬 🔥 УПРАВЛЕНИЕ ОБЩИМ ЧАТОМ
+  function openGeneralChat() {
+    document.getElementById('generalChatScreen').classList.add('active');
+    const container = document.getElementById('chatMessagesContainer');
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function closeGeneralChat() {
+    document.getElementById('generalChatScreen').classList.remove('active');
+  }
+
+  function sendChatMessage() {
+    const input = document.getElementById('chatTextInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const container = document.getElementById('chatMessagesContainer');
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const msgHTML = `
+      <div class="message-bubble outgoing">
+        <div class="message-content-box">
+          ${text}
+          <span class="message-time-stamp">${timeStr}</span>
+        </div>
+      </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', msgHTML);
+    input.value = '';
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // 🔥 СИМУЛЯЦИЯ ИНДИКАТОРА "ПЕЧАТАЕТ..." В ШАПКЕ ЧАТА
+  const typingUsers = ['Алишер', 'Мадина', 'Сардор', 'Шахзод', 'Зарина'];
+  const statusEl = document.getElementById('chatHeaderStatus');
+  const defaultStatus = '1,284 участников • 142 онлайн';
+
+  setInterval(() => {
+    if (Math.random() > 0.4) {
+      const randomUser = typingUsers[Math.floor(Math.random() * typingUsers.length)];
+      statusEl.innerText = `${randomUser} печатает...`;
+      statusEl.classList.add('typing');
+
+      setTimeout(() => {
+        statusEl.innerText = defaultStatus;
+        statusEl.classList.remove('typing');
+      }, 3500);
     }
+  }, 9000);
 
-    function getPlayer(iframe) {
-      if (vkPlayers.has(iframe)) return vkPlayers.get(iframe);
-      if (typeof VK !== 'undefined' && VK.VideoPlayer) {
-        const player = VK.VideoPlayer(iframe);
-        vkPlayers.set(iframe, player);
-        return player;
-      }
-      return null;
+  // НАСТРОЙКИ
+  const openSettingsBtn = document.getElementById('openSettingsBtn');
+  const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+  const settingsPage = document.getElementById('settingsPage');
+
+  openSettingsBtn.addEventListener('click', () => { settingsPage.classList.add('active'); });
+  closeSettingsBtn.addEventListener('click', () => { settingsPage.classList.remove('active'); });
+
+  function saveSettingsChanges() {
+    const firstName = document.getElementById('inputFirstName').value.trim();
+    const lastName = document.getElementById('inputLastName').value.trim();
+    const username = document.getElementById('inputUsername').value.trim();
+    const bio = document.getElementById('inputBio').value.trim();
+
+    const fullName = (firstName + ' ' + lastName).trim() || 'Пользователь';
+
+    document.getElementById('displayProfileName').innerText = fullName;
+    if (username) document.getElementById('displayProfileHandle').innerText = username;
+    if (bio) document.getElementById('displayProfileBio').innerText = bio;
+
+    settingsPage.classList.remove('active');
+  }
+
+  function filterProfileFeed(chipEl) {
+    document.querySelectorAll('.filter-tabs .chip').forEach(c => c.classList.remove('active'));
+    chipEl.classList.add('active');
+  }
+
+  // БАЗА КАНАЛОВ
+  let channelsData = {
+    'tanho_off': {
+      id: 'tanho_off',
+      name: 'TANHO Official',
+      username: '@tanho_official',
+      avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100',
+      subsCount: 45200,
+      isSubscribed: false,
+      posts: [
+        {
+          id: 1,
+          title: 'Обновление профиля и системы каналов!',
+          content: 'Теперь профиль выполнен без внешней шапки, с баннером, полной статистикой и настройками аккаунта.',
+          time: '2 часа назад',
+          image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600'
+        }
+      ]
     }
+  };
 
-    function unmuteVideo(iframe) {
-      const player = getPlayer(iframe);
-      if (player) {
-        if (typeof player.unmute === 'function') player.unmute();
-        if (typeof player.setVolume === 'function') player.setVolume(1);
-      }
-      const win = iframe.contentWindow;
-      if (win) {
-        const cmds = [
-          { type: 'player:unmute' },
-          { type: 'player:setVolume', volume: 1 },
-          { method: 'unmute' },
-          { action: 'unmute' }
-        ];
-        cmds.forEach(cmd => win.postMessage(JSON.stringify(cmd), '*'));
-      }
-    }
+  let activeChannelId = null;
+  let selectedTextPosition = 'bottom';
 
-    function unmuteCurrentVideo() {
-      const activeItem = document.querySelector('.short-item');
-      if (activeItem) {
-        const iframe = activeItem.querySelector('iframe');
-        if (iframe) unmuteVideo(iframe);
-      }
-    }
+  function switchPage(pageId, btnEl) {
+    const appHeader = document.getElementById('appHeader');
+    const headerLogo = document.getElementById('headerLogo');
 
-    function sendVkCommand(iframe, action) {
-      const win = iframe.contentWindow;
-      if (!win) return;
-      const cmds = [
-        { type: `player:${action}` },
-        { method: action },
-        { action: action }
-      ];
-      cmds.forEach(cmd => win.postMessage(JSON.stringify(cmd), '*'));
-    }
+    document.querySelectorAll('.page-screen').forEach(p => p.classList.remove('active'));
+    document.getElementById('pageReels').classList.remove('active');
+    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
 
-    function togglePlayPause(element) {
-      unlockAudio();
-      const item = element.closest('.short-item');
-      const iframe = item.querySelector('iframe');
-      const mask = item.querySelector('.custom-pause-mask');
-      const player = getPlayer(iframe);
+    if (pageId === 'pageReels') {
+      appHeader.style.display = 'none';
+      document.getElementById('pageReels').classList.add('active');
+    } else if (pageId === 'pageProfile') {
+      appHeader.style.display = 'none';
+      document.getElementById('pageProfile').classList.add('active');
+    } else {
+      appHeader.style.display = 'flex';
+      document.getElementById(pageId).classList.add('active');
 
-      if (mask.classList.contains('active')) {
-        mask.classList.remove('active');
-        if (player) player.play();
-        sendVkCommand(iframe, 'play');
-        unmuteVideo(iframe);
+      if (pageId === 'pageChannels') {
+        headerLogo.innerText = 'Подписки';
+        renderChannelsList();
       } else {
-        mask.classList.add('active');
-        if (player) player.pause();
-        sendVkCommand(iframe, 'pause');
+        headerLogo.innerText = 'TANHO';
       }
     }
+    btnEl.classList.add('active');
+  }
 
-    function openShortsFeed(startIndex = 0) {
-      renderShorts();
-      setActiveNavItem(1);
-      
-      homeScreen.classList.remove('active');
-      catalogScreen.classList.remove('active');
-      shortsScreen.classList.add('active');
-      bottomNav.style.display = 'none';
+  function renderChannelsList() {
+    const container = document.getElementById('channelsListContainer');
+    const chatCardHTML = container.querySelector('.featured-chat') ? container.querySelector('.featured-chat').outerHTML : '';
+    container.innerHTML = chatCardHTML;
 
-      setupObserver();
+    Object.values(channelsData).forEach(ch => {
+      const card = document.createElement('div');
+      card.className = 'channel-card';
+      card.onclick = () => openChannel(ch.id);
+      card.innerHTML = `
+        <div class="channel-avatar" style="background-image: url('${ch.avatar}');"></div>
+        <div class="channel-info">
+          <div class="channel-title">${ch.name}</div>
+          <div class="channel-subscribers">${formatSubs(ch.subsCount)} подписчиков</div>
+          <div class="channel-last-post">${ch.posts[0] ? ch.posts[0].title : 'Канал открыт'}</div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
 
-      const items = shortsFeed.querySelectorAll('.short-item');
-      if (items[startIndex]) {
-        items[startIndex].scrollIntoView();
+  function formatSubs(count) {
+    return count >= 1000 ? (count / 1000).toFixed(1) + 'K' : count;
+  }
+
+  function openChannel(chId) {
+    activeChannelId = chId;
+    const ch = channelsData[chId];
+    if (!ch) return;
+
+    document.getElementById('tgHeaderAvatar').style.backgroundImage = `url('${ch.avatar}')`;
+    document.getElementById('tgHeaderTitle').innerText = ch.name;
+    document.getElementById('tgHeaderSubs').innerText = `${formatSubs(ch.subsCount)} подписчиков • ${ch.username}`;
+
+    updateChannelSubscribeUI();
+    renderChannelPosts(ch.posts);
+    document.getElementById('channelViewScreen').classList.add('active');
+  }
+
+  function closeChannelView() {
+    document.getElementById('channelViewScreen').classList.remove('active');
+    hideTgMenu();
+    document.getElementById('tgChannelSearchBar').classList.remove('active');
+  }
+
+  function updateChannelSubscribeUI() {
+    const ch = channelsData[activeChannelId];
+    const bottomBar = document.getElementById('tgChannelBottomBar');
+    const mainFeedBtn = document.getElementById(`mainFeedBtn_${activeChannelId}`);
+
+    if (ch.isSubscribed) {
+      bottomBar.classList.add('hidden');
+      if (mainFeedBtn) {
+        mainFeedBtn.className = 'channel-action-btn open';
+        mainFeedBtn.innerText = 'Открыть';
+      }
+    } else {
+      bottomBar.classList.remove('hidden');
+      if (mainFeedBtn) {
+        mainFeedBtn.className = 'channel-action-btn subscribe';
+        mainFeedBtn.innerText = '+ Подписаться';
       }
     }
+  }
 
-    function closeShorts() {
-      document.querySelectorAll('.short-item iframe').forEach(iframe => iframe.src = '');
-      vkPlayers.clear();
-      if (observer) observer.disconnect();
+  function subscribeCurrentChannel() {
+    if (!activeChannelId) return;
+    channelsData[activeChannelId].isSubscribed = true;
+    channelsData[activeChannelId].subsCount += 1;
+    document.getElementById('tgHeaderSubs').innerText = `${formatSubs(channelsData[activeChannelId].subsCount)} подписчиков`;
+    updateChannelSubscribeUI();
+  }
 
-      shortsScreen.classList.remove('active');
-      bottomNav.style.display = 'flex';
-      header.classList.remove('hide');
-      bottomNav.classList.remove('hide');
+  function unsubscribeCurrentChannel() {
+    if (!activeChannelId) return;
+    channelsData[activeChannelId].isSubscribed = false;
+    channelsData[activeChannelId].subsCount = Math.max(0, channelsData[activeChannelId].subsCount - 1);
+    document.getElementById('tgHeaderSubs').innerText = `${formatSubs(channelsData[activeChannelId].subsCount)} подписчиков`;
+    updateChannelSubscribeUI();
+    hideTgMenu();
+  }
+
+  function handleMainFeedChannelBtn(chId) {
+    const ch = channelsData[chId];
+    if (!ch) return;
+    if (ch.isSubscribed) {
+      openChannel(chId);
+    } else {
+      ch.isSubscribed = true;
+      ch.subsCount += 1;
+      updateChannelSubscribeUI();
+    }
+  }
+
+  function renderChannelPosts(postsList) {
+    const container = document.getElementById('tgChannelPostsContainer');
+    container.innerHTML = '';
+    postsList.forEach(p => {
+      const card = document.createElement('article');
+      card.className = 'post-card';
+      card.innerHTML = `
+        <div class="post-header">
+          <div class="post-author">
+            <div class="author-avatar" style="background-image: url('${channelsData[activeChannelId].avatar}');"></div>
+            <div class="author-meta">
+              <div class="author-name">${channelsData[activeChannelId].name}</div>
+              <div class="post-location-tag">${p.time}</div>
+            </div>
+          </div>
+        </div>
+        ${p.image ? `<div class="post-slider-wrapper"><div class="slide-item"><img src="${p.image}"></div></div>` : ''}
+        <div class="post-content-text">
+          <h2 class="post-title-text">${p.title}</h2>
+          <p class="caption">${p.content}</p>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function toggleTgChannelSearch() {
+    const searchBar = document.getElementById('tgChannelSearchBar');
+    searchBar.classList.toggle('active');
+    if (searchBar.classList.contains('active')) {
+      document.getElementById('tgChannelSearchInput').focus();
+    }
+  }
+
+  function searchInChannel(query) {
+    if (!activeChannelId) return;
+    const q = query.toLowerCase().trim();
+    const filtered = channelsData[activeChannelId].posts.filter(p => 
+      p.title.toLowerCase().includes(q) || p.content.toLowerCase().includes(q)
+    );
+    renderChannelPosts(filtered);
+  }
+
+  function toggleTgMenu() { document.getElementById('tgDropdownMenu').classList.toggle('active'); }
+  function hideTgMenu() { document.getElementById('tgDropdownMenu').classList.remove('active'); }
+
+  function openEditChannelModal() {
+    hideTgMenu();
+    const ch = channelsData[activeChannelId];
+    document.getElementById('edit-ch-name').value = ch.name;
+    document.getElementById('edit-ch-username').value = ch.username;
+    document.getElementById('edit-ch-avatar').value = ch.avatar;
+    document.getElementById('edit-channel-modal').classList.add('active');
+  }
+
+  function saveChannelEdits() {
+    const newName = document.getElementById('edit-ch-name').value.trim();
+    const newUsername = document.getElementById('edit-ch-username').value.trim();
+    const newAvatar = document.getElementById('edit-ch-avatar').value.trim();
+
+    if (newName && activeChannelId) {
+      channelsData[activeChannelId].name = newName;
+      channelsData[activeChannelId].username = newUsername;
+      if (newAvatar) channelsData[activeChannelId].avatar = newAvatar;
+
+      document.getElementById('tgHeaderTitle').innerText = newName;
+      document.getElementById('tgHeaderAvatar').style.backgroundImage = `url('${channelsData[activeChannelId].avatar}')`;
+      closeModals();
+      renderChannelsList();
+    }
+  }
+
+  // ОБЩИЕ ФУНКЦИИ
+  function openSearch() {
+    document.getElementById('headerLogo').style.display = 'none';
+    document.getElementById('headerActions').style.display = 'none';
+    const searchBox = document.getElementById('headerSearchBox');
+    searchBox.classList.add('active');
+    document.getElementById('headerSearchInput').focus();
+  }
+
+  function closeSearch() {
+    document.getElementById('headerSearchBox').classList.remove('active');
+    document.getElementById('headerLogo').style.display = 'block';
+    document.getElementById('headerActions').style.display = 'flex';
+  }
+
+  function toggleTheme() { document.body.classList.toggle('light-theme'); }
+  function openEditor() { document.getElementById('editorModal').classList.add('open'); }
+  function closeEditor() { document.getElementById('editorModal').classList.remove('open'); }
+
+  function toggleTextPosition() {
+    const iconSpan = document.getElementById('headerTogglePosIcon');
+    const editorBody = document.getElementById('editorBody');
+    const textInputsBox = document.getElementById('textInputsBox');
+    const attachmentsPreview = document.getElementById('attachmentsPreview');
+
+    if (selectedTextPosition === 'bottom') {
+      selectedTextPosition = 'top';
+      iconSpan.innerHTML = `<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>`;
+      editorBody.insertBefore(textInputsBox, attachmentsPreview);
+    } else {
+      selectedTextPosition = 'bottom';
+      iconSpan.innerHTML = `<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>`;
+      editorBody.insertBefore(attachmentsPreview, textInputsBox);
+    }
+  }
+
+  function togglePostExpand(element) {
+    const card = element.closest('.post-card');
+    if (!card) return;
+    card.classList.toggle('expanded');
+    const btn = card.querySelector('.expand-toggle-btn');
+    if (btn) btn.innerText = card.classList.contains('expanded') ? 'Свернуть ↑' : 'Читать полностью ↓';
+  }
+
+  // СТИКЕРЫ И ГАЛЕРЕЯ
+  const btnSticker = document.getElementById('btn-sticker');
+  const stickerPopover = document.getElementById('sticker-popover');
+  const stickersRow = document.getElementById('stickers-row');
+  let attachedStickers = [];
+
+  btnSticker.addEventListener('click', (e) => { e.stopPropagation(); stickerPopover.classList.toggle('active'); });
+  document.querySelectorAll('.sticker-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const src = item.getAttribute('data-src');
+      attachedStickers.push(src);
+      const card = document.createElement('div');
+      card.className = 'sticker-chip';
+      card.innerHTML = `<img src="${src}"><button class="remove-badge-btn" onclick="this.parentElement.remove()">×</button>`;
+      stickersRow.appendChild(card);
+      stickerPopover.classList.remove('active');
+    });
+  });
+
+  const galleryContainer = document.getElementById('gallery-container');
+  const photoGrid = document.getElementById('photo-grid');
+  let attachedPhotos = [];
+
+  document.getElementById('btn-image').addEventListener('click', () => document.getElementById('image-file-input').click());
+  document.getElementById('image-file-input').addEventListener('change', (e) => {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        attachedPhotos.push({ id: Date.now() + Math.random(), url: event.target.result });
+        renderGallery();
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  });
+
+  function renderGallery() {
+    if (!attachedPhotos.length) { galleryContainer.classList.remove('active'); return; }
+    galleryContainer.classList.add('active');
+    document.getElementById('photo-count').innerText = attachedPhotos.length;
+    photoGrid.setAttribute('data-count', Math.min(attachedPhotos.length, 2));
+    photoGrid.innerHTML = '';
+    attachedPhotos.slice(0, 2).forEach((photo) => {
+      const item = document.createElement('div');
+      item.className = 'photo-item';
+      item.innerHTML = `<img src="${photo.url}"><button class="remove-badge-btn" onclick="removePhoto(${photo.id})">×</button>`;
+      photoGrid.appendChild(item);
+    });
+  }
+
+  function removePhoto(id) { attachedPhotos = attachedPhotos.filter(p => p.id !== id); renderGallery(); }
+
+  // МУЗЫКА И ВИДЕО МОДАЛКИ
+  const musicInput = document.getElementById('music-file-input');
+  let attachedAudioData = null;
+
+  document.getElementById('btn-music').addEventListener('click', () => musicInput.click());
+  musicInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      attachedAudioData = { name: file.name, url: URL.createObjectURL(file) };
+      document.getElementById('music-container').innerHTML = `
+        <div class="tg-audio-card">
+          <button class="tg-play-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+          <div class="tg-audio-body"><div class="tg-audio-title">${file.name}</div><div class="tg-audio-time">Аудиозапись ready</div></div>
+          <button class="remove-badge-btn" onclick="clearAudio()">×</button>
+        </div>
+      `;
+    }
+  });
+  function clearAudio() { document.getElementById('music-container').innerHTML = ''; attachedAudioData = null; }
+
+  let attachedVideoData = null;
+  document.getElementById('btn-video').addEventListener('click', () => {
+    document.getElementById('video-url-input').value = '';
+    document.getElementById('youtube-error').style.display = 'none';
+    document.getElementById('video-modal').classList.add('active');
+  });
+
+  function attachVideoFromInput() {
+    const url = document.getElementById('video-url-input').value.trim();
+    const customName = document.getElementById('video-name-input').value.trim() || 'Видеоролик';
+
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      document.getElementById('youtube-error').style.display = 'block';
+      return;
     }
 
-    function setupObserver() {
-      if (observer) observer.disconnect();
+    const targetUrl = url || 'https://vk.com/video_ext.php?oid=-237335724&id=456239089&js_api=1';
+    attachedVideoData = { url: targetUrl, title: customName };
 
-      observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          const iframe = entry.target.querySelector('iframe');
-          const mask = entry.target.querySelector('.custom-pause-mask');
-          const baseUrl = iframe.getAttribute('data-src');
+    let playerHtml = targetUrl.endsWith('.mp4') 
+      ? `<video controls src="${targetUrl}"></video>` 
+      : `<iframe src="${targetUrl}"></iframe>`;
 
-          if (entry.isIntersecting) {
-            mask.classList.remove('active');
-            iframe.src = `${baseUrl}&autoplay=1`;
-            iframe.onload = () => {
-              setTimeout(() => unmuteVideo(iframe), 300);
-            };
-          } else {
-            mask.classList.remove('active');
-            iframe.src = '';
-            vkPlayers.delete(iframe);
-          }
-        });
-      }, { root: shortsFeed, threshold: 0.6 });
+    document.getElementById('video-container').innerHTML = `
+      <div style="padding:0; position:relative;">
+        <div style="width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000;">${playerHtml}</div>
+        <button class="remove-badge-btn" onclick="clearVideo()">×</button>
+      </div>
+    `;
+    closeModals();
+  }
+  function clearVideo() { document.getElementById('video-container').innerHTML = ''; attachedVideoData = null; }
 
-      document.querySelectorAll('.short-item').forEach(item => observer.observe(item));
+  let selectedLocation = null;
+  document.getElementById('btn-location').addEventListener('click', () => document.getElementById('location-modal').classList.add('active'));
+  function attachCustomLocation() {
+    const val = document.getElementById('custom-location-input').value.trim();
+    if (val) {
+      selectedLocation = '📍 ' + val;
+      document.getElementById('location-container').innerHTML = `<div style="color:#38bdf8; font-size:12px;">${selectedLocation} <button class="remove-badge-btn" onclick="clearLocation()">×</button></div>`;
+    }
+    closeModals();
+  }
+  function clearLocation() { document.getElementById('location-container').innerHTML = ''; selectedLocation = null; }
+  function closeModals() { 
+    document.getElementById('location-modal').classList.remove('active'); 
+    document.getElementById('video-modal').classList.remove('active'); 
+    document.getElementById('edit-channel-modal').classList.remove('active');
+  }
+
+  function toggleLike(btn) {
+    const svg = btn.querySelector('.heart-icon');
+    const countSpan = btn.querySelector('.likes-count');
+    let count = parseInt(countSpan.textContent.replace(/\s/g, '')) || 0;
+    if (svg.getAttribute('fill') === 'none') {
+      svg.setAttribute('fill', 'var(--like-red)'); svg.setAttribute('stroke', 'var(--like-red)'); count++;
+    } else {
+      svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor'); count--;
+    }
+    countSpan.textContent = count;
+  }
+
+  function toggleReelLike(chip) {
+    const svg = chip.querySelector('.reel-heart-icon');
+    const valSpan = chip.querySelector('.reel-likes-val');
+    let count = parseInt(valSpan.textContent) || 0;
+    if (svg.getAttribute('fill') === 'none') {
+      svg.setAttribute('fill', 'var(--like-red)'); svg.setAttribute('stroke', 'var(--like-red)'); count++;
+    } else {
+      svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor'); count--;
+    }
+    valSpan.textContent = count;
+  }
+
+  function handleSliderScroll(slider) {
+    const currentIndex = Math.round(slider.scrollLeft / slider.clientWidth);
+    const container = slider.parentElement;
+    const badge = container.querySelector('.slider-badge');
+    const dots = container.querySelectorAll('.dot');
+    if (badge) badge.textContent = `${currentIndex + 1}/${dots.length}`;
+    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === currentIndex));
+  }
+
+  // 🚀 ПУБЛИКАЦИЯ В ЛЕНТУ
+  function publishArticle() {
+    const title = document.getElementById('article-title').value.trim();
+    const content = document.getElementById('article-content').value.trim();
+
+    if (!title) { alert('Пожалуйста, введите заголовок поста!'); return; }
+
+    const textBlockHTML = `
+      <div class="post-content-text" onclick="togglePostExpand(this)">
+        <h2 class="post-title-text">${title}</h2>
+        ${content ? `<p class="caption">${content}</p><button class="expand-toggle-btn">Читать полностью ↓</button>` : ''}
+      </div>
+    `;
+
+    let mediaContentHTML = '';
+    if (attachedPhotos.length > 0) {
+      mediaContentHTML = `
+        <div class="post-slider-wrapper" onclick="togglePostExpand(this)">
+          <div class="post-media-slider" onscroll="handleSliderScroll(this)">
+            ${attachedPhotos.map(p => `<div class="slide-item"><img src="${p.url}"></div>`).join('')}
+          </div>
+          ${attachedPhotos.length > 1 ? `<div class="slider-badge">1/${attachedPhotos.length}</div>` : ''}
+          <div class="slider-dots">${Array(attachedPhotos.length).fill('<span class="dot"></span>').join('')}</div>
+        </div>
+      `;
+    } else if (attachedVideoData) {
+      const vPlayer = attachedVideoData.url.endsWith('.mp4')
+        ? `<video controls src="${attachedVideoData.url}"></video>`
+        : `<iframe src="${attachedVideoData.url}"></iframe>`;
+      mediaContentHTML = `<div style="padding: 0 14px;"><div style="width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden;">${vPlayer}</div></div>`;
     }
 
-    renderFeed(playlist);
-  </script>
+    let attachmentsBottomHTML = '';
+    if (attachedAudioData) {
+      attachmentsBottomHTML = `
+        <div class="post-attachments-bottom">
+          <div class="tg-audio-card">
+            <button class="tg-play-btn" onclick="new Audio('${attachedAudioData.url}').play();"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+            <div class="tg-audio-body"><div class="tg-audio-title">${attachedAudioData.name}</div><div class="tg-audio-time">Аудиозапись • TANHO</div></div>
+          </div>
+        </div>
+      `;
+    }
+
+    const bodyOrderHTML = (selectedTextPosition === 'top') 
+      ? textBlockHTML + mediaContentHTML + attachmentsBottomHTML
+      : mediaContentHTML + attachmentsBottomHTML + textBlockHTML;
+
+    const currentUserName = document.getElementById('displayProfileName').innerText;
+
+    const newPostCardHTML = `
+      <article class="post-card">
+        <div class="post-header">
+          <div class="post-author" onclick="switchPage('pageProfile', document.querySelectorAll('.nav-tab-btn')[4])">
+            <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100');"></div>
+            <div class="author-meta">
+              <div class="author-name">${currentUserName}</div>
+              ${selectedLocation ? `<div class="post-location-tag">${selectedLocation}</div>` : ''}
+            </div>
+          </div>
+          <span class="post-time-top">только что</span>
+        </div>
+
+        ${bodyOrderHTML}
+
+        <div class="post-actions">
+          <div class="action-group">
+            <button class="action-with-count" onclick="toggleLike(this)"><svg class="heart-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="likes-count">0</span></button>
+            <button class="action-with-count" onclick="alert('💬 Комментарии')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="comments-count">0</span></button>
+            <button class="icon-btn" onclick="alert('✈️ Пересылка')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+          </div>
+          <button class="icon-btn" title="Закладка"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+        </div>
+      </article>
+    `;
+
+    document.getElementById('postsContainer').insertAdjacentHTML('afterbegin', newPostCardHTML);
+
+    document.getElementById('article-title').value = '';
+    document.getElementById('article-content').value = '';
+    attachedPhotos = [];
+    clearVideo();
+    clearAudio();
+    clearLocation();
+    renderGallery();
+    closeEditor();
+
+    switchPage('pageMain', document.querySelectorAll('.nav-tab-btn')[0]);
+  }
+</script>
 
 </body>
 </html>
