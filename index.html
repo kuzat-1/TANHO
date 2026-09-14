@@ -195,6 +195,38 @@
       justify-content: space-between; padding: 16px 16px 20px 16px;
     }
 
+    .reels-tabs-header {
+      height: 46px; display: flex; align-items: center; justify-content: center;
+      background: rgba(8, 9, 16, 0.96); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; z-index: 5;
+    }
+    .reels-segmented {
+      display: flex; background: rgba(255,255,255,0.08); border-radius: 999px; padding: 3px; gap: 3px;
+    }
+    .seg-btn {
+      padding: 7px 20px; border-radius: 999px; border: none; background: transparent;
+      color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+    }
+    .seg-btn.active { background: var(--primary-accent); color: #fff; box-shadow: 0 2px 10px rgba(124,58,237,0.35); }
+
+    .reels-tab-content { display: none; flex: 1; overflow-y: auto; scrollbar-width: none; flex-direction: column; }
+    .reels-tab-content.active { display: flex; }
+    .reels-tab-content::-webkit-scrollbar { display: none; }
+
+    /* YouTube feed */
+    .yt-feed { display: flex; flex-direction: column; gap: 0; background: var(--bg-dark); padding-bottom: 8px; }
+    .yt-card { background: var(--bg-main); border-bottom: 1px solid var(--border-color); padding-bottom: 8px; cursor: pointer; }
+    .yt-thumb { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; }
+    .yt-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .yt-duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.85); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 6px; border-radius: 6px; }
+    .yt-info { display: flex; gap: 10px; padding: 10px 12px 2px 12px; align-items: flex-start; }
+    .yt-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+    .yt-meta { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+    .yt-title { font-size: 14.5px; font-weight: 700; line-height: 1.35; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .yt-channel { font-size: 12.5px; color: var(--text-muted); }
+    .yt-stats { font-size: 11.5px; color: var(--text-muted); display: flex; gap: 6px; align-items: center; }
+    .yt-more-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; flex-shrink: 0; }
+
     .reel-top-bar { display: flex; justify-content: space-between; align-items: center; z-index: 10; padding-top: 8px; }
     .reel-icon-btn {
       width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 0, 0, 0.4);
@@ -734,41 +766,75 @@
     </div>
   </main>
 
-  <!-- Вкладка 2: РИЛСЫ -->
+  <!-- Вкладка 2: ИНТЕРЕСНОЕ (Лента + Reels) -->
   <div class="reels-screen-container" id="pageReels">
-    <div class="reels-vertical-feed">
-      <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800');">
-        
-        <div class="reel-top-bar">
-          <button class="reel-icon-btn" onclick="switchPage('pageMain', document.querySelectorAll('.nav-tab-btn')[0])">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          </button>
-          <button class="reel-icon-btn">⋮</button>
-        </div>
-
-        <div class="reel-center-action">
-          <button class="use-idea-btn" onclick="openEditor()">
-            <span>✨ Использовать идею</span>
-          </button>
-        </div>
-
-        <div class="reel-bottom-content">
-          <div class="reel-actions-row">
-            <div class="reel-action-chip" onclick="toggleReelLike(this)">
-              <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              <span class="reel-likes-val">15</span>
+    <div class="reels-tabs-header">
+      <div class="reels-segmented">
+        <button class="seg-btn active" id="segFeedBtn" onclick="switchReelsTab('feed')">Лента</button>
+        <button class="seg-btn" id="segReelsBtn" onclick="switchReelsTab('reels')">Reels</button>
+      </div>
+    </div>
+    <!-- ЛЕНТА - YouTube стиль -->
+    <div class="reels-tab-content active" id="reelsFeedTab">
+      <div class="yt-feed" id="ytFeed"></div>
+    </div>
+    <!-- REELS - вертикальная лента -->
+    <div class="reels-tab-content" id="reelsReelsTab">
+      <div class="reels-vertical-feed" id="reelsVerticalFeed">
+        <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800');">
+          <div class="reel-center-action">
+            <button class="use-idea-btn" onclick="openEditor()"><span>✨ Использовать идею</span></button>
+          </div>
+          <div class="reel-bottom-content">
+            <div class="reel-actions-row">
+              <div class="reel-action-chip" onclick="toggleReelLike(this)">
+                <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span class="reel-likes-val">2.4K</span>
+              </div>
+              <div class="reel-action-chip"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M7 15h10"/><path d="M7 9h4"/></svg><span>HD</span></div>
             </div>
-            <div class="reel-action-chip">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M7 15h10"/><path d="M7 9h4"/></svg>
-              <span>HD</span>
+            <div class="reel-author-info">
+              <div class="reel-author-handle">@CaliraVal</div>
+              <div class="reel-caption-text">Летнее видео у моря • TANHO Reels 🌊#travel</div>
             </div>
           </div>
-          <div class="reel-author-info">
-            <div class="reel-author-handle">@CaliraVal</div>
-            <div class="reel-caption-text">Летнее видео от канала TANHO...</div>
+        </div>
+        <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800');">
+          <div class="reel-center-action">
+            <button class="use-idea-btn" onclick="openEditor()"><span>✨ Использовать идею</span></button>
+          </div>
+          <div class="reel-bottom-content">
+            <div class="reel-actions-row">
+              <div class="reel-action-chip" onclick="toggleReelLike(this)">
+                <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span class="reel-likes-val">8.1K</span>
+              </div>
+              <div class="reel-action-chip"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M7 15h10"/><path d="M7 9h4"/></svg><span>HD</span></div>
+            </div>
+            <div class="reel-author-info">
+              <div class="reel-author-handle">@urbancore</div>
+              <div class="reel-caption-text">Ночной город не спит • time-lapse 4K 🌃</div>
+            </div>
           </div>
         </div>
-
+        <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800');">
+          <div class="reel-center-action">
+            <button class="use-idea-btn" onclick="openEditor()"><span>✨ Использовать идею</span></button>
+          </div>
+          <div class="reel-bottom-content">
+            <div class="reel-actions-row">
+              <div class="reel-action-chip" onclick="toggleReelLike(this)">
+                <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span class="reel-likes-val">312</span>
+              </div>
+              <div class="reel-action-chip"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M7 15h10"/><path d="M7 9h4"/></svg><span>HD</span></div>
+            </div>
+            <div class="reel-author-info">
+              <div class="reel-author-handle">@naturevibe</div>
+              <div class="reel-caption-text">Утро в горах • дыхание природы 🏔️</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1273,6 +1339,7 @@
     if (pageId === 'pageReels') {
       appHeader.style.display = 'none';
       document.getElementById('pageReels').classList.add('active');
+      if (typeof switchReelsTab === 'function') switchReelsTab('feed');
     } else if (pageId === 'pageProfile') {
       appHeader.style.display = 'none';
       document.getElementById('pageProfile').classList.add('active');
@@ -1461,6 +1528,49 @@
     }
     countSpan.textContent = count;
   }
+
+  function switchReelsTab(tab) {
+    const feedTab = document.getElementById('reelsFeedTab');
+    const reelsTab = document.getElementById('reelsReelsTab');
+    const feedBtn = document.getElementById('segFeedBtn');
+    const reelsBtn = document.getElementById('segReelsBtn');
+    if (tab === 'feed') {
+      feedTab.classList.add('active'); reelsTab.classList.remove('active');
+      feedBtn.classList.add('active'); reelsBtn.classList.remove('active');
+    } else {
+      reelsTab.classList.add('active'); feedTab.classList.remove('active');
+      reelsBtn.classList.add('active'); feedBtn.classList.remove('active');
+    }
+  }
+
+  const ytVideosData = [
+    { id:1, title: 'Обзор нового TANHO — как работает лента и чат', channel: 'TANHO Official', avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100', thumb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800', duration: '8:42', views: '124K', time: '3 дня назад' },
+    { id:2, title: 'Ташкент с высоты: дрон 4K • красивый закат над городом', channel: '@urbancore', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100', thumb: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800', duration: '3:12', views: '89K', time: '5 дней назад' },
+    { id:3, title: 'Утро в горах Чимгана — релакс, природа, тишина', channel: '@naturevibe', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100', thumb: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800', duration: '12:05', views: '45K', time: '1 неделю назад' },
+    { id:4, title: 'Как собрать идеальный Reels за 60 сек — монтаж в телефоне', channel: '@CaliraVal', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100', thumb: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800', duration: '5:33', views: '210K', time: '2 дня назад' },
+    { id:5, title: 'Готовим плов по-узбекски: пошаговый рецепт от шефа', channel: '@tasty.uz', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100', thumb: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800', duration: '14:22', views: '312K', time: '4 дня назад' },
+  ];
+
+  function renderYtFeed() {
+    const container = document.getElementById('ytFeed');
+    if (!container) return;
+    container.innerHTML = ytVideosData.map(v => `
+      <div class="yt-card" onclick="alert('▶ Открытие видео: ${v.title}')">
+        <div class="yt-thumb"><img src="${v.thumb}" alt=""><span class="yt-duration">${v.duration}</span></div>
+        <div class="yt-info">
+          <div class="yt-avatar" style="background-image:url('${v.avatar}')"></div>
+          <div class="yt-meta">
+            <div class="yt-title">${v.title}</div>
+            <div class="yt-channel">${v.channel}</div>
+            <div class="yt-stats"><span>${v.views} просмотров</span><span>•</span><span>${v.time}</span></div>
+          </div>
+          <button class="yt-more-btn" onclick="event.stopPropagation(); alert('⋮ Меню видео')">⋮</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  document.addEventListener('DOMContentLoaded', renderYtFeed);
+  setTimeout(renderYtFeed, 300);
 
   function toggleReelLike(chip) {
     const svg = chip.querySelector('.reel-heart-icon');
