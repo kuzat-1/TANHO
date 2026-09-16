@@ -381,6 +381,15 @@
       backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.12); color: #fff;
       display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
+    .burger-menu-dropdown { position: absolute; top: 52px; right: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 30; min-width: 230px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .burger-menu-dropdown.active { display: flex; }
+    .burger-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .burger-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
+    .burger-menu-version { text-align: center; font-size: 11px; color: var(--text-muted); padding: 8px 0 4px 0; border-top: 1px solid var(--border-color); margin-top: 4px; }
+    .info-modal-body { font-size: 13px; line-height: 1.55; color: var(--text-main); max-height: 50vh; overflow-y: auto; white-space: pre-line; }
+    .rate-stars { display: flex; gap: 6px; justify-content: center; padding: 6px 0; }
+    .rate-stars button { background: none; border: none; font-size: 30px; cursor: pointer; color: var(--text-muted); padding: 2px 4px; }
+    .rate-stars button.lit { color: #facc15; }
 
     .profile-header { position: relative; z-index: 10; padding: 10px 20px 0 20px; }
     .user-hero { display: flex; align-items: flex-start; gap: 16px; }
@@ -1118,12 +1127,17 @@
           </svg>
         </button>
 
-        <button class="icon-btn-blur" id="openSettingsBtn" aria-label="Настройки">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-          </svg>
+        <button class="icon-btn-blur" id="openSettingsBtn" aria-label="Меню" onclick="toggleBurgerMenu(event)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
         </button>
+      </div>
+      <div class="burger-menu-dropdown" id="burgerMenuDropdown">
+        <button onclick="handleBurgerMenu('privacy')">Политика конфиденциальности</button>
+        <button onclick="handleBurgerMenu('copyright')">Правообладателям</button>
+        <button onclick="handleBurgerMenu('share')">Поделиться приложением</button>
+        <button onclick="handleBurgerMenu('rate')">Оценить приложение</button>
+        <button onclick="handleBurgerMenu('support')">Поддержка</button>
+        <div class="burger-menu-version" id="burgerMenuVersion">Версия 1.0.0</div>
       </div>
     </div>
 
@@ -1768,6 +1782,15 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="info-modal">
+    <div class="dialog-box">
+      <div class="dialog-title" id="infoModalTitle"></div>
+      <div class="info-modal-body" id="infoModalBody"></div>
+      <div id="infoModalAction"></div>
+      <div class="dialog-option" onclick="closeInfoModal()" style="justify-content:center; color:rgba(255,255,255,0.4);">Закрыть</div>
+    </div>
+  </div>
+
 </div>
 
 <!-- СКТРИПТЫ И ИНТЕРАКТИВ -->
@@ -1980,8 +2003,77 @@
   const closeSettingsBtn = document.getElementById('closeSettingsBtn');
   const settingsPage = document.getElementById('settingsPage');
 
-  openSettingsBtn.addEventListener('click', () => { alert('Раздел настроек скоро появится ✨'); });
   closeSettingsBtn.addEventListener('click', () => { settingsPage.classList.remove('active'); setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); });
+
+  // 🍔 Бургер-меню профиля (видно всегда, работает без входа)
+  var APP_VERSION = '1.0.0';
+  try {
+    var _bv = document.getElementById('burgerMenuVersion');
+    if(_bv) _bv.textContent = 'Версия ' + APP_VERSION;
+  } catch(e){}
+  function toggleBurgerMenu(e){
+    if(e) e.stopPropagation();
+    var dd = document.getElementById('burgerMenuDropdown');
+    if(!dd) return;
+    var wasActive = dd.classList.contains('active');
+    document.querySelectorAll('.burger-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    document.querySelectorAll('.post-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    document.querySelectorAll('.profile-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    document.querySelectorAll('.yt-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    document.querySelectorAll('.reel-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    if(!wasActive) dd.classList.add('active');
+  }
+  function openInfoModal(title, html, actionHtml){
+    document.getElementById('infoModalTitle').textContent = title;
+    document.getElementById('infoModalBody').innerHTML = html;
+    document.getElementById('infoModalAction').innerHTML = actionHtml || '';
+    document.getElementById('info-modal').classList.add('active');
+  }
+  function closeInfoModal(){
+    document.getElementById('info-modal').classList.remove('active');
+  }
+  function renderRateStars(){
+    var box = document.getElementById('rateStarsBox');
+    if(!box) return;
+    var cur = 0;
+    try { cur = parseInt(localStorage.getItem('tanho_rating') || '0'); } catch(e){}
+    var html = '';
+    for(var i = 1; i <= 5; i++){
+      html += '<button class="' + (i <= cur ? 'lit' : '') + '" onclick="setAppRating(' + i + ')">★</button>';
+    }
+    box.innerHTML = html;
+    var note = document.getElementById('rateNote');
+    if(note) note.textContent = cur > 0 ? 'Ваша оценка: ' + cur + ' из 5. Спасибо! ✨' : 'Нажмите на звёзды, чтобы оценить.';
+  }
+  function setAppRating(n){
+    try { localStorage.setItem('tanho_rating', String(n)); } catch(e){}
+    renderRateStars();
+    if(navigator.vibrate) navigator.vibrate(20);
+  }
+  function handleBurgerMenu(action){
+    var dd = document.getElementById('burgerMenuDropdown');
+    if(dd) dd.classList.remove('active');
+    if(event) event.stopPropagation();
+    if(action === 'privacy'){
+      openInfoModal('Политика конфиденциальности',
+        'TANHO уважает вашу приватность.\n\n• Мы храним данные только на вашем устройстве (localStorage): профиль, подписки и настройки.\n• Мы не передаём ваши данные третьим лицам.\n• Вы можете удалить свои данные в любой момент, очистив данные приложения.');
+    } else if(action === 'copyright'){
+      openInfoModal('Правообладателям',
+        'Если вы считаете, что контент в TANHO нарушает ваши авторские права, напишите нам.\n\n• Укажите ссылку на материал и подтверждение прав.\n• Мы рассмотрим обращение и при необходимости удалим материал.\n• Контакт: через раздел «Поддержка» в этом меню.');
+    } else if(action === 'share'){
+      var text = 'TANHO — Video & Social Platform';
+      if(navigator.share){ navigator.share({ title: text, text: text, url: location.href }).catch(function(){}); }
+      else if(navigator.clipboard){ navigator.clipboard.writeText(location.href); alert('Ссылка скопирована ✓'); }
+      else { alert('TANHO — Video & Social Platform'); }
+    } else if(action === 'rate'){
+      openInfoModal('Оценить приложение', '<div class="rate-stars" id="rateStarsBox"></div><div id="rateNote" style="text-align:center; font-size:12px; color:var(--text-muted);"></div>');
+      renderRateStars();
+    } else if(action === 'support'){
+      openInfoModal('Поддержка',
+        'Нужна помощь? Мы рядом.\n\n• Опишите проблему максимально подробно.\n• Быстрее всего отвечаем в общем чате приложения.',
+        '<button class="auth-submit" onclick="closeInfoModal(); openGeneralChat();">Открыть общий чат</button>');
+    }
+  }
 
   function saveSettingsChanges() {
     const firstName = document.getElementById('inputFirstName').value.trim();
@@ -2227,7 +2319,7 @@
       }
       if(menuWrap) menuWrap.style.display = 'flex';
       if(blockMenuBtn) blockMenuBtn.textContent = user.isBlocked ? 'Разблокировать' : 'Заблокировать';
-      if(settingsBtn) settingsBtn.style.display = 'none';
+      if(settingsBtn) settingsBtn.style.display = 'flex';
     }
     var dd = document.getElementById('profileMenuDropdown');
     if(dd) dd.classList.remove('active');
@@ -2367,6 +2459,7 @@
     if(!e.target.closest('.profile-menu-wrap')) document.querySelectorAll('.profile-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
     if(!e.target.closest('.yt-menu-wrap')) document.querySelectorAll('.yt-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
     if(!e.target.closest('.reel-menu-wrap')) document.querySelectorAll('.reel-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
+    if(!e.target.closest('.top-nav-profile')) document.querySelectorAll('.burger-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
   });
 
   let selectedTextPosition = 'bottom';
@@ -2688,6 +2781,9 @@
     document.getElementById('video-modal').classList.remove('active');
     var _am = document.getElementById('auth-modal');
     if(_am) _am.classList.remove('active');
+    var _im = document.getElementById('info-modal');
+    if(_im) _im.classList.remove('active');
+    document.querySelectorAll('.burger-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
   }
 
   // 🔊 Real audio playback
