@@ -1401,11 +1401,11 @@
   }
   .nav-capsule-box, .floating-add-btn { pointer-events: auto; }
 
-  /* КАПСУЛА 54px — 70% прозрачная → 48% (0.52 alpha) для читаемости, glass 24px */
+  /* КАПСУЛА 54px — 70% прозрачная (0.30 alpha) */
   .nav-capsule-box {
     flex: 1;
     height: 54px;
-    background: rgba(255,255,255,0.52);
+    background: rgba(255,255,255,0.30);
     backdrop-filter: blur(24px) saturate(1.35);
     -webkit-backdrop-filter: blur(24px) saturate(1.35);
     border-radius: 999px;
@@ -1417,14 +1417,14 @@
     border: 1px solid rgba(255, 255, 255, 0.10);
   }
   body:not(.light-theme) .nav-capsule-box {
-    background: rgba(30, 32, 48, 0.52);
+    background: rgba(30, 32, 48, 0.30);
     border: 1px solid rgba(255, 255, 255, 0.10);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.30), 0 2px 8px rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(24px) saturate(1.35);
     -webkit-backdrop-filter: blur(24px) saturate(1.35);
   }
   body.light-theme .nav-capsule-box {
-    background: rgba(255,255,255,0.52);
+    background: rgba(255,255,255,0.30);
     border: 1px solid rgba(255, 255, 255, 0.10);
     backdrop-filter: blur(24px) saturate(1.35);
     -webkit-backdrop-filter: blur(24px) saturate(1.35);
