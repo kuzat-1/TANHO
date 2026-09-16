@@ -147,6 +147,13 @@
     .post-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; }
     .post-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
     .post-menu-dropdown .danger { color: var(--danger-color); }
+    .profile-menu-wrap { position: relative; display: flex; align-items: center; }
+    .profile-menu-btn { width: 44px; height: 44px; border-radius: 12px; background: var(--btn-secondary); border: 1px solid var(--border-color); color: var(--text-main); font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .profile-menu-dropdown { position: absolute; top: 50px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 30; min-width: 180px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+    .profile-menu-dropdown.active { display: flex; }
+    .profile-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .profile-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
+    .profile-menu-dropdown .danger { color: var(--danger-color); }
 
     .channel-action-btn {
       padding: 6px 14px; border-radius: 18px; font-size: 12px; font-weight: 700;
@@ -849,7 +856,7 @@
   <main class="page-screen active" id="pageMain" ondblclick="handleDoubleTapRefresh(event, 'pageMain')">
     <div class="refresh-indicator" id="refreshMain"><div class="refresh-spinner"></div> Обновление...</div>
     <div class="posts-feed" id="postsContainer">
-      <article class="post-card" data-owner="other">
+      <article class="post-card" data-owner="other" data-user-id="tanho_official">
         <div class="post-header">
           <div class="post-author" onclick="openUserProfile('tanho_official')">
             <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100');"></div>
@@ -860,7 +867,7 @@
           </div>
           <div class="post-header-actions">
             <button class="subscribe-btn" onclick="toggleSubscribe(this)">Подписаться</button>
-            <button class="post-menu-btn" onclick="togglePostMenu(this)">⋯</button>
+            <button class="post-menu-btn" onclick="togglePostMenu(this)">⋮</button>
             <div class="post-menu-dropdown">
               <button onclick="handlePostMenuAction('interesting', this)">Интересный</button>
               <button onclick="handlePostMenuAction('not_interesting', this)">Неинтересный</button>
@@ -1018,17 +1025,20 @@
 
       <div class="action-buttons" id="profileActions">
         <button class="btn btn-primary" id="profilePrimaryBtn" onclick="handleProfilePrimaryAction()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span id="profilePrimaryText">Общий чат</span>
+          <svg id="profilePrimaryIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span id="profilePrimaryText">Редактировать профиль</span>
         </button>
-        <button class="btn btn-secondary" id="profileSecondaryBtn" onclick="handleProfileSecondaryAction()">
+        <button class="btn btn-secondary" id="profileSecondaryBtn" onclick="handleProfileSecondaryAction()" style="display:none;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
           <span id="profileSecondaryText">Подписаться</span>
         </button>
-        <button class="btn btn-secondary" id="profileBlockBtn" onclick="handleProfileBlock()" style="display:none; flex:0.7; background: var(--danger-bg); color: var(--danger-color); border-color: rgba(239,68,68,0.2);">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-          Заблокировать
-        </button>
+        <div class="profile-menu-wrap" id="profileMenuWrap" style="display:none;">
+          <button class="profile-menu-btn" onclick="toggleProfileMenu(event)">⋮</button>
+          <div class="profile-menu-dropdown" id="profileMenuDropdown">
+            <button onclick="handleProfileMenuAction('report')">Пожаловаться</button>
+            <button class="danger" id="profileBlockMenuBtn" onclick="handleProfileMenuAction('block')">Заблокировать</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1826,102 +1836,149 @@
     if (username) document.getElementById('displayProfileHandle').innerText = username;
     if (bio) document.getElementById('displayProfileBio').innerText = bio;
     // обновить текущего пользователя в базе
-    if (TANHO_USERS['khadija_92']) {
-      TANHO_USERS['khadija_92'].name = fullName;
-      if (username) TANHO_USERS['khadija_92'].handle = username;
-      if (bio) TANHO_USERS['khadija_92'].bio = bio;
-    }
+    try {
+      if (typeof TANHO_USERS !== 'undefined' && TANHO_USERS['khadija_92']) {
+        TANHO_USERS['khadija_92'].name = fullName;
+        if (username) TANHO_USERS['khadija_92'].handle = username;
+        if (bio) TANHO_USERS['khadija_92'].bio = bio;
+      }
+    } catch(e){}
 
     settingsPage.classList.remove('active');
     setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
   }
 
-  // 👤 База пользователей и логика профилей
-  const TANHO_USERS = {
+  // 👤 База пользователей и логика профилей (стабильная, без innerHTML-перезаписей)
+  var OWN_USER_ID = 'khadija_92';
+  var TANHO_USERS = {
     khadija_92: { id: 'khadija_92', name: 'Khadija_92', handle: '@khadija_92', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300', bio: 'Мечтай. Действуй. Будь собой ✨', location: 'Узбекистан', verified: true, isOwn: true, posts: 342, followers: '12.4K', following: 156, isSubscribed: false, isBlocked: false },
     tanho_official: { id: 'tanho_official', name: 'TANHO Official', handle: '@tanho_official', avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100', bio: 'Официальный канал TANHO — новости, обновления и видео', location: 'Ташкент', verified: true, isOwn: false, posts: 128, followers: '45.2K', following: 12, isSubscribed: false, isBlocked: false }
   };
-  let currentProfileId = 'khadija_92';
-  function getCurrentUserId(){ return 'khadija_92'; }
+  var currentProfileId = 'khadija_92';
+  function getCurrentUserId(){ return OWN_USER_ID; }
+  function persistUserState(){
+    try {
+      var s = {};
+      Object.keys(TANHO_USERS).forEach(function(k){ s[k] = { isSubscribed: TANHO_USERS[k].isSubscribed, isBlocked: TANHO_USERS[k].isBlocked }; });
+      localStorage.setItem('tanho_users_state', JSON.stringify(s));
+    } catch(e){}
+  }
+  function restoreUserState(){
+    try {
+      var raw = localStorage.getItem('tanho_users_state');
+      if(!raw) return;
+      var s = JSON.parse(raw);
+      Object.keys(s).forEach(function(k){ if(TANHO_USERS[k]){ TANHO_USERS[k].isSubscribed = !!s[k].isSubscribed; TANHO_USERS[k].isBlocked = !!s[k].isBlocked; } });
+    } catch(e){}
+  }
+  try { restoreUserState(); } catch(e){}
+  function setProfileButtons(user){
+    var secondaryBtn = document.getElementById('profileSecondaryBtn');
+    var secondaryText = document.getElementById('profileSecondaryText');
+    var menuWrap = document.getElementById('profileMenuWrap');
+    var blockMenuBtn = document.getElementById('profileBlockMenuBtn');
+    var settingsBtn = document.getElementById('openSettingsBtn');
+    if(user.isOwn){
+      if(secondaryBtn) secondaryBtn.style.display = 'none';
+      if(menuWrap) menuWrap.style.display = 'none';
+      if(settingsBtn) settingsBtn.style.display = 'flex';
+    } else {
+      if(secondaryBtn){
+        secondaryBtn.style.display = 'flex';
+        if(user.isBlocked){
+          if(secondaryText) secondaryText.textContent = 'Заблокирован';
+          secondaryBtn.className = 'btn btn-secondary';
+          secondaryBtn.disabled = true;
+          secondaryBtn.style.opacity = '0.6';
+        } else {
+          secondaryBtn.disabled = false;
+          secondaryBtn.style.opacity = '1';
+          if(secondaryText) secondaryText.textContent = user.isSubscribed ? 'Подписан ✓' : 'Подписаться';
+          secondaryBtn.className = user.isSubscribed ? 'btn btn-secondary subscribed' : 'btn btn-secondary';
+        }
+      }
+      if(menuWrap) menuWrap.style.display = 'flex';
+      if(blockMenuBtn) blockMenuBtn.textContent = user.isBlocked ? 'Разблокировать' : 'Заблокировать';
+      if(settingsBtn) settingsBtn.style.display = 'none';
+    }
+    var dd = document.getElementById('profileMenuDropdown');
+    if(dd) dd.classList.remove('active');
+  }
   function openUserProfile(userId){
-    const user = TANHO_USERS[userId] || TANHO_USERS['khadija_92'];
-    currentProfileId = userId;
-    try { localStorage.setItem('tanho_profile_id', userId); } catch(e){}
-    // обновить шапку профиля
-    const avatarEl = document.getElementById('displayProfileAvatar');
+    var user = TANHO_USERS[userId] || TANHO_USERS[OWN_USER_ID];
+    currentProfileId = user.id;
+    try { localStorage.setItem('tanho_profile_id', user.id); } catch(e){}
+    var avatarEl = document.getElementById('displayProfileAvatar');
     if (avatarEl) avatarEl.src = user.avatar;
     document.getElementById('displayProfileName').innerText = user.name;
     document.getElementById('displayProfileHandle').innerText = user.handle;
     document.getElementById('displayProfileBio').innerText = user.bio;
-    // статистика
-    const stats = document.querySelectorAll('.stats-grid .stat-value');
+    var stats = document.querySelectorAll('.stats-grid .stat-value');
     if (stats.length >= 3) {
       stats[0].innerText = user.posts;
       stats[1].innerText = user.followers;
       stats[2].innerText = user.following;
     }
-    // meta
-    const metaLoc = document.querySelector('.meta-info .meta-item:first-child');
+    var metaLoc = document.querySelector('.meta-info .meta-item:first-child');
     if (metaLoc) metaLoc.innerHTML = '📍 ' + user.location;
-    // кнопки
-    const primaryBtn = document.getElementById('profilePrimaryBtn');
-    const primaryText = document.getElementById('profilePrimaryText');
-    const secondaryBtn = document.getElementById('profileSecondaryBtn');
-    const secondaryText = document.getElementById('profileSecondaryText');
-    const blockBtn = document.getElementById('profileBlockBtn');
-    const settingsBtn = document.getElementById('openSettingsBtn');
-    const verifiedBadge = document.querySelector('.verified-badge');
-    if (user.verified && verifiedBadge) verifiedBadge.style.display = 'flex'; else if(verifiedBadge) verifiedBadge.style.display = 'none';
-    if (user.isOwn) {
-      if(primaryText) primaryText.textContent = 'Редактировать профиль';
-      if(primaryBtn) { primaryBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span id="profilePrimaryText">Редактировать профиль</span>'; primaryBtn.onclick = ()=>{ document.getElementById('settingsPage').classList.add('active'); setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); }; }
-      if(secondaryBtn) secondaryBtn.style.display = 'none';
-      if(blockBtn) blockBtn.style.display = 'none';
-      if(settingsBtn) settingsBtn.style.display = 'flex';
-    } else {
-      if(primaryText) primaryText.textContent = 'Сообщение';
-      if(primaryBtn) { primaryBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span id="profilePrimaryText">Сообщение</span>'; primaryBtn.onclick = openGeneralChat; }
-      if(secondaryBtn) {
-        secondaryBtn.style.display = 'flex';
-        if(secondaryText) secondaryText.textContent = user.isSubscribed ? 'Подписан ✓' : 'Подписаться';
-        secondaryBtn.className = user.isSubscribed ? 'btn btn-secondary subscribed' : 'btn btn-secondary';
-        // лайк видео — у другого пользователя можно лайкнуть, но в профиле пока просто подписка
-      }
-      if(blockBtn) blockBtn.style.display = user.isBlocked ? 'none' : 'flex';
-      if(settingsBtn) settingsBtn.style.display = 'none';
-    }
-    // показать профиль
-    const pill = document.querySelector('.floating-nav-container .nav-item-pill:last-child');
+    var verifiedBadge = document.querySelector('.verified-badge');
+    if (verifiedBadge) verifiedBadge.style.display = user.verified ? 'flex' : 'none';
+    // статичные тексты кнопок (без innerHTML, чтобы не ломать DOM)
+    var primaryText = document.getElementById('profilePrimaryText');
+    if(primaryText) primaryText.textContent = user.isOwn ? 'Редактировать профиль' : 'Сообщение';
+    setProfileButtons(user);
+    var pill = document.querySelector('.floating-nav-container .nav-item-pill:last-child');
     switchPage('pageProfile', pill);
   }
   function handleProfilePrimaryAction(){
-    const user = TANHO_USERS[currentProfileId];
+    var user = TANHO_USERS[currentProfileId];
     if(!user) return;
     if(user.isOwn){
       document.getElementById('settingsPage').classList.add('active');
-      setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
+      setTimeout(function(){ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
     } else {
       openGeneralChat();
     }
   }
   function handleProfileSecondaryAction(){
-    const user = TANHO_USERS[currentProfileId];
-    if(!user || user.isOwn) return;
+    var user = TANHO_USERS[currentProfileId];
+    if(!user || user.isOwn || user.isBlocked) return;
     user.isSubscribed = !user.isSubscribed;
-    const secondaryText = document.getElementById('profileSecondaryText');
-    const secondaryBtn = document.getElementById('profileSecondaryBtn');
-    if(secondaryText) secondaryText.textContent = user.isSubscribed ? 'Подписан ✓' : 'Подписаться';
-    if(secondaryBtn) secondaryBtn.className = user.isSubscribed ? 'btn btn-secondary subscribed' : 'btn btn-secondary';
+    persistUserState();
+    setProfileButtons(user);
     if(navigator.vibrate) navigator.vibrate(20);
   }
-  function handleProfileBlock(){
-    const user = TANHO_USERS[currentProfileId];
+  function toggleProfileMenu(e){
+    if(e) e.stopPropagation();
+    var dd = document.getElementById('profileMenuDropdown');
+    if(!dd) return;
+    var wasActive = dd.classList.contains('active');
+    document.querySelectorAll('.profile-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    document.querySelectorAll('.post-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    if(!wasActive) dd.classList.add('active');
+  }
+  function handleProfileMenuAction(action){
+    var user = TANHO_USERS[currentProfileId];
     if(!user || user.isOwn) return;
-    if(confirm(`Заблокировать ${user.name}?`)){
-      user.isBlocked = true;
-      alert(`${user.name} заблокирован`);
-      document.getElementById('profileBlockBtn').style.display = 'none';
+    var dd = document.getElementById('profileMenuDropdown');
+    if(dd) dd.classList.remove('active');
+    if(action==='report'){ alert('Жалоба отправлена ✓'); }
+    else if(action==='block'){
+      if(user.isBlocked){
+        user.isBlocked = false;
+        persistUserState();
+        setProfileButtons(user);
+        alert(user.name + ' разблокирован ✓');
+      } else {
+        if(confirm('Заблокировать ' + user.name + '?')){
+          user.isBlocked = true;
+          persistUserState();
+          setProfileButtons(user);
+          alert(user.name + ' заблокирован');
+        }
+      }
     }
+    if(navigator.vibrate) navigator.vibrate(20);
   }
 
   function filterProfileFeed(chipEl) {
@@ -1934,14 +1991,23 @@
     if(isSub){ btn.classList.remove('subscribed'); btn.textContent='Подписаться'; }
     else { btn.classList.add('subscribed'); btn.textContent='Подписан ✓'; if(navigator.vibrate) navigator.vibrate(20); }
   }
+  function isOwnPost(post){
+    if(!post) return false;
+    if(post.getAttribute('data-owner')==='self') return true;
+    if(post.getAttribute('data-owner')==='other') return false;
+    var uid = post.getAttribute('data-user-id');
+    if(uid) return uid === OWN_USER_ID;
+    return false;
+  }
   function togglePostMenu(btn){
     const dd = btn.nextElementSibling;
     const wasActive = dd.classList.contains('active');
     document.querySelectorAll('.post-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
+    document.querySelectorAll('.profile-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
     if(!wasActive){
       dd.classList.add('active');
       const post = btn.closest('.post-card');
-      const isOwn = post.getAttribute('data-owner')==='self' || post.querySelector('.author-name')?.innerText.trim() === document.getElementById('displayProfileName')?.innerText.trim();
+      const isOwn = isOwnPost(post);
       const editBtn = dd.querySelector('button[onclick*="edit"]');
       if(editBtn) editBtn.style.display = isOwn ? 'flex' : 'none';
     }
@@ -1965,6 +2031,7 @@
   }
   document.addEventListener('click', (e)=>{
     if(!e.target.closest('.post-header-actions')) document.querySelectorAll('.post-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
+    if(!e.target.closest('.profile-menu-wrap')) document.querySelectorAll('.profile-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
   });
 
   let selectedTextPosition = 'bottom';
@@ -2653,7 +2720,7 @@
     const currentUserName = document.getElementById('displayProfileName').innerText;
 
     const newPostCardHTML = `
-      <article class="post-card" data-owner="self">
+      <article class="post-card" data-owner="self" data-user-id="khadija_92">
         <div class="post-header">
           <div class="post-author" onclick="openUserProfile(getCurrentUserId())">
             <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100');"></div>
@@ -2663,7 +2730,7 @@
             </div>
           </div>
           <div class="post-header-actions">
-            <button class="post-menu-btn" onclick="togglePostMenu(this)">⋯</button>
+            <button class="post-menu-btn" onclick="togglePostMenu(this)">⋮</button>
             <div class="post-menu-dropdown">
               <button onclick="handlePostMenuAction('interesting', this)">Интересный</button>
               <button onclick="handlePostMenuAction('not_interesting', this)">Неинтересный</button>
