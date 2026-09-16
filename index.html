@@ -297,7 +297,9 @@
     .video-viewer-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%); pointer-events: none; }
     .video-viewer-side { position: absolute; right: 10px; bottom: 170px; display: flex; flex-direction: column; align-items: center; gap: 14px; z-index: 5; }
     .video-viewer-side .reel-action-chip { flex-direction: column; gap: 2px; font-size: 11px; }
-    .video-viewer-similar-toggle { width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .video-viewer-similar-wrap { position: relative; margin-top: 8px; }
+    .video-viewer-similar-wrap:has(.video-viewer-similar.hidden) .video-viewer-similar-toggle { right: 12px; }
+    .video-viewer-similar-toggle { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 6; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
     .video-viewer-bottom { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%); padding: 10px 12px 100px 12px; }
     .video-viewer-author { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .video-viewer-avatar { width: 38px; height: 38px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; border: 1.5px solid #fff; }
@@ -307,7 +309,7 @@
     .video-viewer-caption { color: rgba(255,255,255,0.92); font-size: 13px; line-height: 1.4; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .video-viewer-timeline { height: 3px; background: rgba(255,255,255,0.25); border-radius: 999px; overflow: hidden; margin-top: 8px; position: relative; }
     .video-viewer-progress { position: absolute; left: 0; top: 0; bottom: 0; background: #fff; border-radius: 999px; }
-    .video-viewer-similar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 12px 0 12px; scrollbar-width: none; margin-top: 8px; }
+    .video-viewer-similar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 52px 0 0; scrollbar-width: none; margin-top: 0; }
     .video-viewer-similar::-webkit-scrollbar { display: none; }
     .video-viewer-similar.hidden { display: none; }
     .similar-card { flex: 0 0 132px; cursor: pointer; }
@@ -1052,7 +1054,6 @@
             <span class="reel-likes-val" id="videoViewerLikes">0</span>
           </div>
           <div class="reel-action-chip" onclick="shareViewerVideo()" title="Репост"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Репост</span></div>
-          <button class="video-viewer-similar-toggle" id="similarToggleBtn" onclick="toggleSimilarPanel(event)" title="Похожие">›</button>
           <div class="reel-menu-wrap">
             <button class="reel-menu-btn" onclick="event.stopPropagation(); toggleViewerMenu(this)">⋮</button>
             <div class="reel-menu-dropdown" id="viewerMenuDropdown">
@@ -1072,7 +1073,10 @@
           </div>
           <div class="video-viewer-caption" id="videoViewerCaption"></div>
           <div class="video-viewer-timeline"><div class="video-viewer-progress" id="videoViewerProgress" style="width: 35%;"></div></div>
-          <div class="video-viewer-similar" id="videoViewerSimilar"></div>
+          <div class="video-viewer-similar-wrap">
+            <div class="video-viewer-similar" id="videoViewerSimilar"></div>
+            <button class="video-viewer-similar-toggle" id="similarToggleBtn" onclick="toggleSimilarPanel(event)" title="Похожие">›</button>
+          </div>
         </div>
       </div>
     </div>
