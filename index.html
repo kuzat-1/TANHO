@@ -864,6 +864,22 @@
     .dialog-input { width: 100%; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; color: var(--text-main); font-size: 14px; outline: none; }
     .dialog-option { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px; color: var(--text-main); font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
     .error-text { font-size: 12px; color: var(--error-color); display: none; }
+    /* 🔐 Авторизация */
+    #auth-modal { z-index: 1100; }
+    .auth-tabs { display: flex; gap: 8px; background: var(--input-bg); border-radius: 12px; padding: 4px; }
+    .auth-tab { flex: 1; border: none; background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 600; padding: 9px 0; border-radius: 9px; cursor: pointer; }
+    .auth-tab.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .auth-form { display: none; flex-direction: column; gap: 10px; }
+    .auth-form.active { display: flex; }
+    .auth-error { font-size: 12px; color: var(--error-color); min-height: 16px; text-align: center; }
+    .auth-divider { display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-size: 12px; }
+    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
+    .auth-provider { width: 100%; border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); }
+    .auth-provider:active { transform: scale(0.98); }
+    .auth-submit { width: 100%; border: none; border-radius: 12px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--primary-gradient); color: #fff; box-shadow: 0 4px 18px rgba(124,58,237,0.4); }
+    .auth-submit:active { transform: scale(0.98); }
+    .auth-loading { display: none; align-items: center; justify-content: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
+    .auth-loading.active { display: flex; }
   </style>
 </head>
 <body>
@@ -1639,7 +1655,8 @@
     const chatActive = document.getElementById('generalChatScreen')?.classList.contains('active');
     const editorOpen = document.getElementById('editorModal')?.classList.contains('open');
     const settingsActive = document.getElementById('settingsPage')?.classList.contains('active');
-    if(chatActive || editorOpen || settingsActive) nav.style.display = 'none';
+    const authActive = document.getElementById('auth-modal')?.classList.contains('active');
+    if(chatActive || editorOpen || settingsActive || authActive) nav.style.display = 'none';
     else nav.style.display = 'flex';
   }
   // Универсальный клик по меню — надёжно
@@ -1719,6 +1736,33 @@
       <div class="error-text" id="youtube-error">❌ Ссылки на YouTube запрещены! Используйте VK Video или MP4.</div>
       <div class="dialog-option" onclick="attachVideoFromInput()" style="justify-content:center; background:var(--primary-accent);">Встроить</div>
       <div class="dialog-option" onclick="closeModals()" style="justify-content:center; color:rgba(255,255,255,0.4);">Отмена</div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="auth-modal">
+    <div class="dialog-box">
+      <div class="dialog-title" style="text-align:center;">Войти в TANHO</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="authTabLogin" onclick="switchAuthTab('login')">Войти</button>
+        <button class="auth-tab" id="authTabRegister" onclick="switchAuthTab('register')">Регистрация</button>
+      </div>
+      <div class="auth-error" id="authError"></div>
+      <div class="auth-form active" id="authFormLogin">
+        <input type="email" class="dialog-input" id="authLoginEmail" placeholder="Email" autocomplete="email">
+        <input type="password" class="dialog-input" id="authLoginPass" placeholder="Пароль" autocomplete="current-password">
+        <button class="auth-submit" onclick="handleEmailLogin()">Войти</button>
+      </div>
+      <div class="auth-form" id="authFormRegister">
+        <input type="text" class="dialog-input" id="authRegName" placeholder="Имя пользователя" autocomplete="username">
+        <input type="email" class="dialog-input" id="authRegEmail" placeholder="Почта" autocomplete="email">
+        <input type="password" class="dialog-input" id="authRegPass" placeholder="Пароль (минимум 4 символа)" autocomplete="new-password">
+        <button class="auth-submit" onclick="handleEmailRegister()">Зарегистрироваться</button>
+      </div>
+      <div class="auth-loading" id="authLoading"><div class="refresh-spinner"></div><span id="authLoadingText">Входим…</span></div>
+      <div class="auth-divider">или</div>
+      <button class="auth-provider" onclick="handleGoogleAuth()">G&nbsp;&nbsp;Продолжить с Google</button>
+      <button class="auth-provider" onclick="handleTelegramAuth()">✈&nbsp;&nbsp;Продолжить с Telegram</button>
+      <div class="dialog-option" onclick="closeAuthModal()" style="justify-content:center; color:rgba(255,255,255,0.4);">Отмена</div>
     </div>
   </div>
 
@@ -1950,10 +1994,11 @@
     if (bio) document.getElementById('displayProfileBio').innerText = bio;
     // обновить текущего пользователя в базе
     try {
-      if (typeof TANHO_USERS !== 'undefined' && TANHO_USERS['khadija_92']) {
-        TANHO_USERS['khadija_92'].name = fullName;
-        if (username) TANHO_USERS['khadija_92'].handle = username;
-        if (bio) TANHO_USERS['khadija_92'].bio = bio;
+      var _uid = (typeof getCurrentUserId === 'function') ? getCurrentUserId() : 'khadija_92';
+      if (typeof TANHO_USERS !== 'undefined' && TANHO_USERS[_uid]) {
+        TANHO_USERS[_uid].name = fullName;
+        if (username) TANHO_USERS[_uid].handle = username;
+        if (bio) TANHO_USERS[_uid].bio = bio;
       }
     } catch(e){}
 
@@ -1999,6 +2044,160 @@
     } catch(e){}
   }
   try { restoreUserState(); } catch(e){}
+  // 🔐 Авторизация (гость / регистрация)
+  var TANHO_AUTH_KEY = 'tanho_auth';
+  var TANHO_REGISTERED_KEY = 'tanho_registered';
+  function getRegisteredUsers(){
+    try { return JSON.parse(localStorage.getItem(TANHO_REGISTERED_KEY) || '[]'); }
+    catch(e){ return []; }
+  }
+  function saveRegisteredUsers(list){
+    try { localStorage.setItem(TANHO_REGISTERED_KEY, JSON.stringify(list)); } catch(e){}
+  }
+  function isLoggedIn(){
+    try {
+      var a = JSON.parse(localStorage.getItem(TANHO_AUTH_KEY) || 'null');
+      return !!(a && a.userId && TANHO_USERS[a.userId]);
+    } catch(e){ return false; }
+  }
+  function setSession(userId){
+    try {
+      if(userId) localStorage.setItem(TANHO_AUTH_KEY, JSON.stringify({userId: userId}));
+      else localStorage.removeItem(TANHO_AUTH_KEY);
+    } catch(e){}
+  }
+  function slugUserId(name){
+    var base = (name || 'user').toLowerCase().replace(/[^a-z0-9а-яё]+/gi, '_').replace(/^_+|_+$/g, '').slice(0, 20) || 'user';
+    var id = base, n = 1;
+    while(TANHO_USERS[id]){ n++; id = base + '_' + n; }
+    return id;
+  }
+  function avatarFor(id, name){
+    return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name || id) + '&background=7c3aed&color=fff&size=300';
+  }
+  function syncSettingsInputs(user){
+    try {
+      if(document.getElementById('inputFirstName')) document.getElementById('inputFirstName').value = user.name || '';
+      if(document.getElementById('inputUsername')) document.getElementById('inputUsername').value = user.handle || '';
+      if(document.getElementById('inputBio')) document.getElementById('inputBio').value = user.bio || '';
+    } catch(e){}
+  }
+  function loginUser(id){
+    var u = TANHO_USERS[id];
+    if(!u) return;
+    Object.keys(TANHO_USERS).forEach(function(k){ TANHO_USERS[k].isOwn = (k === id); });
+    OWN_USER_ID = id;
+    currentProfileId = id;
+    setSession(id);
+    syncSettingsInputs(u);
+    closeAuthModal();
+    openUserProfile(id);
+    if(navigator.vibrate) navigator.vibrate(20);
+  }
+  function setAuthError(msg){
+    var el = document.getElementById('authError');
+    if(el) el.textContent = msg || '';
+  }
+  function switchAuthTab(mode){
+    var isLogin = mode !== 'register';
+    document.getElementById('authTabLogin').classList.toggle('active', isLogin);
+    document.getElementById('authTabRegister').classList.toggle('active', !isLogin);
+    document.getElementById('authFormLogin').classList.toggle('active', isLogin);
+    document.getElementById('authFormRegister').classList.toggle('active', !isLogin);
+    setAuthError('');
+  }
+  function openAuthModal(mode){
+    document.querySelectorAll('.post-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    document.querySelectorAll('.profile-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    switchAuthTab(mode || 'login');
+    document.getElementById('auth-modal').classList.add('active');
+    setTimeout(function(){ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
+  }
+  function closeAuthModal(){
+    document.getElementById('auth-modal').classList.remove('active');
+    document.getElementById('authLoading').classList.remove('active');
+    setTimeout(function(){ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
+  }
+  function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+  function handleEmailLogin(){
+    var email = (document.getElementById('authLoginEmail').value || '').trim().toLowerCase();
+    var pass = document.getElementById('authLoginPass').value || '';
+    if(!email || !pass){ setAuthError('Введите email и пароль.'); return; }
+    var found = null;
+    getRegisteredUsers().forEach(function(r){ if((r.email || '').toLowerCase() === email) found = r; });
+    if(!found){ setAuthError('Аккаунт не найден. Зарегистрируйтесь.'); switchAuthTab('register'); return; }
+    if(found.pass !== pass){ setAuthError('Неверный пароль.'); return; }
+    if(!TANHO_USERS[found.id]){
+      TANHO_USERS[found.id] = { id: found.id, name: found.name, handle: found.handle, avatar: found.avatar, bio: found.bio || 'Новый пользователь TANHO ✨', location: 'Ташкент', verified: false, isOwn: false, posts: 0, followers: '0', following: 0, isSubscribed: false, isBlocked: false };
+    }
+    loginUser(found.id);
+  }
+  function handleEmailRegister(){
+    var name = (document.getElementById('authRegName').value || '').trim();
+    var email = (document.getElementById('authRegEmail').value || '').trim().toLowerCase();
+    var pass = document.getElementById('authRegPass').value || '';
+    if(name.length < 2){ setAuthError('Введите имя пользователя (минимум 2 символа).'); return; }
+    if(!validEmail(email)){ setAuthError('Введите корректную почту.'); return; }
+    if(pass.length < 4){ setAuthError('Пароль — минимум 4 символа.'); return; }
+    var exists = null;
+    getRegisteredUsers().forEach(function(r){ if((r.email || '').toLowerCase() === email) exists = r; });
+    if(exists){ setAuthError('Эта почта уже зарегистрирована. Войдите.'); switchAuthTab('login'); return; }
+    var id = slugUserId(name);
+    var avatar = avatarFor(id, name);
+    var handle = '@' + id;
+    TANHO_USERS[id] = { id: id, name: name, handle: handle, avatar: avatar, bio: 'Новый пользователь TANHO ✨', location: 'Ташкент', verified: false, isOwn: false, posts: 0, followers: '0', following: 0, isSubscribed: false, isBlocked: false };
+    var list = getRegisteredUsers();
+    list.push({ id: id, name: name, handle: handle, email: email, pass: pass, avatar: avatar, bio: 'Новый пользователь TANHO ✨', provider: 'email' });
+    saveRegisteredUsers(list);
+    loginUser(id);
+  }
+  function mockOAuthLogin(provider){
+    var loading = document.getElementById('authLoading');
+    var loadingText = document.getElementById('authLoadingText');
+    setAuthError('');
+    if(loadingText) loadingText.textContent = provider === 'google' ? 'Входим через Google…' : 'Входим через Telegram…';
+    if(loading) loading.classList.add('active');
+    setTimeout(function(){
+      if(loading) loading.classList.remove('active');
+      var list = getRegisteredUsers();
+      var found = null;
+      list.forEach(function(r){ if(r.provider === provider) found = r; });
+      if(found){
+        if(!TANHO_USERS[found.id]){
+          TANHO_USERS[found.id] = { id: found.id, name: found.name, handle: found.handle, avatar: found.avatar, bio: found.bio || 'Новый пользователь TANHO ✨', location: 'Ташкент', verified: false, isOwn: false, posts: 0, followers: '0', following: 0, isSubscribed: false, isBlocked: false };
+        }
+        loginUser(found.id);
+        return;
+      }
+      var name = provider === 'google' ? 'Google User' : 'Telegram User';
+      var id = slugUserId(name);
+      var avatar = avatarFor(id, name);
+      var handle = '@' + id;
+      var email = provider === 'google' ? 'google.user@gmail.com' : 'telegram_user@t.me';
+      TANHO_USERS[id] = { id: id, name: name, handle: handle, avatar: avatar, bio: 'Вошёл через ' + (provider === 'google' ? 'Google' : 'Telegram') + ' ✨', location: 'Ташкент', verified: false, isOwn: false, posts: 0, followers: '0', following: 0, isSubscribed: false, isBlocked: false };
+      list.push({ id: id, name: name, handle: handle, email: email, pass: '', avatar: avatar, bio: TANHO_USERS[id].bio, provider: provider });
+      saveRegisteredUsers(list);
+      loginUser(id);
+    }, 900);
+  }
+  function handleGoogleAuth(){ mockOAuthLogin('google'); }
+  function handleTelegramAuth(){ mockOAuthLogin('telegram'); }
+  // восстановить созданных пользователей и сессию
+  try {
+    getRegisteredUsers().forEach(function(r){
+      if(!TANHO_USERS[r.id]){
+        TANHO_USERS[r.id] = { id: r.id, name: r.name, handle: r.handle, avatar: r.avatar, bio: r.bio || 'Новый пользователь TANHO ✨', location: 'Ташкент', verified: false, isOwn: false, posts: 0, followers: '0', following: 0, isSubscribed: false, isBlocked: false };
+      }
+    });
+    var _savedAuth = null;
+    try { _savedAuth = JSON.parse(localStorage.getItem(TANHO_AUTH_KEY) || 'null'); } catch(e){}
+    if(_savedAuth && _savedAuth.userId && TANHO_USERS[_savedAuth.userId]){
+      OWN_USER_ID = _savedAuth.userId;
+      Object.keys(TANHO_USERS).forEach(function(k){ TANHO_USERS[k].isOwn = (k === _savedAuth.userId); });
+      currentProfileId = _savedAuth.userId;
+      syncSettingsInputs(TANHO_USERS[_savedAuth.userId]);
+    }
+  } catch(e){}
   function setProfileButtons(user){
     var secondaryBtn = document.getElementById('profileSecondaryBtn');
     var secondaryText = document.getElementById('profileSecondaryText');
@@ -2032,6 +2231,11 @@
     if(dd) dd.classList.remove('active');
   }
   function openUserProfile(userId){
+    var targetId = TANHO_USERS[userId] ? userId : OWN_USER_ID;
+    if(!isLoggedIn() && targetId === getCurrentUserId()){
+      openAuthModal('register');
+      return;
+    }
     var user = TANHO_USERS[userId] || TANHO_USERS[OWN_USER_ID];
     currentProfileId = user.id;
     try { localStorage.setItem('tanho_profile_id', user.id); } catch(e){}
@@ -2461,9 +2665,11 @@
     closeModals();
   }
   function clearLocation() { document.getElementById('location-container').innerHTML = ''; selectedLocation = null; }
-  function closeModals() { 
-    document.getElementById('location-modal').classList.remove('active'); 
-    document.getElementById('video-modal').classList.remove('active'); 
+  function closeModals() {
+    document.getElementById('location-modal').classList.remove('active');
+    document.getElementById('video-modal').classList.remove('active');
+    var _am = document.getElementById('auth-modal');
+    if(_am) _am.classList.remove('active');
   }
 
   // 🔊 Real audio playback
@@ -2955,6 +3161,7 @@
 
   // 🚀 ПУБЛИКАЦИЯ В ЛЕНТУ
   function publishArticle() {
+    if(!isLoggedIn()){ openAuthModal('register'); setAuthError('Войдите или зарегистрируйтесь, чтобы опубликовать пост.'); return; }
     const title = document.getElementById('article-title').value.trim();
     const content = document.getElementById('article-content').value.trim();
 
@@ -3018,7 +3225,7 @@
     const currentUserName = document.getElementById('displayProfileName').innerText;
 
     const newPostCardHTML = `
-      <article class="post-card" data-owner="self" data-user-id="khadija_92">
+      <article class="post-card" data-owner="self" data-user-id="${getCurrentUserId()}">
         <div class="post-header">
           <div class="post-author" onclick="openUserProfile(getCurrentUserId())">
             <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100');"></div>
