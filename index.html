@@ -2438,7 +2438,23 @@
     document.getElementById('headerActions').style.display = 'flex';
   }
 
-  function toggleTheme() { document.body.classList.toggle('light-theme'); }
+  function notifyNativeTheme(){
+    try {
+      var light = document.body.classList.contains('light-theme');
+      try { localStorage.setItem('tanho_theme', light ? 'light' : 'dark'); } catch(e){}
+      if(window.TanhoTheme && window.TanhoTheme.setTheme) window.TanhoTheme.setTheme(light ? 'light' : 'dark');
+    } catch(e){}
+  }
+  function toggleTheme() {
+    document.body.classList.toggle('light-theme');
+    notifyNativeTheme();
+    if(navigator.vibrate) navigator.vibrate(15);
+  }
+  // восстановить тему и мгновенно синхронизировать системные иконки
+  try {
+    if(localStorage.getItem('tanho_theme') === 'light') document.body.classList.add('light-theme');
+  } catch(e){}
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(notifyNativeTheme, 600); });
   function openEditor() { 
     document.getElementById('editorModal').classList.add('open'); 
     setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
