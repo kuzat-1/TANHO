@@ -130,13 +130,23 @@
       display: flex; flex-direction: column; padding-bottom: 12px; margin-bottom: 4px;
     }
 
-    .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 8px 14px; }
+    .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 8px 14px; position: relative; }
     .post-author { display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; }
     .author-avatar { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
     .author-meta { display: flex; flex-direction: column; gap: 1px; }
     .author-name { font-size: 14px; font-weight: 700; color: var(--text-main); }
     .post-location-tag { font-size: 11px; color: #38bdf8; font-weight: 500; }
     .post-time-top { font-size: 10.5px; color: var(--text-muted); }
+    .post-header-actions { display: flex; align-items: center; gap: 8px; }
+    .subscribe-btn { padding: 6px 14px; border-radius: 16px; background: var(--primary-accent); color: #fff; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .subscribe-btn.subscribed { background: var(--btn-secondary); color: var(--text-muted); border: 1px solid var(--border-color); }
+    .post-menu-btn { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 4px 8px; border-radius: 50%; }
+    .post-menu-btn:active { background: rgba(255,255,255,0.06); }
+    .post-menu-dropdown { position: absolute; top: 44px; right: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 20; min-width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+    .post-menu-dropdown.active { display: flex; }
+    .post-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .post-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
+    .post-menu-dropdown .danger { color: var(--danger-color); }
 
     .channel-action-btn {
       padding: 6px 14px; border-radius: 18px; font-size: 12px; font-weight: 700;
@@ -839,16 +849,24 @@
   <main class="page-screen active" id="pageMain" ondblclick="handleDoubleTapRefresh(event, 'pageMain')">
     <div class="refresh-indicator" id="refreshMain"><div class="refresh-spinner"></div> Обновление...</div>
     <div class="posts-feed" id="postsContainer">
-      <article class="post-card">
+      <article class="post-card" data-owner="other">
         <div class="post-header">
           <div class="post-author" onclick="switchPage('pageProfile', document.querySelector('.floating-nav-container .nav-item-pill:last-child') || document.querySelector('.bottom-nav .nav-tab-btn:last-child'))">
             <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100');"></div>
             <div class="author-meta">
               <div class="author-name">TANHO Official</div>
-              <div class="post-location-tag">@tanho_official</div>
+              <div class="post-time-top">2 часа назад</div>
             </div>
           </div>
-          <span class="post-time-top">2 часа назад</span>
+          <div class="post-header-actions">
+            <button class="subscribe-btn" onclick="toggleSubscribe(this)">Подписаться</button>
+            <button class="post-menu-btn" onclick="togglePostMenu(this)">⋯</button>
+            <div class="post-menu-dropdown">
+              <button onclick="handlePostMenuAction('interesting', this)">Интересный</button>
+              <button onclick="handlePostMenuAction('not_interesting', this)">Неинтересный</button>
+              <button class="danger" onclick="handlePostMenuAction('report', this)">Пожаловаться</button>
+            </div>
+          </div>
         </div>
 
         <div class="post-slider-wrapper" onclick="togglePostExpand(this)">
@@ -1803,6 +1821,44 @@
     chipEl.classList.add('active');
   }
 
+  function toggleSubscribe(btn){
+    const isSub = btn.classList.contains('subscribed');
+    if(isSub){ btn.classList.remove('subscribed'); btn.textContent='Подписаться'; }
+    else { btn.classList.add('subscribed'); btn.textContent='Подписан ✓'; if(navigator.vibrate) navigator.vibrate(20); }
+  }
+  function togglePostMenu(btn){
+    const dd = btn.nextElementSibling;
+    const wasActive = dd.classList.contains('active');
+    document.querySelectorAll('.post-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
+    if(!wasActive){
+      dd.classList.add('active');
+      const post = btn.closest('.post-card');
+      const isOwn = post.getAttribute('data-owner')==='self' || post.querySelector('.author-name')?.innerText.trim() === document.getElementById('displayProfileName')?.innerText.trim();
+      const editBtn = dd.querySelector('button[onclick*="edit"]');
+      if(editBtn) editBtn.style.display = isOwn ? 'flex' : 'none';
+    }
+  }
+  function handlePostMenuAction(action, btn){
+    const dd = btn.closest('.post-menu-dropdown');
+    const post = btn.closest('.post-card');
+    if(dd) dd.classList.remove('active');
+    if(action==='interesting'){ post.style.transform='scale(0.99)'; setTimeout(()=>post.style.transform='',200); if(navigator.vibrate) navigator.vibrate(20); }
+    else if(action==='not_interesting'){ post.style.opacity='0.6'; setTimeout(()=>post.style.opacity='1',800); }
+    else if(action==='report'){ alert('Жалоба отправлена ✓'); }
+    else if(action==='edit'){
+      const titleEl = post.querySelector('.post-title-text');
+      const capEl = post.querySelector('.caption');
+      document.getElementById('article-title').value = titleEl ? titleEl.innerText : '';
+      document.getElementById('article-content').value = capEl ? capEl.innerText : '';
+      // удалить старый пост после редактирования (как обновление)
+      post.remove();
+      openEditor();
+    }
+  }
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.post-header-actions')) document.querySelectorAll('.post-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
+  });
+
   let selectedTextPosition = 'bottom';
 
   function switchPage(pageId, btnEl) {
@@ -2481,16 +2537,24 @@
     const currentUserName = document.getElementById('displayProfileName').innerText;
 
     const newPostCardHTML = `
-      <article class="post-card">
+      <article class="post-card" data-owner="self">
         <div class="post-header">
           <div class="post-author" onclick="switchPage('pageProfile', document.querySelector('.floating-nav-container .nav-item-pill:last-child') || document.querySelector('.bottom-nav .nav-tab-btn:last-child'))">
             <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100');"></div>
             <div class="author-meta">
               <div class="author-name">${currentUserName}</div>
-              ${selectedLocation ? `<div class="post-location-tag">${selectedLocation}</div>` : ''}
+              <div class="post-time-top">только что</div>
             </div>
           </div>
-          <span class="post-time-top">только что</span>
+          <div class="post-header-actions">
+            <button class="post-menu-btn" onclick="togglePostMenu(this)">⋯</button>
+            <div class="post-menu-dropdown">
+              <button onclick="handlePostMenuAction('interesting', this)">Интересный</button>
+              <button onclick="handlePostMenuAction('not_interesting', this)">Неинтересный</button>
+              <button class="danger" onclick="handlePostMenuAction('report', this)">Пожаловаться</button>
+              <button onclick="handlePostMenuAction('edit', this)">✏️ Редактировать</button>
+            </div>
+          </div>
         </div>
 
         ${bodyOrderHTML}
