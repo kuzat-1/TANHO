@@ -286,26 +286,32 @@
     .reel-menu-dropdown.active { display: flex; }
     .reel-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
     .reel-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
-    /* 🎬 Просмотр видео поверх ленты (без перехода) */
+    /* 🎬 Просмотр видео из Ленты — в стиле Reels (без перехода) */
     .video-viewer { position: absolute; inset: 0; z-index: 120; display: none; flex-direction: column; background: #000; overflow: hidden; }
     .video-viewer.active { display: flex; }
-    .video-viewer-top { display: flex; align-items: center; gap: 10px; padding: 12px; }
+    .video-viewer-top { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: 12px; z-index: 6; background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%); }
     .video-viewer-close { width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 18px; cursor: pointer; flex-shrink: 0; }
     .video-viewer-title { flex: 1; color: #fff; font-size: 14px; font-weight: 700; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .video-viewer-stage { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; flex-shrink: 0; }
-    .video-viewer-stage img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .video-viewer-author { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
-    .video-viewer-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; cursor: pointer; }
-    .video-viewer-meta { flex: 1; min-width: 0; cursor: pointer; }
-    .video-viewer-channel { color: #fff; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .video-viewer-sub { color: rgba(255,255,255,0.7); font-size: 11px; }
-    .video-viewer-actions { display: flex; align-items: center; gap: 10px; padding: 0 12px 6px 12px; }
-    .video-viewer-similar-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 30px; height: 60px; border-radius: 15px; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 18px; cursor: pointer; z-index: 5; }
-    .video-viewer-similar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 12px 16px 12px; scrollbar-width: none; }
+    .video-viewer-stage { position: relative; flex: 1; width: 100%; background: #000; overflow: hidden; }
+    .video-viewer-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .video-viewer-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%); pointer-events: none; }
+    .video-viewer-side { position: absolute; right: 10px; bottom: 170px; display: flex; flex-direction: column; align-items: center; gap: 14px; z-index: 5; }
+    .video-viewer-side .reel-action-chip { flex-direction: column; gap: 2px; font-size: 11px; }
+    .video-viewer-similar-toggle { width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .video-viewer-bottom { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%); padding: 10px 12px 100px 12px; }
+    .video-viewer-author { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .video-viewer-avatar { width: 38px; height: 38px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; border: 1.5px solid #fff; }
+    .video-viewer-meta { flex: 1; min-width: 0; }
+    .video-viewer-channel { color: #fff; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .video-viewer-sub { color: rgba(255,255,255,0.75); font-size: 11px; margin-top: 1px; }
+    .video-viewer-caption { color: rgba(255,255,255,0.92); font-size: 13px; line-height: 1.4; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .video-viewer-timeline { height: 3px; background: rgba(255,255,255,0.25); border-radius: 999px; overflow: hidden; margin-top: 8px; position: relative; }
+    .video-viewer-progress { position: absolute; left: 0; top: 0; bottom: 0; background: #fff; border-radius: 999px; }
+    .video-viewer-similar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 12px 0 12px; scrollbar-width: none; margin-top: 8px; }
     .video-viewer-similar::-webkit-scrollbar { display: none; }
     .video-viewer-similar.hidden { display: none; }
     .similar-card { flex: 0 0 132px; cursor: pointer; }
-    .similar-thumb { width: 132px; height: 74px; border-radius: 10px; overflow: hidden; background: #111; position: relative; }
+    .similar-thumb { width: 132px; height: 74px; border-radius: 10px; overflow: hidden; background: #111; position: relative; border: 1px solid rgba(255,255,255,0.15); }
     .similar-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .similar-title { color: #fff; font-size: 11px; font-weight: 600; line-height: 1.3; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
@@ -1031,33 +1037,44 @@
         </div>
       </div>
     </div>
-    <!-- 🎬 Просмотр видео из ленты (без перехода) -->
+    <!-- 🎬 Просмотр видео из Ленты — как Reels (без перехода) -->
     <div class="video-viewer" id="videoViewer">
-      <div class="video-viewer-top">
-        <button class="video-viewer-close" onclick="closeVideoViewer()">←</button>
-        <div class="video-viewer-title" id="videoViewerTitle"></div>
-      </div>
-      <div class="video-viewer-stage" style="position:relative;">
+      <div class="video-viewer-stage">
         <img id="videoViewerThumb" src="" alt="">
-        <button class="video-viewer-similar-toggle" id="similarToggleBtn" onclick="toggleSimilarPanel(event)">›</button>
-      </div>
-      <div class="video-viewer-author">
-        <div class="video-viewer-avatar" id="videoViewerAvatar" onclick="viewerAuthorProfile()"></div>
-        <div class="video-viewer-meta" onclick="viewerAuthorProfile()">
-          <div class="video-viewer-channel" id="videoViewerChannel"></div>
-          <div class="video-viewer-sub" id="videoViewerSub"></div>
+        <div class="video-viewer-shade"></div>
+        <div class="video-viewer-top">
+          <button class="video-viewer-close" onclick="closeVideoViewer()">←</button>
+          <div class="video-viewer-title" id="videoViewerTitle"></div>
         </div>
-        <div class="reel-action-chip" onclick="toggleViewerLike(this)">
-          <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          <span class="reel-likes-val" id="videoViewerLikes">0</span>
+        <div class="video-viewer-side">
+          <div class="reel-action-chip" onclick="toggleViewerLike(this)">
+            <svg class="reel-heart-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span class="reel-likes-val" id="videoViewerLikes">0</span>
+          </div>
+          <div class="reel-action-chip" onclick="shareViewerVideo()" title="Репост"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Репост</span></div>
+          <button class="video-viewer-similar-toggle" id="similarToggleBtn" onclick="toggleSimilarPanel(event)" title="Похожие">›</button>
+          <div class="reel-menu-wrap">
+            <button class="reel-menu-btn" onclick="event.stopPropagation(); toggleViewerMenu(this)">⋮</button>
+            <div class="reel-menu-dropdown" id="viewerMenuDropdown">
+              <button onclick="viewerMarkInteresting()">Интересно</button>
+              <button onclick="viewerReportVideo()">Пожаловаться</button>
+              <button onclick="shareViewerVideo()">Поделиться</button>
+            </div>
+          </div>
         </div>
-        <div class="reel-action-chip" onclick="shareViewerVideo()" title="Репост"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Репост</span></div>
+        <div class="video-viewer-bottom">
+          <div class="video-viewer-author">
+            <div class="video-viewer-avatar" id="videoViewerAvatar" onclick="viewerAuthorProfile()"></div>
+            <div class="video-viewer-meta" onclick="viewerAuthorProfile()">
+              <div class="video-viewer-channel" id="videoViewerChannel"></div>
+              <div class="video-viewer-sub" id="videoViewerSub"></div>
+            </div>
+          </div>
+          <div class="video-viewer-caption" id="videoViewerCaption"></div>
+          <div class="video-viewer-timeline"><div class="video-viewer-progress" id="videoViewerProgress" style="width: 35%;"></div></div>
+          <div class="video-viewer-similar" id="videoViewerSimilar"></div>
+        </div>
       </div>
-      <div class="video-viewer-actions">
-        <div class="reel-action-chip" onclick="viewerMarkInteresting()" title="Интересно"><span>Интересно</span></div>
-        <div class="reel-action-chip" onclick="viewerReportVideo()" title="Пожаловаться"><span>Пожаловаться</span></div>
-      </div>
-      <div class="video-viewer-similar" id="videoViewerSimilar"></div>
     </div>
   </div>
 
@@ -2699,17 +2716,31 @@
     document.getElementById('videoViewerAvatar').style.backgroundImage = "url('" + v.avatar + "')";
     document.getElementById('videoViewerChannel').textContent = v.channel;
     document.getElementById('videoViewerSub').textContent = v.views + ' просмотров • ' + v.time;
+    document.getElementById('videoViewerCaption').textContent = v.title;
+    var pct = 20 + ((v.id * 17) % 60);
+    document.getElementById('videoViewerProgress').style.width = pct + '%';
     document.getElementById('videoViewerLikes').textContent = viewerLiked[id] ? '1' : '0';
     var likeIcon = document.querySelector('#videoViewer .reel-heart-icon');
     if(likeIcon){ likeIcon.setAttribute('fill', viewerLiked[id] ? 'var(--like-red)' : 'none'); likeIcon.setAttribute('stroke', viewerLiked[id] ? 'var(--like-red)' : 'currentColor'); }
     var sim = document.getElementById('videoViewerSimilar');
     sim.classList.remove('hidden');
     document.getElementById('similarToggleBtn').textContent = '›';
+    var md = document.getElementById('viewerMenuDropdown');
+    if(md) md.classList.remove('active');
     sim.innerHTML = ytVideosData.filter(function(x){ return x.id!==id; }).map(function(x){
       return `<div class="similar-card" onclick="openVideoViewer(${x.id})"><div class="similar-thumb"><img src="${x.thumb}" alt="" loading="lazy"></div><div class="similar-title">${x.title}</div></div>`;
     }).join('');
     document.getElementById('videoViewer').classList.add('active');
     if(navigator.vibrate) navigator.vibrate(15);
+  }
+  function toggleViewerMenu(btn){
+    var dd = document.getElementById('viewerMenuDropdown');
+    if(!dd) return;
+    var wasActive = dd.classList.contains('active');
+    document.querySelectorAll('.reel-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    document.querySelectorAll('.yt-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    if(!wasActive) dd.classList.add('active');
+    if(event) event.stopPropagation();
   }
   function closeVideoViewer(){
     document.getElementById('videoViewer').classList.remove('active');
