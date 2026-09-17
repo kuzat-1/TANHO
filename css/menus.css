@@ -1,0 +1,12 @@
+/* TANHO — menus.css */
+.profile-menu-wrap { position: relative; display: flex; align-items: center; }
+    .profile-menu-btn { width: 44px; height: 44px; border-radius: 12px; background: var(--btn-secondary); border: 1px solid var(--border-color); color: var(--text-main); font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .profile-menu-dropdown { position: absolute; top: 50px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 30; min-width: 180px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+    .profile-menu-dropdown.active { display: flex; }
+    .profile-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .profile-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
+    .profile-menu-dropdown .danger { color: var(--danger-color); }
+    .burger-menu-version { text-align: center; font-size: 11px; color: var(--text-muted); padding: 14px 0 4px 0; }
+    .burger-menu-list { display: flex; flex-direction: column; gap: 2px; }
+    .burger-menu-list button { background: none; border: none; color: var(--text-main); padding: 12px 8px; text-align: left; border-radius: 10px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+    .burger-menu-list button:hover { background: rgba(255,255,255,0.06); }

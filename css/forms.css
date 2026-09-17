@@ -1,0 +1,29 @@
+/* TANHO — forms.css */
+.icon-btn-circle {
+      width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color); color: var(--text-main);
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .icon-btn-circle:active { transform: scale(0.92); }
+
+    .icon-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; }
+
+    .btn {
+      height: 44px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600; color: #fff;
+      display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; flex: 1;
+    }
+    .btn-primary { background: var(--primary-gradient); box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35); }
+    .btn-secondary { background-color: var(--btn-secondary); border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text-main); }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    textarea.custom-input { height: 80px; padding: 12px 14px; resize: none; }
+
+    .btn-terminate {
+      width: 100%; height: 42px; border-radius: 12px; background-color: var(--btn-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.06); color: var(--danger-color); font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 4px;
+    }
+    .btn-sticker { background: radial-gradient(circle, #facc15 0%, #ca8a04 100%); }
+    .btn-image   { background: linear-gradient(135deg, #c084fc 0%, #9333ea 100%); }
+    .btn-music   { background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%); }
+    .btn-video   { background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%); }
+    .btn-location{ background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); }

@@ -1,0 +1,251 @@
+/* TANHO — base.css */
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: var(--font-stack); }
+
+    body {
+      background-color: #030407; color: var(--text-main);
+      display: flex; justify-content: center; min-height: 100vh;
+      transition: background-color 0.3s ease;
+    }
+
+    .app-screen {
+      width: 100%; max-width: 430px; background-color: var(--bg-dark);
+      height: 100vh; height: 100dvh; display: flex; flex-direction: column; position: relative;
+      overflow-x: hidden; overflow-y: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.9);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    /* 🔄 Pull to refresh indicator */
+    .refresh-indicator { position: absolute; top: 10px; left: 50%; transform: translateX(-50%) translateY(-40px); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; z-index: 10; opacity: 0; transition: all 0.3s ease; pointer-events: none; }
+    .refresh-indicator.active { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .refresh-spinner { width: 14px; height: 14px; border: 2px solid var(--border-color); border-top-color: var(--primary-accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* --- ЭКРАН 1: ГЛАВНАЯ (ПОСТЫ) --- */
+    .posts-feed { display: flex; flex-direction: column; }
+    .post-location-tag { font-size: 11px; color: #38bdf8; font-weight: 500; }
+
+    .channel-action-btn {
+      padding: 6px 14px; border-radius: 18px; font-size: 12px; font-weight: 700;
+      border: none; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 4px;
+    }
+    .channel-action-btn.subscribe { background: var(--tg-blue); color: #ffffff; }
+    .channel-action-btn.open { background: rgba(255, 255, 255, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.4); transition: all 0.2s; }
+    .dot.active { background: #a855f7; width: 14px; border-radius: 4px; }
+    .likes-count, .comments-count { font-size: 13px; font-weight: 600; }
+    #reelsFeedTab { background: transparent; padding-top: calc(42px + env(safe-area-inset-top, 0px)); }
+    #reelsReelsTab { background: #000; padding-top: 0; }
+    .similar-card { flex: 0 0 150px; cursor: pointer; }
+    .similar-thumb { width: 150px; height: 84px; border-radius: 10px; overflow: hidden; background: #111; position: relative; }
+    .similar-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .similar-title { color: var(--text-main); font-size: 11px; font-weight: 600; line-height: 1.3; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* --- ЭКРАН 3: СПИСОК КАНАЛОВ И ЧАТОВ --- */
+    .channels-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .channel-card {
+      display: flex; align-items: center; gap: 12px; padding: 12px; background-color: var(--card-bg);
+      border-radius: 16px; border: 1px solid var(--border-color); cursor: pointer;
+    }
+    .channel-avatar { width: 48px; height: 48px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+    .channel-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .channel-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
+    .channel-subscribers { font-size: 12px; color: var(--text-muted); }
+    .channel-last-post { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+    .info-modal-body, .doc-text { font-size: 13px; line-height: 1.6; color: var(--text-main); max-height: 50vh; overflow-y: auto; white-space: pre-line; }
+    .rate-stars { display: flex; gap: 6px; justify-content: center; padding: 6px 0; }
+    .rate-stars button { background: none; border: none; font-size: 32px; cursor: pointer; color: var(--text-muted); padding: 2px 4px; }
+    .rate-stars button.lit { color: #facc15; }
+
+    @keyframes pulseText { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+    
+    .quoted-reply {
+      background: rgba(255,255,255,0.07); border-left: 3px solid var(--primary-accent);
+      padding: 6px 8px; border-radius: 8px; margin-bottom: 6px; font-size: 12px; text-align: left;
+    }
+    .outgoing .quoted-reply { background: rgba(255,255,255,0.18); border-left-color: #fff; }
+    .quoted-reply-name { font-weight: 700; font-size: 11px; color: var(--primary-accent); margin-bottom: 1px; }
+    .outgoing .quoted-reply-name { color: #fff; }
+    .quoted-reply-text { color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .outgoing .quoted-reply-text { color: rgba(255,255,255,0.9); }
+    .reaction-chip { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 2px 7px; font-size: 12px; display: flex; align-items: center; gap: 3px; cursor: pointer; color: var(--text-main); }
+    .reaction-chip.active { background: rgba(108,92,231,0.18); border-color: var(--primary-accent); color: var(--primary-accent); }
+    .quick-like { width: 26px; height: 26px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; color: var(--text-muted); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .quick-like:active { transform: scale(0.9); }
+    .reaction-picker { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 8px; display: none; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 20; white-space: nowrap; transform-origin: bottom center; max-width: min(320px, calc(100vw - 24px)); width: max-content; flex-wrap: wrap; justify-content: center; box-sizing: border-box; }
+    
+    
+    .reaction-picker.active { display: flex; }
+    .reaction-picker button { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px 6px; border-radius: 50%; transition: transform 0.15s; }
+    .reaction-picker button:hover { transform: scale(1.2); background: rgba(255,255,255,0.06); }
+    .reaction-picker button:active { transform: scale(0.95); }
+
+    .edit-media-card {
+      background-color: var(--card-bg); border-radius: 18px; overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05); position: relative;
+    }
+    .edit-banner-preview {
+      height: 120px; background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800') center/cover no-repeat;
+      position: relative; display: flex; align-items: center; justify-content: center;
+    }
+    .edit-banner-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); }
+    .change-banner-btn {
+      position: relative; z-index: 2; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 8px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; cursor: pointer;
+    }
+
+    .edit-avatar-container {
+      padding: 0 16px 16px 16px; margin-top: -36px; display: flex; align-items: flex-end;
+      justify-content: space-between; position: relative; z-index: 5;
+    }
+    .edit-avatar-wrapper {
+      position: relative; width: 76px; height: 76px; border-radius: 50%; padding: 3px;
+      background: linear-gradient(135deg, #a855f7, #06b6d4);
+    }
+    .edit-avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .input-label { font-size: 12px; color: var(--text-sub); font-weight: 500; }
+    .custom-input {
+      width: 100%; height: 46px; background-color: var(--input-bg); border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px; padding: 0 14px; color: #fff; font-size: 14px; outline: none; transition: border-color 0.2s;
+    }
+    .custom-input:focus { border-color: var(--primary-accent); }
+    .item-left { display: flex; align-items: center; gap: 12px; }
+    .item-icon {
+      width: 34px; height: 34px; border-radius: 10px; background-color: var(--btn-secondary);
+      display: flex; align-items: center; justify-content: center; color: var(--text-sub);
+    }
+    .item-title { font-size: 14px; font-weight: 500; color: var(--text-main); }
+    .item-sub { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+    .item-arrow { color: var(--text-sub); opacity: 0.6; }
+    .danger-item { color: var(--danger-color); }
+    .danger-item .item-icon { background-color: var(--danger-bg); color: var(--danger-color); }
+
+    .save-main-btn {
+      height: 48px; border-radius: 14px; background: var(--primary-gradient); border: none;
+      color: #fff; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.4); margin-top: 10px;
+    }
+
+    /* TELEGRAM ЭКРАН КАНАЛА */
+    .channel-view-screen {
+      position: absolute; inset: 0; background: var(--bg-main); z-index: 150;
+      display: none; flex-direction: column; overflow: hidden;
+    }
+    .channel-view-screen.active { display: flex; }
+
+    .tg-channel-header {
+      height: 60px; padding: 0 12px; display: flex; align-items: center; gap: 10px;
+      background: var(--header-bg); border-bottom: 1px solid var(--border-color); backdrop-filter: blur(20px); position: relative; z-index: 20;
+    }
+    .tg-back-btn { background: none; border: none; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; }
+    .tg-channel-meta { flex: 1; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .tg-channel-avatar-head { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+    .tg-channel-titles { display: flex; flex-direction: column; }
+    .tg-channel-name-head { font-size: 15px; font-weight: 700; color: var(--text-main); }
+    .tg-channel-subs-head { font-size: 11.5px; color: var(--text-muted); }
+
+    .tg-channel-search-bar { display: none; padding: 8px 14px; background: var(--panel-bg); border-bottom: 1px solid var(--border-color); }
+    .tg-channel-search-bar.active { display: flex; }
+    .tg-search-input-field {
+      width: 100%; background: var(--input-bg); border: 1px solid var(--glass-border);
+      border-radius: 12px; padding: 8px 12px; color: var(--text-main); font-size: 13.5px; outline: none;
+    }
+
+    .tg-channel-content { flex: 1; overflow-y: auto; padding-bottom: 16px; display: flex; flex-direction: column; }
+
+    .tg-channel-bottom-bar {
+      padding: 10px 16px; background: var(--nav-bg); backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-color); display: flex; justify-content: center;
+    }
+    .tg-channel-bottom-bar.hidden { display: none !important; }
+
+    .tg-subscribe-big-btn {
+      width: 100%; padding: 14px; border-radius: 14px; background: var(--tg-blue);
+      border: none; color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer;
+      text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(34, 158, 217, 0.3);
+    }
+
+    .tg-dropdown-menu {
+      position: absolute; top: 54px; right: 12px; background: rgba(22, 25, 39, 0.98);
+      backdrop-filter: blur(30px); border: 1px solid var(--glass-border); border-radius: 16px;
+      padding: 6px; display: none; flex-direction: column; gap: 4px; z-index: 100; min-width: 190px;
+    }
+    .tg-dropdown-menu.active { display: flex; }
+    .tg-menu-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+      font-size: 13px; font-weight: 500; color: var(--text-main); cursor: pointer; background: none; border: none; width: 100%; text-align: left;
+    }
+
+    .nav-center-add {
+      width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #6366f1);
+      display: flex; align-items: center; justify-content: center; color: #fff;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.5); margin-top: -16px; cursor: pointer; border: none;
+    }
+    @supports (height: 100dvh) {
+      .editor-modal { height: 100dvh; }
+    }
+    .close-editor-btn { background: none; border: none; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; }
+
+    .text-inputs-box { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .input-title { width: 100%; background: transparent; border: none; outline: none; color: var(--text-main); font-size: 20px; font-weight: 700; }
+    .input-title::placeholder { color: var(--text-muted); opacity: 0.6; }
+
+    .input-content { width: 100%; min-height: 70px; background: transparent; border: none; outline: none; color: var(--text-main); font-size: 15px; line-height: 1.4; resize: none; }
+    .input-content::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+    .attachments-preview { display: flex; flex-direction: column; gap: 12px; }
+
+    .stickers-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sticker-chip {
+      position: relative; width: 60px; height: 60px;
+      background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border);
+      border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    }
+    .sticker-chip img { width: 80%; height: 80%; object-fit: contain; }
+
+    .remove-badge-btn {
+      position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background: #ef4444;
+      border: 2px solid var(--bg-main); border-radius: 50%; color: #fff; font-size: 12px;
+      font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;
+    }
+
+    .gallery-container {
+      display: none; flex-direction: column; gap: 8px; background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px;
+    }
+    .gallery-container.active { display: flex; }
+    .gallery-header { display: flex; align-items: center; justify-content: space-between; }
+    .gallery-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
+    .photo-grid { display: grid; gap: 4px; border-radius: 12px; overflow: hidden; min-height: 100px; }
+    .photo-grid[data-count="1"] { grid-template-columns: 1fr; }
+    .photo-grid[data-count="2"] { grid-template-columns: 1fr 1fr; }
+
+    .photo-item { position: relative; width: 100%; height: 100%; min-height: 100px; background: #1a1c29; overflow: hidden; }
+    .photo-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .bottom-section { margin-top: auto; display: flex; flex-direction: column; gap: 8px; position: sticky; bottom: 0; background: var(--bg-main); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5; }
+    .glass-dock {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(30px);
+      border: 1px solid var(--glass-border); border-radius: 999px; padding: 6px 8px; width: 100%;
+    }
+    .dock-btn { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    .send-btn {
+      width: 46px; height: 46px; border-radius: 50%; background: var(--primary-gradient);
+      border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+
+    .sticker-popover {
+      position: absolute; bottom: 64px; left: 0; right: 0; background: rgba(18, 20, 32, 0.95);
+      backdrop-filter: blur(35px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px;
+      display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; z-index: 30;
+    }
+    .sticker-popover.active { display: grid; }
+    .sticker-item { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); }
+    .sticker-item img { width: 85%; height: 85%; object-fit: contain; }
+    @keyframes stickerPop { 0% { transform: scale(0.5) rotate(-10deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+    @keyframes stickerFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    .error-text { font-size: 12px; color: var(--error-color); display: none; }
+    /* 🔐 Авторизация */
+    #auth-modal { z-index: 1100; }

@@ -1,0 +1,24 @@
+/* TANHO — variables.css */
+:root {
+      --bg-dark: #080910;
+      --bg-main: #080910;
+      --card-bg: #121522;
+      --panel-bg: #191c2b;
+      --btn-secondary: #191c2b;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #ffffff;
+      --text-sub: #8a92a6;
+      --text-muted: #8a92a6;
+      --primary-accent: #6c5ce7;
+      --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+      --danger-color: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.1);
+      --tg-blue: #229ed9;
+      --like-red: #ff3040;
+      --header-bg: rgba(8, 9, 16, 0.94);
+      --nav-bg: rgba(8, 9, 16, 0.94);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --input-bg: #161927;
+      --error-color: #ff4d4d;
+      --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    }

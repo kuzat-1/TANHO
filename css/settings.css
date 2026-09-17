@@ -1,0 +1,35 @@
+/* TANHO — settings.css */
+/* ---------------- ⚙️ 6. СТРАНИЦА НАСТРОЕК ---------------- */
+    .page-settings {
+      position: absolute; inset: 0; background-color: var(--bg-dark); z-index: 180;
+      transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px;
+    }
+    .page-settings.active { transform: translateX(0); }
+
+    .settings-header {
+      height: calc(56px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 16px 0 16px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06); position: sticky; top: 0;
+      background: rgba(8, 9, 16, 0.95); backdrop-filter: blur(15px); z-index: 20;
+    }
+    .settings-title-box { display: flex; align-items: center; gap: 12px; }
+    .settings-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+
+    .settings-content { padding: 20px 16px; display: flex; flex-direction: column; gap: 24px; }
+
+    .section-block { display: flex; flex-direction: column; gap: 14px; }
+    .section-label { font-size: 13px; font-weight: 700; color: var(--primary-accent); text-transform: uppercase; letter-spacing: 0.8px; }
+
+    .settings-card-list { background-color: var(--card-bg); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; }
+    .settings-item {
+      display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04); cursor: pointer;
+    }
+    .settings-item:last-child { border-bottom: none; }
+
+    .device-card {
+      display: flex; align-items: center; justify-content: space-between; padding: 12px 14px;
+      background-color: var(--input-bg); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .device-info { display: flex; align-items: center; gap: 12px; }
+    .device-status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }

@@ -1,0 +1,40 @@
+/* TANHO — theme.css */
+/* ☀️ СВЕТЛАЯ ТЕМА */
+    body.light-theme {
+      --bg-main: #f4f5f9;
+      --bg-dark: #f4f5f9;
+      --card-bg: #ffffff;
+      --panel-bg: #eef0f6;
+      --btn-secondary: #e2e8f0;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --text-muted: #64748b;
+      --header-bg: rgba(255, 255, 255, 0.94);
+      --nav-bg: rgba(255, 255, 255, 0.94);
+      --glass-border: rgba(0, 0, 0, 0.1);
+      --input-bg: #e2e8f0;
+    }
+    /* светлая тема: нижнее меню всегда тёмное, Reels всегда тёмный */
+    body.light-theme .bottom-nav {
+      background: rgba(8, 9, 16, 0.92) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    }
+    body.light-theme .bottom-nav .nav-tab-btn { color: #64748b !important; }
+    body.light-theme .bottom-nav .nav-tab-btn.active { color: #a855f7 !important; }
+    body.light-theme #reelsReelsTab { background: #000 !important; }
+    body.light-theme #reelsReelsTab .reel-card { color: #fff; }
+    body.light-theme #reelsReelsTab .reel-author-handle,
+    body.light-theme #reelsReelsTab .reel-caption-text,
+    body.light-theme #reelsReelsTab .reel-action-chip { color: #fff !important; }
+    /* Лента в светлой теме следует теме, шапка прозрачная */
+    body.light-theme .reels-tabs-header { background: transparent !important; }
+    body.light-theme .reels-tabs-header .seg-btn { color: #64748b !important; }
+    body.light-theme .reels-tabs-header .seg-btn.active { color: #0f172a !important; }
+  body.light-theme .nav-capsule-box {
+    background: rgba(255,255,255,0.30);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(24px) saturate(1.35);
+    -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  }
+  body.light-theme .nav-item-pill { color: #64748b; }

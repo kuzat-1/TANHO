@@ -8,888 +8,23 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="version" content="v20260916160710 70% capsule" />
   <title>TANHO — Video & Social Platform v20260916160710 70% capsule</title>
-  <style>
-    :root {
-      --bg-dark: #080910;
-      --bg-main: #080910;
-      --card-bg: #121522;
-      --panel-bg: #191c2b;
-      --btn-secondary: #191c2b;
-      --border-color: rgba(255, 255, 255, 0.08);
-      --text-main: #ffffff;
-      --text-sub: #8a92a6;
-      --text-muted: #8a92a6;
-      --primary-accent: #6c5ce7;
-      --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
-      --danger-color: #ef4444;
-      --danger-bg: rgba(239, 68, 68, 0.1);
-      --tg-blue: #229ed9;
-      --like-red: #ff3040;
-      --header-bg: rgba(8, 9, 16, 0.94);
-      --nav-bg: rgba(8, 9, 16, 0.94);
-      --glass-border: rgba(255, 255, 255, 0.12);
-      --input-bg: #161927;
-      --error-color: #ff4d4d;
-      --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-    }
-
-    /* ☀️ СВЕТЛАЯ ТЕМА */
-    body.light-theme {
-      --bg-main: #f4f5f9;
-      --bg-dark: #f4f5f9;
-      --card-bg: #ffffff;
-      --panel-bg: #eef0f6;
-      --btn-secondary: #e2e8f0;
-      --border-color: rgba(0, 0, 0, 0.08);
-      --text-main: #0f172a;
-      --text-sub: #64748b;
-      --text-muted: #64748b;
-      --header-bg: rgba(255, 255, 255, 0.94);
-      --nav-bg: rgba(255, 255, 255, 0.94);
-      --glass-border: rgba(0, 0, 0, 0.1);
-      --input-bg: #e2e8f0;
-    }
-    /* светлая тема: нижнее меню всегда тёмное, Reels всегда тёмный */
-    body.light-theme .bottom-nav {
-      background: rgba(8, 9, 16, 0.92) !important;
-      border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-    }
-    body.light-theme .bottom-nav .nav-tab-btn { color: #64748b !important; }
-    body.light-theme .bottom-nav .nav-tab-btn.active { color: #a855f7 !important; }
-    body.light-theme #reelsReelsTab { background: #000 !important; }
-    body.light-theme #reelsReelsTab .reel-card { color: #fff; }
-    body.light-theme #reelsReelsTab .reel-author-handle,
-    body.light-theme #reelsReelsTab .reel-caption-text,
-    body.light-theme #reelsReelsTab .reel-action-chip { color: #fff !important; }
-    /* Лента в светлой теме следует теме, шапка прозрачная */
-    body.light-theme .reels-tabs-header { background: transparent !important; }
-    body.light-theme .reels-tabs-header .seg-btn { color: #64748b !important; }
-    body.light-theme .reels-tabs-header .seg-btn.active { color: #0f172a !important; }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: var(--font-stack); }
-
-    body {
-      background-color: #030407; color: var(--text-main);
-      display: flex; justify-content: center; min-height: 100vh;
-      transition: background-color 0.3s ease;
-    }
-
-    .app-screen {
-      width: 100%; max-width: 430px; background-color: var(--bg-dark);
-      height: 100vh; height: 100dvh; display: flex; flex-direction: column; position: relative;
-      overflow-x: hidden; overflow-y: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.9);
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    /* ---------------- 1. ШАПКА ПРИЛОЖЕНИЯ (HEADER) ---------------- */
-    .app-header {
-      height: calc(58px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 16px 0 16px; display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--border-color); background: var(--header-bg); backdrop-filter: blur(20px);
-      position: relative; z-index: 50; flex-shrink: 0; transition: background 0.3s ease;
-    }
-
-    .header-logo {
-      font-size: 20px; font-weight: 800; letter-spacing: 0.5px;
-      background: linear-gradient(135deg, #a855f7, #38bdf8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-
-    .header-actions { display: flex; align-items: center; gap: 8px; }
-
-    .icon-btn-circle {
-      width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color); color: var(--text-main);
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .icon-btn-circle:active { transform: scale(0.92); }
-
-    .header-search-box {
-      display: none; width: 100%; height: 40px; background: var(--input-bg);
-      border-radius: 12px; padding: 0 12px; align-items: center; gap: 8px;
-      border: 1px solid var(--border-color);
-    }
-    .header-search-box.active { display: flex; }
-    .header-search-input {
-      width: 100%; background: transparent; border: none; outline: none;
-      color: var(--text-main); font-size: 14px;
-    }
-
-    /* ---------------- 2. СТРАНИЦЫ ПРИЛОЖЕНИЯ ---------------- */
-    .page-screen { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding-bottom: 90px; position: relative; background: var(--bg-dark); }
-    .page-screen.active { display: flex; }
-    /* 🔄 Pull to refresh indicator */
-    .refresh-indicator { position: absolute; top: 10px; left: 50%; transform: translateX(-50%) translateY(-40px); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; z-index: 10; opacity: 0; transition: all 0.3s ease; pointer-events: none; }
-    .refresh-indicator.active { transform: translateX(-50%) translateY(0); opacity: 1; }
-    .refresh-spinner { width: 14px; height: 14px; border: 2px solid var(--border-color); border-top-color: var(--primary-accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* --- ЭКРАН 1: ГЛАВНАЯ (ПОСТЫ) --- */
-    .posts-feed { display: flex; flex-direction: column; }
-    .post-card:last-child { border-bottom: none; margin-bottom: 0; }
-    .yt-feed .yt-card:last-child { border-bottom: none; margin-bottom: 0; }
-    
-    .post-card {
-      border-bottom: 1px solid var(--border-color); background-color: var(--bg-main);
-      display: flex; flex-direction: column; padding-bottom: 12px; margin-bottom: 4px;
-    }
-
-    .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 8px 14px; position: relative; }
-    .post-author { display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; }
-    .author-avatar { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
-    .author-meta { display: flex; flex-direction: column; gap: 1px; }
-    .author-name { font-size: 14px; font-weight: 700; color: var(--text-main); }
-    .post-location-tag { font-size: 11px; color: #38bdf8; font-weight: 500; }
-    .post-time-top { font-size: 10.5px; color: var(--text-muted); }
-    .post-header-actions { display: flex; align-items: center; gap: 8px; }
-    .subscribe-btn { padding: 6px 14px; border-radius: 16px; background: var(--primary-accent); color: #fff; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-    .subscribe-btn.subscribed { background: var(--btn-secondary); color: var(--text-muted); border: 1px solid var(--border-color); }
-    .post-menu-btn { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 4px 8px; border-radius: 50%; }
-    .post-menu-btn:active { background: rgba(255,255,255,0.06); }
-    .post-menu-dropdown { position: absolute; top: 44px; right: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 20; min-width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
-    .post-menu-dropdown.active { display: flex; }
-    .post-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-    .post-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
-    .post-menu-dropdown .danger { color: var(--danger-color); }
-    .profile-menu-wrap { position: relative; display: flex; align-items: center; }
-    .profile-menu-btn { width: 44px; height: 44px; border-radius: 12px; background: var(--btn-secondary); border: 1px solid var(--border-color); color: var(--text-main); font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .profile-menu-dropdown { position: absolute; top: 50px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 30; min-width: 180px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
-    .profile-menu-dropdown.active { display: flex; }
-    .profile-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-    .profile-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
-    .profile-menu-dropdown .danger { color: var(--danger-color); }
-
-    .channel-action-btn {
-      padding: 6px 14px; border-radius: 18px; font-size: 12px; font-weight: 700;
-      border: none; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 4px;
-    }
-    .channel-action-btn.subscribe { background: var(--tg-blue); color: #ffffff; }
-    .channel-action-btn.open { background: rgba(255, 255, 255, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
-
-    .icon-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; }
-
-    .post-slider-wrapper { position: relative; width: 100%; background-color: #000; overflow: hidden; }
-    .post-media-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
-    .post-media-slider::-webkit-scrollbar { display: none; }
-
-    .slide-item {
-      width: 100%; height: 260px; flex-shrink: 0; scroll-snap-align: start;
-      position: relative; display: flex; align-items: center; justify-content: center;
-    }
-    .slide-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-    .post-card.expanded .slide-item { height: auto; max-height: 480px; }
-    .post-card.expanded .slide-item img { object-fit: contain; max-height: 480px; }
-
-    .slider-badge {
-      position: absolute; top: 10px; right: 12px; background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(8px); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px; pointer-events: none; z-index: 2;
-    }
-    .slider-dots {
-      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 5px; background: rgba(0, 0, 0, 0.4); padding: 4px 8px; border-radius: 10px; backdrop-filter: blur(4px); z-index: 2;
-    }
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.4); transition: all 0.2s; }
-    .dot.active { background: #a855f7; width: 14px; border-radius: 4px; }
-
-    .post-attachments-bottom { padding: 8px 14px; display: flex; flex-direction: column; gap: 8px; }
-    .tg-audio-card {
-      display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px 14px; width: 100%;
-    }
-    .tg-play-btn {
-      width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
-      border: none; display: flex; align-items: center; justify-content: center; color: #ffffff; cursor: pointer; flex-shrink: 0;
-    }
-    .tg-audio-body { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
-    .tg-audio-title { font-size: 13px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .tg-audio-time { font-size: 11px; color: var(--text-muted); }
-
-    .post-content-text { padding: 8px 14px; display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
-    .post-title-text { font-size: 16px; font-weight: 700; color: var(--text-main); line-height: 1.35; }
-    .caption { font-size: 13.5px; line-height: 1.45; color: var(--text-main); opacity: 0.88; }
-    .post-card:not(.expanded) .caption { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .post-card.expanded .caption { display: block; }
-    .expand-toggle-btn {
-      background: none; border: none; color: #a855f7; font-weight: 600;
-      font-size: 12.5px; cursor: pointer; padding-top: 2px; text-align: left; display: inline-block;
-    }
-
-    .post-actions { padding: 10px 14px 4px 14px; display: flex; justify-content: space-between; align-items: center; }
-    .action-group { display: flex; gap: 10px; align-items: center; }
-    .action-with-count {
-      display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px;
-      background: rgba(255, 255, 255, 0.06); border: none; color: var(--text-main); cursor: pointer; transition: transform 0.15s ease;
-    }
-    .action-with-count:active { transform: scale(0.92); }
-    .likes-count, .comments-count { font-size: 13px; font-weight: 600; }
-
-    /* --- ЭКРАН 2: РИЛСЫ --- */
-    .reels-screen-container {
-      position: absolute; inset: 0; bottom: 0; width: 100%; height: 100%;
-      background: var(--bg-dark); z-index: 40; display: none; flex-direction: column; overflow: hidden;
-    }
-    .reels-screen-container.active { display: flex; }
-
-    .reels-vertical-feed { width: 100%; height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; }
-    .reels-vertical-feed::-webkit-scrollbar { display: none; }
-
-    .reel-card {
-      width: 100%; height: 100%; scroll-snap-align: start; position: relative;
-      background-size: cover; background-position: center; display: flex; flex-direction: column;
-      justify-content: space-between; padding: 16px 16px 20px 16px;
-    }
-
-    .reels-tabs-header {
-      position: absolute; top: env(safe-area-inset-top, 0px); left: 0; right: 0; height: 42px; display: flex; align-items: center; justify-content: center; gap: 36px;
-      background: transparent !important; border-bottom: none !important; flex-shrink: 0; z-index: 5;
-      box-shadow: none !important; pointer-events: auto;
-    }
-    /* container already defined above */
-    .reels-tab-content { padding-top: calc(42px + env(safe-area-inset-top, 0px)); }
-    .seg-btn {
-      position: relative; background: none; border: none; padding: 10px 2px; cursor: pointer;
-      color: var(--text-muted); font-size: 14px; font-weight: 500; transition: color 0.2s ease;
-    }
-    .seg-btn.active { color: var(--text-main); font-weight: 700; }
-    .seg-btn .seg-underline {
-      position: absolute; left: 0; right: 0; bottom: -1px; height: 2.5px;
-      background: var(--primary-accent); border-radius: 999px;
-      transform: scaleX(0); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
-    }
-    .seg-btn.active .seg-underline { transform: scaleX(1); }
-
-    .reels-tab-content { display: none; flex: 1; overflow-y: auto; scrollbar-width: none; flex-direction: column; padding-top: 0; }
-    .reels-tab-content.active { display: flex; }
-    .reels-tab-content::-webkit-scrollbar { display: none; }
-    #reelsFeedTab { background: transparent; padding-top: calc(42px + env(safe-area-inset-top, 0px)); }
-    #reelsReelsTab { background: #000; padding-top: 0; }
-
-    /* YouTube feed — без белого фона над капсулой */
-    .yt-feed { display: flex; flex-direction: column; gap: 0; background: transparent; padding-bottom: 86px; }
-    .yt-card { background: var(--bg-main); border-bottom: 1px solid var(--border-color); padding-bottom: 8px; cursor: pointer; }
-    .yt-thumb { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; }
-    .yt-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .yt-duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.85); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 6px; border-radius: 6px; }
-    .yt-info { display: flex; gap: 10px; padding: 10px 12px 2px 12px; align-items: flex-start; }
-    .yt-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
-    .yt-meta { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
-    .yt-title { font-size: 14.5px; font-weight: 700; line-height: 1.35; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .yt-channel { font-size: 12.5px; color: var(--text-muted); }
-    .yt-stats { font-size: 11.5px; color: var(--text-muted); display: flex; gap: 6px; align-items: center; }
-    .yt-more-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; flex-shrink: 0; }
-    .yt-card { position: relative; }
-    .yt-menu-wrap { position: relative; flex-shrink: 0; }
-    .yt-menu-dropdown { position: absolute; top: 30px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 30; min-width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
-    .yt-menu-dropdown.active { display: flex; }
-    .yt-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-    .yt-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
-    .reel-menu-wrap { position: relative; }
-    .reel-menu-btn { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; background: none; border: none; }
-    .reel-menu-dropdown { position: absolute; bottom: calc(100% + 8px); right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 30; min-width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
-    .reel-menu-dropdown.active { display: flex; }
-    .reel-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-    .reel-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
-    /* 🎬 Просмотр видео из Ленты — в стиле Reels (без перехода) */
-    .video-viewer { position: absolute; inset: 0; z-index: 120; display: none; flex-direction: column; background: var(--bg-dark); overflow: hidden; }
-    .video-viewer.active { display: flex; }
-    .video-viewer-scroll { flex: 1; overflow-y: auto; scrollbar-width: none; padding-bottom: 90px; }
-    .video-viewer-scroll::-webkit-scrollbar { display: none; }
-    .video-viewer-top { display: flex; align-items: center; gap: 10px; padding: calc(12px + env(safe-area-inset-top, 0px)) 12px 12px 12px; }
-    .video-viewer-close { width: 36px; height: 36px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); font-size: 18px; cursor: pointer; flex-shrink: 0; }
-    .video-viewer-title { flex: 1; color: var(--text-main); font-size: 14px; font-weight: 700; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .video-viewer-player { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; }
-    .video-viewer-player img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .video-viewer-actions-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px 2px 12px; }
-    .viewer-action-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: rgba(255,255,255,0.06); border: none; color: var(--text-main); font-size: 13px; font-weight: 600; cursor: pointer; }
-    .viewer-action-btn:active { transform: scale(0.94); }
-    .video-viewer-author { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
-    .video-viewer-avatar { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; cursor: pointer; }
-    .video-viewer-meta { flex: 1; min-width: 0; cursor: pointer; }
-    .video-viewer-channel { color: var(--text-main); font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .video-viewer-sub { color: var(--text-muted); font-size: 11px; margin-top: 1px; }
-    .video-viewer-divider { height: 1px; background: var(--border-color); margin: 4px 0 0 0; }
-    .video-viewer-divider { height: 1px; background: var(--border-color); margin: 6px 0 0 0; }
-    .video-viewer-similar-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px 0 12px; }
-    .video-viewer-similar-title { color: var(--text-main); font-size: 13px; font-weight: 700; }
-    .video-viewer-similar-toggle { width: 34px; height: 34px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .video-viewer-similar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 12px 16px 12px; scrollbar-width: none; }
-    .video-viewer-similar::-webkit-scrollbar { display: none; }
-    .video-viewer-similar.hidden { display: none; }
-    .similar-card { flex: 0 0 150px; cursor: pointer; }
-    .similar-thumb { width: 150px; height: 84px; border-radius: 10px; overflow: hidden; background: #111; position: relative; }
-    .similar-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .similar-title { color: var(--text-main); font-size: 11px; font-weight: 600; line-height: 1.3; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-    .reel-top-bar { display: flex; justify-content: space-between; align-items: center; z-index: 10; padding-top: 8px; }
-    .reel-icon-btn {
-      width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-
-    /* reel-center-action / use-idea-btn removed */
-
-    .reel-bottom-content { display: flex; flex-direction: column; gap: 12px; z-index: 10; margin-top: auto; padding-bottom: 100px; }
-    .reel-timeline { position: absolute; bottom: 78px; left: 0; right: 0; height: 36px; display: flex; align-items: center; gap: 10px; z-index: 11; pointer-events: none; padding: 0 16px; background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%); }
-    .reel-timeline-track { flex: 1; height: 3px; background: rgba(255,255,255,0.25); border-radius: 999px; overflow: hidden; position: relative; }
-    .reel-timeline-progress { position: absolute; left: 0; top: 0; bottom: 0; width: 42%; background: #fff; border-radius: 999px; }
-    .reel-timeline-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
-    .reel-timeline-username { font-size: 11px; font-weight: 700; color: #fff; line-height: 1; }
-    .reel-timeline-desc { font-size: 11px; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
-    .reel-actions-row { display: flex; align-items: center; gap: 14px; }
-    .reel-action-chip { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; }
-    .reel-author-info { display: flex; flex-direction: column; gap: 4px; }
-    .reel-author-handle { font-size: 14px; font-weight: 700; color: #fff; }
-    .reel-caption-text { font-size: 13px; color: rgba(255, 255, 255, 0.88); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-    /* --- ЭКРАН 3: СПИСОК КАНАЛОВ И ЧАТОВ --- */
-    .channels-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
-    .channel-card {
-      display: flex; align-items: center; gap: 12px; padding: 12px; background-color: var(--card-bg);
-      border-radius: 16px; border: 1px solid var(--border-color); cursor: pointer;
-    }
-    .channel-card.featured-chat {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(79, 70, 229, 0.15) 100%);
-      border-color: rgba(168, 85, 247, 0.3);
-    }
-    .channel-avatar { width: 48px; height: 48px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
-    .channel-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-    .channel-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
-    .channel-subscribers { font-size: 12px; color: var(--text-muted); }
-    .channel-last-post { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
-
-    /* ---------------- 4. ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ---------------- */
-    .banner-bg {
-      position: absolute; top: 0; left: 0; right: 0; height: 220px;
-      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800') center/cover no-repeat;
-      z-index: 1;
-    }
-
-    .banner-overlay {
-      position: absolute; top: 0; left: 0; right: 0; height: 220px;
-      background: linear-gradient(to bottom, rgba(8, 9, 16, 0.2) 0%, rgba(8, 9, 16, 0.85) 70%, var(--bg-dark) 100%);
-    }
-
-    .top-nav-profile {
-      height: calc(56px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 16px 0 16px; display: flex; justify-content: flex-end; align-items: center;
-      position: relative; z-index: 10;
-    }
-    .top-nav-right { display: flex; align-items: center; gap: 10px; }
-
-    .icon-btn-blur {
-      width: 40px; height: 40px; border-radius: 50%; background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.12); color: #fff;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .burger-menu-dropdown { position: absolute; top: 52px; right: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 30; min-width: 230px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-    .burger-menu-dropdown.active { display: flex; }
-    .burger-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-    .burger-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
-    .burger-menu-version { text-align: center; font-size: 11px; color: var(--text-muted); padding: 8px 0 4px 0; border-top: 1px solid var(--border-color); margin-top: 4px; }
-    .info-modal-body { font-size: 13px; line-height: 1.55; color: var(--text-main); max-height: 50vh; overflow-y: auto; white-space: pre-line; }
-    .rate-stars { display: flex; gap: 6px; justify-content: center; padding: 6px 0; }
-    .rate-stars button { background: none; border: none; font-size: 30px; cursor: pointer; color: var(--text-muted); padding: 2px 4px; }
-    .rate-stars button.lit { color: #facc15; }
-
-    .profile-header { position: relative; z-index: 10; padding: 10px 20px 0 20px; }
-    .user-hero { display: flex; align-items: flex-start; gap: 16px; }
-
-    .avatar-ring {
-      width: 84px; height: 84px; border-radius: 50%; padding: 3px;
-      background: linear-gradient(135deg, #a855f7, #06b6d4);
-      box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); flex-shrink: 0; position: relative;
-    }
-    .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background-color: #1c2030; }
-
-    .user-details { flex: 1; padding-top: 2px; }
-    .user-name-row { display: flex; align-items: center; gap: 6px; }
-    .user-name { font-size: 20px; font-weight: 700; color: var(--text-main); }
-
-    .verified-badge {
-      width: 18px; height: 18px; background: #38bdf8; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: bold;
-    }
-
-    .user-handle { font-size: 13px; color: var(--text-sub); margin-top: 2px; margin-bottom: 6px; }
-    .user-bio { font-size: 13px; color: #e2e8f0; margin-bottom: 6px; line-height: 1.35; }
-
-    .meta-info { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-sub); }
-    .meta-item { display: flex; align-items: center; gap: 6px; }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-top: 20px; padding: 0 10px; }
-    .stat-value { font-size: 18px; font-weight: 700; color: var(--text-main); }
-    .stat-label { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
-
-    .action-buttons { display: flex; gap: 12px; margin-top: 18px; }
-
-    .btn {
-      height: 44px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600; color: #fff;
-      display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; flex: 1;
-    }
-    .btn-primary { background: var(--primary-gradient); box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35); }
-    .btn-secondary { background-color: var(--btn-secondary); border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text-main); }
-
-    .filter-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 20px 20px 10px 20px; scrollbar-width: none; }
-    .filter-tabs::-webkit-scrollbar { display: none; }
-
-    .chip {
-      padding: 8px 18px; border-radius: 10px; background-color: var(--btn-secondary);
-      color: var(--text-sub); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .chip.active { background-color: var(--primary-accent); color: #fff; font-weight: 600; }
-
-    .feed-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 20px; }
-    .feed-card {
-      background-color: var(--card-bg); border-radius: 16px; overflow: hidden;
-      display: flex; flex-direction: column; border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .card-media { position: relative; width: 100%; height: 130px; background-color: #1a1d2e; }
-    .card-img { width: 100%; height: 100%; object-fit: cover; }
-
-    .badge-type {
-      position: absolute; top: 8px; left: 8px; background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px); padding: 3px 8px; border-radius: 6px; font-size: 11px; color: #fff;
-    }
-    .badge-time {
-      position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px); padding: 3px 8px; border-radius: 6px; font-size: 10px; color: rgba(255, 255, 255, 0.85);
-    }
-    .card-body { padding: 10px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
-    .card-title {
-      font-size: 12px; font-weight: 600; line-height: 1.35; margin-bottom: 10px;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--text-main);
-    }
-    .card-stats { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-sub); }
-    .stat-group { display: flex; align-items: center; gap: 10px; }
-    .stat-icon-val { display: flex; align-items: center; gap: 4px; }
-
-    /* ---------------- 💬 5. 🔥 ПОЛНОЭКРАННЫЙ ОБЩИЙ ЧАТ ---------------- */
-    .general-chat-screen {
-      position: absolute; inset: 0; background-color: var(--bg-dark); z-index: 170;
-      display: none; flex-direction: column; overflow: hidden;
-      /* адаптив: на больших экранах центрируем */
-      width: 100%; max-width: 100%;
-    }
-    .general-chat-screen.active { display: flex; }
-
-    .chat-header {
-      height: calc(60px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 12px 0 12px; display: flex; align-items: center; gap: 10px;
-      background: var(--header-bg); border-bottom: 1px solid var(--border-color);
-      backdrop-filter: blur(20px); z-index: 20; flex-shrink: 0;
-    }
-
-    .chat-header-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: linear-gradient(135deg, #a855f7, #38bdf8);
-      display: flex; align-items: center; justify-content: center; color: #fff;
-      font-weight: 700; flex-shrink: 0;
-    }
-
-    .chat-header-titles { display: flex; flex-direction: column; flex: 1; }
-    .chat-header-name { font-size: 15px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
-    .chat-header-status { font-size: 11.5px; color: #38bdf8; font-weight: 500; transition: all 0.2s ease; }
-    .chat-header-status.typing { color: #a855f7; font-weight: 700; animation: pulseText 1.2s infinite; }
-
-    @keyframes pulseText { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
-
-    .chat-messages-container {
-      flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
-      background-size: 24px 24px;
-    }
-
-    .message-bubble {
-      display: flex; flex-direction: column; max-width: 80%; gap: 2px;
-    }
-    .message-bubble.incoming { align-self: flex-start; }
-    .message-bubble.outgoing { align-self: flex-end; }
-
-    .message-sender-name { font-size: 11px; font-weight: 700; color: #a855f7; margin-left: 4px; margin-bottom: 2px; }
-
-    .message-content-box {
-      padding: 10px 14px; border-radius: 18px; font-size: 13.5px; line-height: 1.4; position: relative;
-    }
-    .incoming .message-content-box {
-      background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main);
-      border-top-left-radius: 4px;
-    }
-    .outgoing .message-content-box {
-      background: var(--primary-gradient); color: #ffffff;
-      border-top-right-radius: 4px; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
-    }
-
-    .message-time-stamp {
-      font-size: 10px; color: rgba(255, 255, 255, 0.6); text-align: right; margin-top: 4px; display: block;
-    }
-
-    .reply-preview {
-      display: none; align-items: center; gap: 10px; padding: 8px 12px;
-      background: var(--card-bg); border-top: 1px solid var(--border-color);
-      border-left: 3px solid var(--primary-accent); flex-shrink: 0;
-    }
-    .reply-preview.active { display: flex; }
-    .reply-preview-content { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 1px; }
-    .reply-preview-name { font-size: 12px; font-weight: 700; color: var(--primary-accent); }
-    .reply-preview-text { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .reply-preview-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 0 4px; }
-
-    .message-bubble { position: relative; }
-    .reply-btn {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      width: 28px; height: 28px; border-radius: 50%; background: var(--card-bg);
-      border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
-      cursor: pointer; opacity: 0; transition: opacity 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.15); color: var(--text-muted);
-    }
-    .incoming .reply-btn { right: -36px; }
-    .outgoing .reply-btn { left: -36px; }
-    .message-bubble:hover .reply-btn, .message-bubble:active .reply-btn { opacity: 1; }
-    @media (max-width: 480px) { .reply-btn { opacity: 0.9; } }
-    .quoted-reply {
-      background: rgba(255,255,255,0.07); border-left: 3px solid var(--primary-accent);
-      padding: 6px 8px; border-radius: 8px; margin-bottom: 6px; font-size: 12px; text-align: left;
-    }
-    .outgoing .quoted-reply { background: rgba(255,255,255,0.18); border-left-color: #fff; }
-    .quoted-reply-name { font-weight: 700; font-size: 11px; color: var(--primary-accent); margin-bottom: 1px; }
-    .outgoing .quoted-reply-name { color: #fff; }
-    .quoted-reply-text { color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .outgoing .quoted-reply-text { color: rgba(255,255,255,0.9); }
-
-    .message-reactions { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; align-items: center; min-height: 4px; position: relative; }
-    .reaction-chip { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 2px 7px; font-size: 12px; display: flex; align-items: center; gap: 3px; cursor: pointer; color: var(--text-main); }
-    .reaction-chip.active { background: rgba(108,92,231,0.18); border-color: var(--primary-accent); color: var(--primary-accent); }
-    .quick-like { width: 26px; height: 26px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; color: var(--text-muted); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-    .quick-like:active { transform: scale(0.9); }
-    .reaction-picker { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 8px; display: none; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 20; white-space: nowrap; transform-origin: bottom center; max-width: min(320px, calc(100vw - 24px)); width: max-content; flex-wrap: wrap; justify-content: center; box-sizing: border-box; }
-    @media (min-width: 480px) { .reaction-picker { max-width: 320px; } }
-    @media (max-width: 360px) { .reaction-picker { gap: 4px; padding: 4px 6px; } .reaction-picker button { font-size: 16px; padding: 3px 5px; } }
-    .reaction-picker.active { display: flex; }
-    .reaction-picker button { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px 6px; border-radius: 50%; transition: transform 0.15s; }
-    .reaction-picker button:hover { transform: scale(1.2); background: rgba(255,255,255,0.06); }
-    .reaction-picker button:active { transform: scale(0.95); }
-
-    .chat-input-bar {
-      padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)) 14px; background: var(--nav-bg); backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; flex-shrink: 0;
-    }
-    /* 📱 Адаптив чата */
-    @media (max-width: 360px) {
-      .chat-header { height: calc(52px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 10px 0 10px; }
-      .chat-header-avatar { width: 36px; height: 36px; font-size: 14px; }
-      .chat-header-name { font-size: 14px; }
-      .chat-messages-container { padding: 10px; gap: 10px; }
-      .message-bubble { max-width: 85%; }
-      .message-content-box { padding: 8px 12px; font-size: 13px; }
-      .chat-input-bar { padding: 8px 10px; gap: 6px; }
-      .chat-text-input { padding: 8px 14px; font-size: 14px; }
-      .chat-send-btn { width: 38px; height: 38px; }
-    }
-    @media (min-width: 400px) {
-      .chat-messages-container { padding: 16px; }
-      .message-bubble { max-width: 78%; }
-    }
-    @media (min-width: 768px) {
-      .general-chat-screen { max-width: 480px; margin: 0 auto; left: 50%; transform: translateX(-50%); right: auto; width: 100%; }
-    }
-
-    .chat-text-input {
-      flex: 1; background: var(--input-bg); border: 1px solid var(--glass-border);
-      border-radius: 20px; padding: 10px 16px; color: var(--text-main); font-size: 14px; outline: none;
-    }
-    .chat-send-btn {
-      width: 42px; height: 42px; border-radius: 50%; background: var(--primary-gradient);
-      border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-    }
-
-    /* ---------------- ⚙️ 6. СТРАНИЦА НАСТРОЕК ---------------- */
-    .page-settings {
-      position: absolute; inset: 0; background-color: var(--bg-dark); z-index: 180;
-      transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px;
-    }
-    .page-settings.active { transform: translateX(0); }
-
-    .settings-header {
-      height: calc(56px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 16px 0 16px; display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06); position: sticky; top: 0;
-      background: rgba(8, 9, 16, 0.95); backdrop-filter: blur(15px); z-index: 20;
-    }
-    .settings-title-box { display: flex; align-items: center; gap: 12px; }
-    .settings-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
-
-    .settings-content { padding: 20px 16px; display: flex; flex-direction: column; gap: 24px; }
-
-    .edit-media-card {
-      background-color: var(--card-bg); border-radius: 18px; overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.05); position: relative;
-    }
-    .edit-banner-preview {
-      height: 120px; background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800') center/cover no-repeat;
-      position: relative; display: flex; align-items: center; justify-content: center;
-    }
-    .edit-banner-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); }
-    .change-banner-btn {
-      position: relative; z-index: 2; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 8px 14px; border-radius: 20px;
-      font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; cursor: pointer;
-    }
-
-    .edit-avatar-container {
-      padding: 0 16px 16px 16px; margin-top: -36px; display: flex; align-items: flex-end;
-      justify-content: space-between; position: relative; z-index: 5;
-    }
-    .edit-avatar-wrapper {
-      position: relative; width: 76px; height: 76px; border-radius: 50%; padding: 3px;
-      background: linear-gradient(135deg, #a855f7, #06b6d4);
-    }
-    .edit-avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-    .avatar-upload-icon {
-      position: absolute; bottom: 0; right: 0; width: 26px; height: 26px;
-      background: var(--primary-accent); border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; border: 2px solid var(--card-bg); color: #fff; cursor: pointer;
-    }
-
-    .section-block { display: flex; flex-direction: column; gap: 14px; }
-    .section-label { font-size: 13px; font-weight: 700; color: var(--primary-accent); text-transform: uppercase; letter-spacing: 0.8px; }
-
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .input-label { font-size: 12px; color: var(--text-sub); font-weight: 500; }
-    .custom-input {
-      width: 100%; height: 46px; background-color: var(--input-bg); border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 12px; padding: 0 14px; color: #fff; font-size: 14px; outline: none; transition: border-color 0.2s;
-    }
-    .custom-input:focus { border-color: var(--primary-accent); }
-    textarea.custom-input { height: 80px; padding: 12px 14px; resize: none; }
-
-    .settings-card-list { background-color: var(--card-bg); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; }
-    .settings-item {
-      display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04); cursor: pointer;
-    }
-    .settings-item:last-child { border-bottom: none; }
-    .item-left { display: flex; align-items: center; gap: 12px; }
-    .item-icon {
-      width: 34px; height: 34px; border-radius: 10px; background-color: var(--btn-secondary);
-      display: flex; align-items: center; justify-content: center; color: var(--text-sub);
-    }
-    .item-title { font-size: 14px; font-weight: 500; color: var(--text-main); }
-    .item-sub { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
-    .item-arrow { color: var(--text-sub); opacity: 0.6; }
-    .danger-item { color: var(--danger-color); }
-    .danger-item .item-icon { background-color: var(--danger-bg); color: var(--danger-color); }
-
-    .device-card {
-      display: flex; align-items: center; justify-content: space-between; padding: 12px 14px;
-      background-color: var(--input-bg); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04);
-    }
-    .device-info { display: flex; align-items: center; gap: 12px; }
-    .device-status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
-
-    .btn-terminate {
-      width: 100%; height: 42px; border-radius: 12px; background-color: var(--btn-secondary);
-      border: 1px solid rgba(255, 255, 255, 0.06); color: var(--danger-color); font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 4px;
-    }
-
-    .save-main-btn {
-      height: 48px; border-radius: 14px; background: var(--primary-gradient); border: none;
-      color: #fff; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
-      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.4); margin-top: 10px;
-    }
-
-    /* TELEGRAM ЭКРАН КАНАЛА */
-    .channel-view-screen {
-      position: absolute; inset: 0; background: var(--bg-main); z-index: 150;
-      display: none; flex-direction: column; overflow: hidden;
-    }
-    .channel-view-screen.active { display: flex; }
-
-    .tg-channel-header {
-      height: 60px; padding: 0 12px; display: flex; align-items: center; gap: 10px;
-      background: var(--header-bg); border-bottom: 1px solid var(--border-color); backdrop-filter: blur(20px); position: relative; z-index: 20;
-    }
-    .tg-back-btn { background: none; border: none; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; }
-    .tg-channel-meta { flex: 1; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-    .tg-channel-avatar-head { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
-    .tg-channel-titles { display: flex; flex-direction: column; }
-    .tg-channel-name-head { font-size: 15px; font-weight: 700; color: var(--text-main); }
-    .tg-channel-subs-head { font-size: 11.5px; color: var(--text-muted); }
-
-    .tg-channel-search-bar { display: none; padding: 8px 14px; background: var(--panel-bg); border-bottom: 1px solid var(--border-color); }
-    .tg-channel-search-bar.active { display: flex; }
-    .tg-search-input-field {
-      width: 100%; background: var(--input-bg); border: 1px solid var(--glass-border);
-      border-radius: 12px; padding: 8px 12px; color: var(--text-main); font-size: 13.5px; outline: none;
-    }
-
-    .tg-channel-content { flex: 1; overflow-y: auto; padding-bottom: 16px; display: flex; flex-direction: column; }
-
-    .tg-channel-bottom-bar {
-      padding: 10px 16px; background: var(--nav-bg); backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border-color); display: flex; justify-content: center;
-    }
-    .tg-channel-bottom-bar.hidden { display: none !important; }
-
-    .tg-subscribe-big-btn {
-      width: 100%; padding: 14px; border-radius: 14px; background: var(--tg-blue);
-      border: none; color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer;
-      text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(34, 158, 217, 0.3);
-    }
-
-    .tg-dropdown-menu {
-      position: absolute; top: 54px; right: 12px; background: rgba(22, 25, 39, 0.98);
-      backdrop-filter: blur(30px); border: 1px solid var(--glass-border); border-radius: 16px;
-      padding: 6px; display: none; flex-direction: column; gap: 4px; z-index: 100; min-width: 190px;
-    }
-    .tg-dropdown-menu.active { display: flex; }
-    .tg-menu-item {
-      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
-      font-size: 13px; font-weight: 500; color: var(--text-main); cursor: pointer; background: none; border: none; width: 100%; text-align: left;
-    }
-
-    /* ---------------- 7. НИЖНЕЕ МЕНЮ (BOTTOM NAVIGATION) ---------------- */
-    .bottom-nav {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 70px;
-      background: rgba(8, 9, 16, 0.92); backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex;
-      justify-content: space-around; align-items: center; z-index: 100;
-    }
-
-    .nav-tab-btn {
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      color: #64748b; font-size: 10px; font-weight: 500; background: none; border: none; cursor: pointer;
-    }
-    .nav-tab-btn.active { color: #a855f7; font-weight: 700; }
-
-    .nav-center-add {
-      width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #6366f1);
-      display: flex; align-items: center; justify-content: center; color: #fff;
-      box-shadow: 0 0 16px rgba(168, 85, 247, 0.5); margin-top: -16px; cursor: pointer; border: none;
-    }
-
-    /* РЕДАКТОР ПОСТА (МОДАЛКА) — над клавиатурой */
-    .editor-modal {
-      position: fixed; inset: 0; background: var(--bg-main); z-index: 200;
-      display: none; flex-direction: column; padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px)) 16px;
-      transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      height: 100dvh; max-height: 100dvh;
-    }
-    .editor-modal.open { display: flex; transform: translateY(0); }
-    .editor-modal.keyboard-open {
-      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px) + env(keyboard-inset-height, 0px));
-    }
-    @supports (height: 100dvh) {
-      .editor-modal { height: 100dvh; }
-    }
-
-    .editor-header { display: flex; align-items: center; justify-content: space-between; position: relative; padding: calc(8px + env(safe-area-inset-top, 0px)) 0 12px 0; z-index: 10; }
-    .close-editor-btn { background: none; border: none; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; }
-    .editor-header-title { position: absolute; left: 0; right: 0; text-align: center; font-size: 18px; font-weight: 700; color: var(--text-main); pointer-events: none; }
-
-    .editor-body { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; scrollbar-width: none; }
-    .editor-body::-webkit-scrollbar { display: none; }
-
-    .text-inputs-box { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-    .input-title { width: 100%; background: transparent; border: none; outline: none; color: var(--text-main); font-size: 20px; font-weight: 700; }
-    .input-title::placeholder { color: var(--text-muted); opacity: 0.6; }
-
-    .input-content { width: 100%; min-height: 70px; background: transparent; border: none; outline: none; color: var(--text-main); font-size: 15px; line-height: 1.4; resize: none; }
-    .input-content::placeholder { color: var(--text-muted); opacity: 0.5; }
-
-    .attachments-preview { display: flex; flex-direction: column; gap: 12px; }
-
-    .stickers-row { display: flex; flex-wrap: wrap; gap: 8px; }
-    .sticker-chip {
-      position: relative; width: 60px; height: 60px;
-      background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border);
-      border-radius: 16px; display: flex; align-items: center; justify-content: center;
-    }
-    .sticker-chip img { width: 80%; height: 80%; object-fit: contain; }
-
-    .remove-badge-btn {
-      position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background: #ef4444;
-      border: 2px solid var(--bg-main); border-radius: 50%; color: #fff; font-size: 12px;
-      font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;
-    }
-
-    .gallery-container {
-      display: none; flex-direction: column; gap: 8px; background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px;
-    }
-    .gallery-container.active { display: flex; }
-    .gallery-header { display: flex; align-items: center; justify-content: space-between; }
-    .gallery-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-
-    .photo-grid { display: grid; gap: 4px; border-radius: 12px; overflow: hidden; min-height: 100px; }
-    .photo-grid[data-count="1"] { grid-template-columns: 1fr; }
-    .photo-grid[data-count="2"] { grid-template-columns: 1fr 1fr; }
-
-    .photo-item { position: relative; width: 100%; height: 100%; min-height: 100px; background: #1a1c29; overflow: hidden; }
-    .photo-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-    .bottom-section { margin-top: auto; display: flex; flex-direction: column; gap: 8px; position: sticky; bottom: 0; background: var(--bg-main); padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 5; }
-    .glass-dock {
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(30px);
-      border: 1px solid var(--glass-border); border-radius: 999px; padding: 6px 8px; width: 100%;
-    }
-    .dock-btn { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .btn-sticker { background: radial-gradient(circle, #facc15 0%, #ca8a04 100%); }
-    .btn-image   { background: linear-gradient(135deg, #c084fc 0%, #9333ea 100%); }
-    .btn-music   { background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%); }
-    .btn-video   { background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%); }
-    .btn-location{ background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); }
-
-    .send-btn {
-      width: 46px; height: 46px; border-radius: 50%; background: var(--primary-gradient);
-      border: 1px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-
-    .sticker-popover {
-      position: absolute; bottom: 64px; left: 0; right: 0; background: rgba(18, 20, 32, 0.95);
-      backdrop-filter: blur(35px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 12px;
-      display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; z-index: 30;
-    }
-    .sticker-popover.active { display: grid; }
-    .sticker-item { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); }
-    .sticker-item img { width: 85%; height: 85%; object-fit: contain; }
-    .post-stickers-overlay { position: absolute; inset: 0; pointer-events: none; }
-    .post-sticker { position: absolute; width: 56px; height: 56px; cursor: grab; pointer-events: auto; touch-action: none; user-select: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); transition: transform 0.15s; animation: stickerPop 0.3s ease; }
-    .post-sticker:active { cursor: grabbing; transform: scale(1.1); }
-    .post-sticker img { width: 100%; height: 100%; object-fit: contain; display: block; }
-    @keyframes stickerPop { 0% { transform: scale(0.5) rotate(-10deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
-    @keyframes stickerFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-    .post-sticker.moving { animation: stickerFloat 2s ease-in-out infinite; }
-
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(15px);
-      display: none; align-items: center; justify-content: center; z-index: 250; padding: 20px;
-    }
-    .modal-overlay.active { display: flex; }
-    .dialog-box {
-      background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 24px;
-      width: 100%; max-width: 360px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
-    }
-    .dialog-title { font-size: 16px; font-weight: 700; color: var(--text-main); }
-    .dialog-input { width: 100%; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; color: var(--text-main); font-size: 14px; outline: none; }
-    .dialog-option { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px; color: var(--text-main); font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .error-text { font-size: 12px; color: var(--error-color); display: none; }
-    /* 🔐 Авторизация */
-    #auth-modal { z-index: 1100; }
-    .auth-tabs { display: flex; gap: 8px; background: var(--input-bg); border-radius: 12px; padding: 4px; }
-    .auth-tab { flex: 1; border: none; background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 600; padding: 9px 0; border-radius: 9px; cursor: pointer; }
-    .auth-tab.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-    .auth-form { display: none; flex-direction: column; gap: 10px; }
-    .auth-form.active { display: flex; }
-    .auth-error { font-size: 12px; color: var(--error-color); min-height: 16px; text-align: center; }
-    .auth-divider { display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-size: 12px; }
-    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
-    .auth-provider { width: 100%; border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); }
-    .auth-provider:active { transform: scale(0.98); }
-    .auth-submit { width: 100%; border: none; border-radius: 12px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--primary-gradient); color: #fff; box-shadow: 0 4px 18px rgba(124,58,237,0.4); }
-    .auth-submit:active { transform: scale(0.98); }
-    .auth-loading { display: none; align-items: center; justify-content: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
-    .auth-loading.active { display: flex; }
-  </style>
+    <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/cards.css" />
+  <link rel="stylesheet" href="css/videos.css" />
+  <link rel="stylesheet" href="css/profile.css" />
+  <link rel="stylesheet" href="css/chat.css" />
+  <link rel="stylesheet" href="css/settings.css" />
+  <link rel="stylesheet" href="css/editor.css" />
+  <link rel="stylesheet" href="css/forms.css" />
+  <link rel="stylesheet" href="css/modals.css" />
+  <link rel="stylesheet" href="css/menus.css" />
+  <link rel="stylesheet" href="css/drawer.css" />
+  <link rel="stylesheet" href="css/screens.css" />
+  <link rel="stylesheet" href="css/navigation.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
 </head>
 <body>
 
@@ -1120,31 +255,20 @@
 
     <div class="top-nav-profile">
       <div class="top-nav-right">
-        <button class="icon-btn-blur" onclick="alert('✈️ Поделиться профилем')" aria-label="Поделиться">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-          </svg>
+        <button class="icon-btn-blur" onclick="shareProfile()" aria-label="Поделиться профилем">
+          <svg class="ic" width="19" height="19"><use href="assets/icons.svg#i-share"/></svg>
         </button>
 
-        <button class="icon-btn-blur" id="openSettingsBtn" aria-label="Меню" onclick="toggleBurgerMenu(event)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        <button class="icon-btn-blur" id="openSettingsBtn" aria-label="Открыть меню" onclick="openBurgerMenu()">
+          <svg class="ic" width="20" height="20"><use href="assets/icons.svg#i-menu"/></svg>
         </button>
-      </div>
-      <div class="burger-menu-dropdown" id="burgerMenuDropdown">
-        <button onclick="handleBurgerMenu('privacy')">Политика конфиденциальности</button>
-        <button onclick="handleBurgerMenu('copyright')">Правообладателям</button>
-        <button onclick="handleBurgerMenu('share')">Поделиться приложением</button>
-        <button onclick="handleBurgerMenu('rate')">Оценить приложение</button>
-        <button onclick="handleBurgerMenu('support')">Поддержка</button>
-        <div class="burger-menu-version" id="burgerMenuVersion">Версия 1.0.0</div>
       </div>
     </div>
 
     <div class="profile-header">
       <div class="user-hero">
         <div class="avatar-ring">
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300" class="avatar-img" id="displayProfileAvatar" alt="Khadija">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300" class="avatar-img" id="displayProfileAvatar" alt="Аватар пользователя">
         </div>
         <div class="user-details">
           <div class="user-name-row">
@@ -1153,17 +277,18 @@
           </div>
           <div class="user-handle" id="displayProfileHandle">@khadija_92</div>
           <div class="user-bio" id="displayProfileBio">Мечтай. Действуй. Будь собой ✨</div>
+          <div class="profile-auth-badge" id="profileAuthBadge"></div>
           <div class="meta-info">
-            <div class="meta-item">📍 Узбекистан</div>
-            <div class="meta-item">📅 В приложении с 2025</div>
+            <div class="meta-item"><svg class="ic"><use href="assets/icons.svg#i-pin"/></svg><span>Узбекистан</span></div>
+            <div class="meta-item"><svg class="ic"><use href="assets/icons.svg#i-cal"/></svg><span>В приложении с 2025</span></div>
           </div>
         </div>
       </div>
 
       <div class="stats-grid">
         <div><div class="stat-value">342</div><div class="stat-label">Публикации</div></div>
-        <div><div class="stat-value">12.4K</div><div class="stat-label">Подписчики</div></div>
-        <div><div class="stat-value">156</div><div class="stat-label">Подписки</div></div>
+        <div><button class="stat-link" onclick="openScreen('followers')" aria-label="Открыть подписчиков"><div class="stat-value">12.4K</div><div class="stat-label">Подписчики</div></button></div>
+        <div><button class="stat-link" onclick="openScreen('following')" aria-label="Открыть подписки"><div class="stat-value">156</div><div class="stat-label">Подписки</div></button></div>
       </div>
 
       <div class="action-buttons" id="profileActions">
@@ -1185,27 +310,27 @@
       </div>
     </div>
 
-    <div class="filter-tabs">
-      <div class="chip active" onclick="filterProfileFeed(this)">Все</div>
-      <div class="chip" onclick="filterProfileFeed(this)">Видео</div>
-      <div class="chip" onclick="filterProfileFeed(this)">Новости</div>
-      <div class="chip" onclick="filterProfileFeed(this)">Фото</div>
-      <div class="chip" onclick="filterProfileFeed(this)">Музыка</div>
+    <div class="filter-tabs" role="tablist" aria-label="Категории публикаций">
+      <div class="chip active" role="tab" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-grid"/></svg>Все</div>
+      <div class="chip" role="tab" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-play"/></svg>Видео</div>
+      <div class="chip" role="tab" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-news"/></svg>Новости</div>
+      <div class="chip" role="tab" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-image"/></svg>Фото</div>
+      <div class="chip" role="tab" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-music"/></svg>Музыка</div>
     </div>
 
-    <div class="feed-grid">
+    <div class="feed-grid" id="profileFeedGrid">
       <div class="feed-card">
         <div class="card-media">
           <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500" class="card-img" alt="Фото">
-          <div class="badge-type">🖼 Фото</div>
+          <div class="badge-type"><svg class="ic"><use href="assets/icons.svg#i-image"/></svg>Фото</div>
           <div class="badge-time">2 дня назад</div>
         </div>
         <div class="card-body">
-          <div class="card-title">Природа всегда вдохновляет ❤️</div>
+          <div class="card-title">Природа всегда вдохновляет</div>
           <div class="card-stats">
             <div class="stat-group">
-              <span class="stat-icon-val">♡ 245</span>
-              <span class="stat-icon-val">💬 32</span>
+              <span class="stat-icon-val"><svg class="ic"><use href="assets/icons.svg#i-heart"/></svg>245</span>
+              <span class="stat-icon-val"><svg class="ic"><use href="assets/icons.svg#i-chat"/></svg>32</span>
             </div>
           </div>
         </div>
@@ -1213,19 +338,26 @@
       <div class="feed-card">
         <div class="card-media">
           <img src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=500" class="card-img" alt="Видео">
-          <div class="badge-type">▶ Видео</div>
+          <div class="badge-type"><svg class="ic"><use href="assets/icons.svg#i-play-fill"/></svg>Видео</div>
           <div class="badge-time">4 дня назад</div>
         </div>
         <div class="card-body">
           <div class="card-title">Красивый закат в Ташкенте</div>
           <div class="card-stats">
             <div class="stat-group">
-              <span class="stat-icon-val">♡ 562</span>
-              <span class="stat-icon-val">💬 48</span>
+              <span class="stat-icon-val"><svg class="ic"><use href="assets/icons.svg#i-heart"/></svg>562</span>
+              <span class="stat-icon-val"><svg class="ic"><use href="assets/icons.svg#i-chat"/></svg>48</span>
             </div>
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="profile-empty" id="profileEmptyState" style="display:none;">
+      <div class="profile-empty-icon"><svg class="ic"><use href="assets/icons.svg#i-image"/></svg></div>
+      <div class="profile-empty-title">Пока нет публикаций</div>
+      <div class="profile-empty-text">Поделитесь своим первым видео, фотографией или новостью.</div>
+      <button class="profile-empty-btn" onclick="openEditor()"><svg class="ic"><use href="assets/icons.svg#i-plus"/></svg>Создать публикацию</button>
     </div>
   </section>
 
@@ -1540,153 +672,9 @@
 
 </nav>
 
-<style>
-  /* КОНТЕЙНЕР МЕНЮ */
-  .floating-nav-container {
-    position: fixed;
-    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 28px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
-    max-width: 360px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 1000;
-    background: transparent;
-    pointer-events: none;
-    padding-left: env(safe-area-inset-left, 0px);
-    padding-right: env(safe-area-inset-right, 0px);
-  }
-  .nav-capsule-box, .floating-add-btn { pointer-events: auto; }
 
-  /* КАПСУЛА 54px — 70% прозрачная (0.30 alpha) */
-  .nav-capsule-box {
-    flex: 1;
-    height: 54px;
-    background: rgba(255,255,255,0.30);
-    backdrop-filter: blur(24px) saturate(1.35);
-    -webkit-backdrop-filter: blur(24px) saturate(1.35);
-    border-radius: 999px;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.30), 0 2px 8px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-  }
-  body:not(.light-theme) .nav-capsule-box {
-    background: rgba(30, 32, 48, 0.30);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.30), 0 2px 8px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(24px) saturate(1.35);
-    -webkit-backdrop-filter: blur(24px) saturate(1.35);
-  }
-  body.light-theme .nav-capsule-box {
-    background: rgba(255,255,255,0.30);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    backdrop-filter: blur(24px) saturate(1.35);
-    -webkit-backdrop-filter: blur(24px) saturate(1.35);
-  }
 
-  /* ВКЛАДКА И ЕЁ ЭЛЕМЕНТЫ */
-  .nav-item-pill {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    height: 100%;
-    padding: 0 12px;
-    border-radius: 999px;
-    border: none;
-    background: transparent;
-    color: #64748b;
-    cursor: pointer;
-    transition: all 0.22s ease;
-    outline: none;
-  }
-  body:not(.light-theme) .nav-item-pill { color: #8a92a6; }
-  body.light-theme .nav-item-pill { color: #64748b; }
 
-  .nav-item-pill .nav-text {
-    font-size: 13.5px;
-    font-weight: 700;
-    display: none;
-    white-space: nowrap;
-    color: #7c3aed;
-    letter-spacing: -0.2px;
-  }
-
-  /* АКТИВНОЕ СОСТОЯНИЕ — работает в обеих темах */
-  .nav-item-pill.active {
-    background: #f3e8ff;
-    padding: 0 16px;
-    color: #7c3aed;
-  }
-  body:not(.light-theme) .nav-item-pill.active {
-    background: rgba(124, 58, 237, 0.18);
-    color: #a78bfa;
-  }
-  body:not(.light-theme) .nav-item-pill.active .nav-text { color: #a78bfa; }
-  body:not(.light-theme) .nav-item-pill.active .nav-icon { color: #a78bfa; }
-
-  .nav-item-pill.active .nav-icon {
-    color: #7c3aed;
-  }
-
-  .nav-item-pill.active .nav-text {
-    display: inline-block;
-  }
-
-  /* КНОПКА ПЛЮС (54px x 54px) */
-  .floating-add-btn {
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 22px rgba(168, 85, 247, 0.48);
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
-  }
-
-  .floating-add-btn:active {
-    transform: scale(0.92);
-    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.5);
-  }
-
-  .page-screen {
-    padding-bottom: 86px !important;
-  }
-</style>
-
-<script>
-  function updateFloatingNavVisibility(){
-    const nav = document.querySelector('.floating-nav-container');
-    if(!nav) return;
-    const chatActive = document.getElementById('generalChatScreen')?.classList.contains('active');
-    const editorOpen = document.getElementById('editorModal')?.classList.contains('open');
-    const settingsActive = document.getElementById('settingsPage')?.classList.contains('active');
-    const authActive = document.getElementById('auth-modal')?.classList.contains('active');
-    if(chatActive || editorOpen || settingsActive || authActive) nav.style.display = 'none';
-    else nav.style.display = 'flex';
-  }
-  // Универсальный клик по меню — надёжно
-  function switchNavTab(btnEl, target) {
-    document.querySelectorAll('.nav-item-pill').forEach(btn => btn.classList.remove('active'));
-    btnEl.classList.add('active');
-    if (target === 'openChat') {
-      if (typeof openGeneralChat === 'function') openGeneralChat();
-    } else {
-      if (typeof switchPage === 'function') switchPage(target, btnEl);
-    }
-    setTimeout(updateFloatingNavVisibility, 30);
-  }
-</script>
 
   <!-- РЕДАКТОР ПОСТА (МОДАЛКА) -->
   <div class="editor-modal" id="editorModal">
@@ -1791,1603 +779,221 @@
     </div>
   </div>
 
+  <!-- BURGER DRAWER -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeBurgerDrawer()"></div>
+  <aside class="burger-drawer" id="burgerDrawer" aria-label="Меню приложения">
+    <div class="drawer-header">
+      <div style="width:40px; flex-shrink:0;"></div>
+      <div class="drawer-title">Меню</div>
+      <button class="drawer-icon-btn" onclick="closeBurgerDrawer()" aria-label="Закрыть меню"><svg class="ic"><use href="assets/icons.svg#i-x"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <button class="drawer-item" onclick="drawerGoProfile()"><span class="drawer-item-icon"><svg class="ic"><use href="assets/icons.svg#i-user"/></svg></span><span class="drawer-item-label">Профиль</span><span class="drawer-item-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+      <button class="drawer-item" onclick="drawerGo('notifications')"><span class="drawer-item-icon"><svg class="ic"><use href="assets/icons.svg#i-bell"/></svg></span><span class="drawer-item-label">Уведомления</span><span class="drawer-item-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+      <button class="drawer-item" onclick="drawerGo('saved')"><span class="drawer-item-icon"><svg class="ic"><use href="assets/icons.svg#i-bookmark"/></svg></span><span class="drawer-item-label">Сохранённое</span><span class="drawer-item-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+      <button class="drawer-item" onclick="drawerGo('settings')"><span class="drawer-item-icon"><svg class="ic"><use href="assets/icons.svg#i-settings"/></svg></span><span class="drawer-item-label">Настройки</span><span class="drawer-item-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+      <button class="drawer-item" onclick="drawerToggleTheme(this)"><span class="drawer-item-icon"><svg class="ic"><use href="assets/icons.svg#i-moon"/></svg></span><span class="drawer-item-label">Тёмная тема</span><span class="drawer-switch" id="drawerThemeSwitch"></span></button>
+      <button class="drawer-item" onclick="drawerGo('help')"><span class="drawer-item-icon"><svg class="ic"><use href="assets/icons.svg#i-help"/></svg></span><span class="drawer-item-label">Помощь</span><span class="drawer-item-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+      <div class="drawer-divider"></div>
+      <button class="drawer-item danger" onclick="drawerLogout()"><span class="drawer-item-icon"><svg class="ic"><use href="assets/icons.svg#i-logout"/></svg></span><span class="drawer-item-label">Выйти</span></button>
+    </div>
+    <div class="drawer-footer"><div class="drawer-version" id="drawerVersion">TANHO • Версия 1.0.0</div></div>
+  </aside>
+
+  <!-- APP SCREENS -->
+  <div class="screen-overlay" id="screen-notifications" aria-label="Уведомления">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Уведомления</div>
+      <button class="screen-action" onclick="clearNotifications()">Очистить</button>
+    </div>
+    <div class="screen-body"><div class="screen-card" id="notificationsList"></div></div>
+  </div>
+
+  <div class="screen-overlay" id="screen-saved" aria-label="Сохранённое">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Сохранённое</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body"><div class="screen-card" id="savedList"></div></div>
+  </div>
+
+  <div class="screen-overlay" id="screen-settings" aria-label="Настройки">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Настройки</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body">
+      <div class="screen-section">
+        <div class="screen-section-label">Аккаунт</div>
+        <div class="screen-card">
+          <button class="screen-row" onclick="openScreen('edit-profile')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-user"/></svg></span><span class="screen-row-label">Аккаунт<span class="screen-row-sub">Имя, username, описание, город</span></span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+          <button class="screen-row" onclick="openScreen('notif-settings')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-bell"/></svg></span><span class="screen-row-label">Уведомления<span class="screen-row-sub">Звук, вибрация, чат</span></span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+          <button class="screen-row" onclick="openScreen('privacy')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-lock"/></svg></span><span class="screen-row-label">Конфиденциальность<span class="screen-row-sub">Данные и права</span></span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+        </div>
+      </div>
+      <div class="screen-section">
+        <div class="screen-section-label">Приложение</div>
+        <div class="screen-card">
+          <button class="screen-row" onclick="openScreen('appearance')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-palette"/></svg></span><span class="screen-row-label">Внешний вид<span class="screen-row-sub">Тёмная и светлая тема</span></span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+          <button class="screen-row" onclick="openScreen('language')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-globe"/></svg></span><span class="screen-row-label">Язык<span class="screen-row-sub" id="languageCurrent">Русский</span></span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+          <button class="screen-row" onclick="openScreen('storage')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-trash"/></svg></span><span class="screen-row-label">Хранилище<span class="screen-row-sub" id="storageSize">—</span></span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-overlay" id="screen-edit-profile" aria-label="Редактировать профиль">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Редактировать профиль</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body">
+      <div class="edit-avatar-wrap"><div class="edit-avatar-ring"><img id="editProfileAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300" alt="Аватар"></div></div>
+      <div class="field-label"><svg class="ic"><use href="assets/icons.svg#i-user"/></svg>Имя</div>
+      <input class="field-input" id="editProfileName" type="text" maxlength="40" placeholder="Ваше имя" autocomplete="off">
+      <div class="field-label"><svg class="ic"><use href="assets/icons.svg#i-info"/></svg>Username</div>
+      <input class="field-input" id="editProfileUsername" type="text" maxlength="30" placeholder="@username" autocomplete="off">
+      <div class="field-label"><svg class="ic"><use href="assets/icons.svg#i-edit"/></svg>Описание</div>
+      <textarea class="field-input" id="editProfileBio" maxlength="160" placeholder="Расскажите о себе"></textarea>
+      <div class="field-label"><svg class="ic"><use href="assets/icons.svg#i-pin"/></svg>Город</div>
+      <input class="field-input" id="editProfileCity" type="text" maxlength="40" placeholder="Город" autocomplete="off">
+      <button class="screen-save-btn" onclick="saveEditProfile()">Сохранить изменения</button>
+    </div>
+  </div>
+
+  <div class="screen-overlay" id="screen-notif-settings" aria-label="Настройка уведомлений">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Уведомления</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body">
+      <div class="screen-card" id="notifPrefsCard">
+        <button class="screen-row" onclick="togglePref(this, 'sound')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-bell"/></svg></span><span class="screen-row-label">Звук уведомлений</span><span class="row-switch" data-pref="sound"></span></button>
+        <button class="screen-row" onclick="togglePref(this, 'vibrate')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-info"/></svg></span><span class="screen-row-label">Вибрация</span><span class="row-switch" data-pref="vibrate"></span></button>
+        <button class="screen-row" onclick="togglePref(this, 'chat')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-chat"/></svg></span><span class="screen-row-label">Сообщения общего чата</span><span class="row-switch" data-pref="chat"></span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-overlay" id="screen-appearance" aria-label="Внешний вид">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Внешний вид</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body">
+      <div class="screen-card">
+        <button class="screen-row" onclick="setThemeMode('dark')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-moon"/></svg></span><span class="screen-row-label">Тёмная тема</span><span class="row-check" data-theme="dark"><svg class="ic"><use href="assets/icons.svg#i-check"/></svg></span></button>
+        <button class="screen-row" onclick="setThemeMode('light')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-sun"/></svg></span><span class="screen-row-label">Светлая тема</span><span class="row-check" data-theme="light"><svg class="ic"><use href="assets/icons.svg#i-check"/></svg></span></button>
+      </div>
+      <div class="screen-section" style="margin-top:14px;"><div class="screen-note">Фирменный градиент TANHO — фиолетовый → синий — используется в обеих темах.</div></div>
+    </div>
+  </div>
+
+  <div class="screen-overlay" id="screen-language" aria-label="Язык">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Язык</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body">
+      <div class="screen-card" id="languageCard">
+        <button class="screen-row" onclick="setLanguage('ru')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-globe"/></svg></span><span class="screen-row-label">Русский</span><span class="row-check" data-lang="ru"><svg class="ic"><use href="assets/icons.svg#i-check"/></svg></span></button>
+        <button class="screen-row" onclick="setLanguage('uz')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-globe"/></svg></span><span class="screen-row-label">O'zbekcha</span><span class="row-check" data-lang="uz"><svg class="ic"><use href="assets/icons.svg#i-check"/></svg></span></button>
+        <button class="screen-row" onclick="setLanguage('en')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-globe"/></svg></span><span class="screen-row-label">English</span><span class="row-check" data-lang="en"><svg class="ic"><use href="assets/icons.svg#i-check"/></svg></span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-overlay" id="screen-storage" aria-label="Хранилище">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Хранилище</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body">
+      <div class="screen-section">
+        <div class="screen-section-label">Использование</div>
+        <div class="screen-card">
+          <div class="notif-item"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-info"/></svg></span><div class="notif-text">Данные TANHO на устройстве<div class="notif-time" id="storageDetail">—</div></div></div>
+        </div>
+      </div>
+      <button class="screen-save-btn" onclick="clearAppCache()">Очистить кэш</button>
+      <button class="screen-save-btn danger" onclick="wipeAppData()">Удалить все данные</button>
+    </div>
+  </div>
+
+  <div class="screen-overlay" id="screen-privacy" aria-label="Конфиденциальность">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Конфиденциальность</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body">
+      <div class="screen-card">
+        <button class="screen-row" onclick="handleBurgerMenu('privacy')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-lock"/></svg></span><span class="screen-row-label">Политика конфиденциальности</span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+        <button class="screen-row" onclick="handleBurgerMenu('copyright')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-info"/></svg></span><span class="screen-row-label">Правообладателям</span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+        <button class="screen-row" onclick="handleBurgerMenu('support')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-chat"/></svg></span><span class="screen-row-label">Поддержка</span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-overlay" id="screen-help" aria-label="Помощь">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Помощь</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body">
+      <div class="screen-card">
+        <button class="screen-row" onclick="handleBurgerMenu('privacy')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-lock"/></svg></span><span class="screen-row-label">Политика конфиденциальности</span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+        <button class="screen-row" onclick="handleBurgerMenu('copyright')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-info"/></svg></span><span class="screen-row-label">Правообладателям</span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+        <button class="screen-row" onclick="handleBurgerMenu('rate')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-heart"/></svg></span><span class="screen-row-label">Оценить приложение</span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+        <button class="screen-row" onclick="handleBurgerMenu('support')"><span class="screen-row-icon"><svg class="ic"><use href="assets/icons.svg#i-chat"/></svg></span><span class="screen-row-label">Поддержка</span><span class="screen-row-chev"><svg class="ic"><use href="assets/icons.svg#i-chev-right"/></svg></span></button>
+      </div>
+      <div class="screen-section" style="margin-top:14px;"><div class="screen-note" id="helpVersion">TANHO • Версия 1.0.0</div></div>
+    </div>
+  </div>
+
+  <div class="screen-overlay" id="screen-followers" aria-label="Подписчики">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Подписчики</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body"><div class="screen-card" id="followersList"></div></div>
+  </div>
+
+  <div class="screen-overlay" id="screen-following" aria-label="Подписки">
+    <div class="screen-header">
+      <button class="screen-back" onclick="goBackScreen()" aria-label="Назад"><svg class="ic"><use href="assets/icons.svg#i-back"/></svg></button>
+      <div class="screen-title">Подписки</div>
+      <div class="screen-header-spacer"></div>
+    </div>
+    <div class="screen-body"><div class="screen-card" id="followingList"></div></div>
+  </div>
+
 </div>
 
 <!-- СКТРИПТЫ И ИНТЕРАКТИВ -->
-<script>
-  // 💬 🔥 УПРАВЛЕНИЕ ОБЩИМ ЧАТОМ + persistence
-  function openGeneralChat(skipPersist) {
-    document.getElementById('generalChatScreen').classList.add('active');
-    const container = document.getElementById('chatMessagesContainer');
-    if (container) container.scrollTop = container.scrollHeight;
-    if (!skipPersist) {
-      try { localStorage.setItem('tanho_page', 'generalChat'); } catch(e){}
-      if (location.hash.slice(1) !== 'chat') history.replaceState(null,'','#chat');
-    }
-    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
-  }
-
-  function closeGeneralChat(skipPersist) {
-    document.getElementById('generalChatScreen').classList.remove('active');
-    // всегда показать капсулу, сбросить превью ответа
-    try { document.getElementById('replyPreview')?.classList.remove('active'); document.getElementById('replyPreview').style.display='none'; } catch(e){}
-    // убрать все пикеры реакций
-    document.querySelectorAll('.reaction-picker.active').forEach(p=>p.classList.remove('active'));
-    if (!skipPersist) {
-      try {
-        const last = localStorage.getItem('tanho_page_before_chat') || 'pageMain';
-        localStorage.setItem('tanho_page', last);
-        const map={pageMain:'main',pageReels:'reels',pageProfile:'profile'};
-        const h = map[last] || 'main';
-        if (location.hash.slice(1)==='chat') history.replaceState(null,'', h==='main' ? '#main' : '#'+h);
-        // надёжно восстановить страницу и пилюлю
-        const btnMap = {
-          pageMain: document.querySelector('.floating-nav-container .nav-item-pill:nth-child(1)'),
-          pageReels: document.querySelector('.floating-nav-container .nav-item-pill:nth-child(2)'),
-          pageProfile: document.querySelector('.floating-nav-container .nav-item-pill:last-child')
-        };
-        const btn = btnMap[last];
-        // сбросить все пилюли и поставить нужную
-        document.querySelectorAll('.nav-item-pill').forEach(b=>b.classList.remove('active'));
-        if (btn) btn.classList.add('active');
-        else {
-          // fallback по hash
-          const fallback = document.querySelector(`.floating-nav-container .nav-item-pill[onclick*="${last}"]`);
-          if(fallback) fallback.classList.add('active');
-        }
-        // показать правильную страницу
-        const pageEl = document.getElementById(last);
-        const reelsEl = document.getElementById('pageReels');
-        document.querySelectorAll('.page-screen').forEach(p=>p.classList.remove('active'));
-        if (reelsEl) reelsEl.classList.remove('active');
-        if (last === 'pageReels' && reelsEl) {
-          reelsEl.classList.add('active');
-          try{ const sub = localStorage.getItem('tanho_reels_tab') || 'feed'; if(typeof switchReelsTab==='function') switchReelsTab(sub, true); }catch(e){}
-        } else if (last === 'pageProfile') {
-          try{
-            const pid = localStorage.getItem('tanho_profile_id') || 'khadija_92';
-            openUserProfile(pid);
-            // openUserProfile already calls switchPage, so avoid duplicate
-            // skip the outer pageEl handling
-          } catch(e){
-            if (pageEl) pageEl.classList.add('active');
-          }
-          // prevent double handling below
-        } else if (pageEl) {
-          pageEl.classList.add('active');
-        }
-        const appHeader = document.getElementById('appHeader');
-        if (appHeader) appHeader.style.display = (last==='pageReels' || last==='pageProfile') ? 'none' : 'flex';
-        const headerLogo = document.getElementById('headerLogo');
-        if (headerLogo && last!=='pageReels' && last!=='pageProfile') headerLogo.innerText='TANHO';
-      } catch(e){}
-    }
-    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
-  }
-
-  let replyTo = null;
-  function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function setReply(name, text){
-    replyTo = {name, text};
-    document.getElementById('replyPreviewName').textContent = name;
-    document.getElementById('replyPreviewText').textContent = text;
-    document.getElementById('replyPreview').classList.add('active');
-    document.getElementById('replyPreview').style.display = 'flex';
-    document.getElementById('chatTextInput').focus();
-  }
-  function clearReply(){
-    replyTo = null;
-    document.getElementById('replyPreview').classList.remove('active');
-    document.getElementById('replyPreview').style.display = 'none';
-  }
-
-  // ❤️ Telegram-style реакции — палец вверх заменяется выбранной
-  function addReaction(bubble, emoji){
-    if(!bubble) return;
-    const container = bubble.querySelector('.message-reactions');
-    const picker = bubble.querySelector('.reaction-picker');
-    if(picker) picker.classList.remove('active');
-    const quickBtn = container.querySelector('.quick-like');
-    let chip = container.querySelector(`[data-emoji="${emoji}"]`);
-    if(chip){
-      const isActive = chip.classList.contains('active');
-      const countEl = chip.querySelector('.reaction-count');
-      let count = parseInt(countEl.textContent) || 0;
-      if(isActive){
-        chip.classList.remove('active');
-        count--;
-        if(count<=0){
-          chip.remove();
-          if(!container.querySelector('[data-emoji]') && !container.querySelector('.quick-like')){
-            const qb=document.createElement('button');
-            qb.className='quick-like';
-            qb.title='Реакция';
-            qb.textContent='👍';
-            qb.onclick=(e)=>{ e.stopPropagation(); qb.nextElementSibling.classList.toggle('active'); };
-            container.prepend(qb);
-          } else if(!container.querySelector('[data-emoji]')){
-            const qb=container.querySelector('.quick-like');
-            if(qb){ qb.textContent='👍'; qb.removeAttribute('data-emoji'); }
-          }
-        } else countEl.textContent = count;
-      } else {
-        chip.classList.add('active');
-        count++;
-        countEl.textContent = count;
-        chip.style.transform='scale(1.2)'; setTimeout(()=>chip.style.transform='',150);
-      }
-      if(navigator.vibrate) navigator.vibrate(20);
-      return;
-    }
-    if(quickBtn){
-      quickBtn.className='reaction-chip active';
-      quickBtn.setAttribute('data-emoji', emoji);
-      quickBtn.innerHTML=`${emoji} <span class="reaction-count">1</span>`;
-      quickBtn.onclick=(e)=>{ e.stopPropagation(); addReaction(bubble, emoji); };
-      quickBtn.title='Нажмите чтобы убрать';
-      quickBtn.style.transform='scale(1.2)'; setTimeout(()=>quickBtn.style.transform='',150);
-    } else {
-      const newChip = document.createElement('button');
-      newChip.className='reaction-chip active';
-      newChip.setAttribute('data-emoji', emoji);
-      newChip.onclick=(e)=>{ e.stopPropagation(); addReaction(bubble, emoji); };
-      newChip.innerHTML=`${emoji} <span class="reaction-count">1</span>`;
-      container.appendChild(newChip);
-      newChip.style.transform='scale(1.2)'; setTimeout(()=>newChip.style.transform='',150);
-    }
-    if(navigator.vibrate) navigator.vibrate(20);
-  }
-  // закрыть пикер при клике вне
-  document.addEventListener('click', (e)=>{
-    if(!e.target.closest('.message-bubble')){
-      document.querySelectorAll('.reaction-picker.active').forEach(p=>p.classList.remove('active'));
-    }
-  });
-
-  function sendChatMessage() {
-    const input = document.getElementById('chatTextInput');
-    const text = input.value.trim();
-    if (!text) return;
-    const container = document.getElementById('chatMessagesContainer');
-    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const escText = escapeHtml(text);
-    const escReplyName = replyTo ? escapeHtml(replyTo.name) : '';
-    const escReplyText = replyTo ? escapeHtml(replyTo.text) : '';
-    const quoted = replyTo ? '<div class="quoted-reply"><div class="quoted-reply-name">'+escReplyName+'</div><div class="quoted-reply-text">'+escReplyText+'</div></div>' : '';
-    const safeText = escText.replace(/'/g, "&#39;");
-    const msgHTML = `
-      <div class="message-bubble outgoing">
-        <div class="message-content-box" ondblclick="event.stopPropagation(); this.parentElement.querySelector('.reaction-picker').classList.toggle('active')">
-          `+quoted+escText+`
-          <span class="message-time-stamp">`+timeStr+`</span>
-        </div>
-        <button class="reply-btn" onclick="event.stopPropagation(); setReply('Вы', '`+safeText+`')" title="Ответить"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>
-        <div class="message-reactions" style="position:relative;">
-          <button class="quick-like" onclick="event.stopPropagation(); this.nextElementSibling.classList.toggle('active')" title="Реакция">👍</button>
-          <div class="reaction-picker">
-          <button onclick="addReaction(this.closest('.message-bubble'),'❤️')">❤️</button>
-          <button onclick="addReaction(this.closest('.message-bubble'),'👍')">👍</button>
-          <button onclick="addReaction(this.closest('.message-bubble'),'🔥')">🔥</button>
-          <button onclick="addReaction(this.closest('.message-bubble'),'😂')">😂</button>
-          <button onclick="addReaction(this.closest('.message-bubble'),'🎉')">🎉</button>
-          <button onclick="addReaction(this.closest('.message-bubble'),'😮')">😮</button>
-        </div>
-      </div>
-    `;
-    container.insertAdjacentHTML('beforeend', msgHTML);
-    input.value = '';
-    clearReply();
-    container.scrollTop = container.scrollHeight;
-  }
-
-  // 🔥 СИМУЛЯЦИЯ ИНДИКАТОРА "ПЕЧАТАЕТ..." В ШАПКЕ ЧАТА
-  const typingUsers = ['Алишер', 'Мадина', 'Сардор', 'Шахзод', 'Зарина'];
-  const statusEl = document.getElementById('chatHeaderStatus');
-  const defaultStatus = '1,284 участников • 142 онлайн';
-
-  setInterval(() => {
-    if (Math.random() > 0.4) {
-      const randomUser = typingUsers[Math.floor(Math.random() * typingUsers.length)];
-      statusEl.innerText = `${randomUser} печатает...`;
-      statusEl.classList.add('typing');
-
-      setTimeout(() => {
-        statusEl.innerText = defaultStatus;
-        statusEl.classList.remove('typing');
-      }, 3500);
-    }
-  }, 9000);
-
-  // НАСТРОЙКИ
-  const openSettingsBtn = document.getElementById('openSettingsBtn');
-  const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-  const settingsPage = document.getElementById('settingsPage');
-
-  closeSettingsBtn.addEventListener('click', () => { settingsPage.classList.remove('active'); setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); });
-
-  // 🍔 Бургер-меню профиля (видно всегда, работает без входа)
-  var APP_VERSION = '1.0.0';
-  try {
-    var _bv = document.getElementById('burgerMenuVersion');
-    if(_bv) _bv.textContent = 'Версия ' + APP_VERSION;
-  } catch(e){}
-  function toggleBurgerMenu(e){
-    if(e) e.stopPropagation();
-    var dd = document.getElementById('burgerMenuDropdown');
-    if(!dd) return;
-    var wasActive = dd.classList.contains('active');
-    document.querySelectorAll('.burger-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    document.querySelectorAll('.post-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    document.querySelectorAll('.profile-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    document.querySelectorAll('.yt-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    document.querySelectorAll('.reel-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    if(!wasActive) dd.classList.add('active');
-  }
-  function openInfoModal(title, html, actionHtml){
-    document.getElementById('infoModalTitle').textContent = title;
-    document.getElementById('infoModalBody').innerHTML = html;
-    document.getElementById('infoModalAction').innerHTML = actionHtml || '';
-    document.getElementById('info-modal').classList.add('active');
-  }
-  function closeInfoModal(){
-    document.getElementById('info-modal').classList.remove('active');
-  }
-  function renderRateStars(){
-    var box = document.getElementById('rateStarsBox');
-    if(!box) return;
-    var cur = 0;
-    try { cur = parseInt(localStorage.getItem('tanho_rating') || '0'); } catch(e){}
-    var html = '';
-    for(var i = 1; i <= 5; i++){
-      html += '<button class="' + (i <= cur ? 'lit' : '') + '" onclick="setAppRating(' + i + ')">★</button>';
-    }
-    box.innerHTML = html;
-    var note = document.getElementById('rateNote');
-    if(note) note.textContent = cur > 0 ? 'Ваша оценка: ' + cur + ' из 5. Спасибо! ✨' : 'Нажмите на звёзды, чтобы оценить.';
-  }
-  function setAppRating(n){
-    try { localStorage.setItem('tanho_rating', String(n)); } catch(e){}
-    renderRateStars();
-    if(navigator.vibrate) navigator.vibrate(20);
-  }
-  function handleBurgerMenu(action){
-    var dd = document.getElementById('burgerMenuDropdown');
-    if(dd) dd.classList.remove('active');
-    if(event) event.stopPropagation();
-    if(action === 'privacy'){
-      openInfoModal('Политика конфиденциальности',
-        'TANHO уважает вашу приватность.\n\n• Мы храним данные только на вашем устройстве (localStorage): профиль, подписки и настройки.\n• Мы не передаём ваши данные третьим лицам.\n• Вы можете удалить свои данные в любой момент, очистив данные приложения.');
-    } else if(action === 'copyright'){
-      openInfoModal('Правообладателям',
-        'Если вы считаете, что контент в TANHO нарушает ваши авторские права, напишите нам.\n\n• Укажите ссылку на материал и подтверждение прав.\n• Мы рассмотрим обращение и при необходимости удалим материал.\n• Контакт: через раздел «Поддержка» в этом меню.');
-    } else if(action === 'share'){
-      var text = 'TANHO — Video & Social Platform';
-      if(navigator.share){ navigator.share({ title: text, text: text, url: location.href }).catch(function(){}); }
-      else if(navigator.clipboard){ navigator.clipboard.writeText(location.href); alert('Ссылка скопирована ✓'); }
-      else { alert('TANHO — Video & Social Platform'); }
-    } else if(action === 'rate'){
-      openInfoModal('Оценить приложение', '<div class="rate-stars" id="rateStarsBox"></div><div id="rateNote" style="text-align:center; font-size:12px; color:var(--text-muted);"></div>');
-      renderRateStars();
-    } else if(action === 'support'){
-      openInfoModal('Поддержка',
-        'Нужна помощь? Мы рядом.\n\n• Опишите проблему максимально подробно.\n• Быстрее всего отвечаем в общем чате приложения.',
-        '<button class="auth-submit" onclick="closeInfoModal(); openGeneralChat();">Открыть общий чат</button>');
-    }
-  }
-
-  function saveSettingsChanges() {
-    const firstName = document.getElementById('inputFirstName').value.trim();
-    const lastName = document.getElementById('inputLastName').value.trim();
-    const username = document.getElementById('inputUsername').value.trim();
-    const bio = document.getElementById('inputBio').value.trim();
-
-    const fullName = (firstName + ' ' + lastName).trim() || 'Пользователь';
-
-    document.getElementById('displayProfileName').innerText = fullName;
-    if (username) document.getElementById('displayProfileHandle').innerText = username;
-    if (bio) document.getElementById('displayProfileBio').innerText = bio;
-    // обновить текущего пользователя в базе
-    try {
-      var _uid = (typeof getCurrentUserId === 'function') ? getCurrentUserId() : 'khadija_92';
-      if (typeof TANHO_USERS !== 'undefined' && TANHO_USERS[_uid]) {
-        TANHO_USERS[_uid].name = fullName;
-        if (username) TANHO_USERS[_uid].handle = username;
-        if (bio) TANHO_USERS[_uid].bio = bio;
-      }
-    } catch(e){}
-
-    settingsPage.classList.remove('active');
-    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
-  }
-
-  // 👤 База пользователей и логика профилей (стабильная, без innerHTML-перезаписей)
-  var OWN_USER_ID = 'khadija_92';
-  var TANHO_USERS = {
-    khadija_92: { id: 'khadija_92', name: 'Khadija_92', handle: '@khadija_92', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300', bio: 'Мечтай. Действуй. Будь собой ✨', location: 'Узбекистан', verified: true, isOwn: true, posts: 342, followers: '12.4K', following: 156, isSubscribed: false, isBlocked: false },
-    tanho_official: { id: 'tanho_official', name: 'TANHO Official', handle: '@tanho_official', avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100', bio: 'Официальный канал TANHO — новости, обновления и видео', location: 'Ташкент', verified: true, isOwn: false, posts: 128, followers: '45.2K', following: 12, isSubscribed: false, isBlocked: false },
-    urbancore: { id: 'urbancore', name: 'Urbancore', handle: '@urbancore', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100', bio: 'Город с высоты • дрон 4K', location: 'Ташкент', verified: false, isOwn: false, posts: 86, followers: '8.1K', following: 210, isSubscribed: false, isBlocked: false },
-    naturevibe: { id: 'naturevibe', name: 'Nature Vibe', handle: '@naturevibe', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100', bio: 'Природа, горы, тишина', location: 'Чимган', verified: false, isOwn: false, posts: 54, followers: '3.2K', following: 98, isSubscribed: false, isBlocked: false },
-    caliraval: { id: 'caliraval', name: 'Calira Val', handle: '@CaliraVal', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100', bio: 'Монтаж Reels за 60 сек', location: 'Ташкент', verified: false, isOwn: false, posts: 112, followers: '21K', following: 340, isSubscribed: false, isBlocked: false },
-    tasty_uz: { id: 'tasty_uz', name: 'Tasty UZ', handle: '@tasty.uz', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100', bio: 'Узбекская кухня • рецепты шефа', location: 'Самарканд', verified: false, isOwn: false, posts: 203, followers: '89K', following: 45, isSubscribed: false, isBlocked: false }
-  };
-  function channelToUserId(channel){
-    if(!channel) return 'tanho_official';
-    var c = channel.trim().toLowerCase();
-    if(c.indexOf('tanho') !== -1) return 'tanho_official';
-    if(c.indexOf('urbancore') !== -1) return 'urbancore';
-    if(c.indexOf('naturevibe') !== -1) return 'naturevibe';
-    if(c.indexOf('caliraval') !== -1) return 'caliraval';
-    if(c.indexOf('tasty') !== -1) return 'tasty_uz';
-    return 'tanho_official';
-  }
-  var currentProfileId = 'khadija_92';
-  function getCurrentUserId(){ return OWN_USER_ID; }
-  function persistUserState(){
-    try {
-      var s = {};
-      Object.keys(TANHO_USERS).forEach(function(k){ s[k] = { isSubscribed: TANHO_USERS[k].isSubscribed, isBlocked: TANHO_USERS[k].isBlocked }; });
-      localStorage.setItem('tanho_users_state', JSON.stringify(s));
-    } catch(e){}
-  }
-  function restoreUserState(){
-    try {
-      var raw = localStorage.getItem('tanho_users_state');
-      if(!raw) return;
-      var s = JSON.parse(raw);
-      Object.keys(s).forEach(function(k){ if(TANHO_USERS[k]){ TANHO_USERS[k].isSubscribed = !!s[k].isSubscribed; TANHO_USERS[k].isBlocked = !!s[k].isBlocked; } });
-    } catch(e){}
-  }
-  try { restoreUserState(); } catch(e){}
-  // 🔐 Авторизация (гость / регистрация)
-  var TANHO_AUTH_KEY = 'tanho_auth';
-  var TANHO_REGISTERED_KEY = 'tanho_registered';
-  function getRegisteredUsers(){
-    try { return JSON.parse(localStorage.getItem(TANHO_REGISTERED_KEY) || '[]'); }
-    catch(e){ return []; }
-  }
-  function saveRegisteredUsers(list){
-    try { localStorage.setItem(TANHO_REGISTERED_KEY, JSON.stringify(list)); } catch(e){}
-  }
-  function isLoggedIn(){
-    try {
-      var a = JSON.parse(localStorage.getItem(TANHO_AUTH_KEY) || 'null');
-      return !!(a && a.userId && TANHO_USERS[a.userId]);
-    } catch(e){ return false; }
-  }
-  function setSession(userId){
-    try {
-      if(userId) localStorage.setItem(TANHO_AUTH_KEY, JSON.stringify({userId: userId}));
-      else localStorage.removeItem(TANHO_AUTH_KEY);
-    } catch(e){}
-  }
-  function slugUserId(name){
-    var base = (name || 'user').toLowerCase().replace(/[^a-z0-9а-яё]+/gi, '_').replace(/^_+|_+$/g, '').slice(0, 20) || 'user';
-    var id = base, n = 1;
-    while(TANHO_USERS[id]){ n++; id = base + '_' + n; }
-    return id;
-  }
-  function avatarFor(id, name){
-    return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name || id) + '&background=7c3aed&color=fff&size=300';
-  }
-  function syncSettingsInputs(user){
-    try {
-      if(document.getElementById('inputFirstName')) document.getElementById('inputFirstName').value = user.name || '';
-      if(document.getElementById('inputUsername')) document.getElementById('inputUsername').value = user.handle || '';
-      if(document.getElementById('inputBio')) document.getElementById('inputBio').value = user.bio || '';
-    } catch(e){}
-  }
-  function loginUser(id){
-    var u = TANHO_USERS[id];
-    if(!u) return;
-    Object.keys(TANHO_USERS).forEach(function(k){ TANHO_USERS[k].isOwn = (k === id); });
-    OWN_USER_ID = id;
-    currentProfileId = id;
-    setSession(id);
-    syncSettingsInputs(u);
-    closeAuthModal();
-    openUserProfile(id);
-    if(navigator.vibrate) navigator.vibrate(20);
-  }
-  function setAuthError(msg){
-    var el = document.getElementById('authError');
-    if(el) el.textContent = msg || '';
-  }
-  function switchAuthTab(mode){
-    var isLogin = mode !== 'register';
-    document.getElementById('authTabLogin').classList.toggle('active', isLogin);
-    document.getElementById('authTabRegister').classList.toggle('active', !isLogin);
-    document.getElementById('authFormLogin').classList.toggle('active', isLogin);
-    document.getElementById('authFormRegister').classList.toggle('active', !isLogin);
-    setAuthError('');
-  }
-  function openAuthModal(mode){
-    document.querySelectorAll('.post-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    document.querySelectorAll('.profile-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    switchAuthTab(mode || 'login');
-    document.getElementById('auth-modal').classList.add('active');
-    setTimeout(function(){ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
-  }
-  function closeAuthModal(){
-    document.getElementById('auth-modal').classList.remove('active');
-    document.getElementById('authLoading').classList.remove('active');
-    setTimeout(function(){ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
-  }
-  function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-  function handleEmailLogin(){
-    var email = (document.getElementById('authLoginEmail').value || '').trim().toLowerCase();
-    var pass = document.getElementById('authLoginPass').value || '';
-    if(!email || !pass){ setAuthError('Введите email и пароль.'); return; }
-    var found = null;
-    getRegisteredUsers().forEach(function(r){ if((r.email || '').toLowerCase() === email) found = r; });
-    if(!found){ setAuthError('Аккаунт не найден. Зарегистрируйтесь.'); switchAuthTab('register'); return; }
-    if(found.pass !== pass){ setAuthError('Неверный пароль.'); return; }
-    if(!TANHO_USERS[found.id]){
-      TANHO_USERS[found.id] = { id: found.id, name: found.name, handle: found.handle, avatar: found.avatar, bio: found.bio || 'Новый пользователь TANHO ✨', location: 'Ташкент', verified: false, isOwn: false, posts: 0, followers: '0', following: 0, isSubscribed: false, isBlocked: false };
-    }
-    loginUser(found.id);
-  }
-  function handleEmailRegister(){
-    var name = (document.getElementById('authRegName').value || '').trim();
-    var email = (document.getElementById('authRegEmail').value || '').trim().toLowerCase();
-    var pass = document.getElementById('authRegPass').value || '';
-    if(name.length < 2){ setAuthError('Введите имя пользователя (минимум 2 символа).'); return; }
-    if(!validEmail(email)){ setAuthError('Введите корректную почту.'); return; }
-    if(pass.length < 4){ setAuthError('Пароль — минимум 4 символа.'); return; }
-    var exists = null;
-    getRegisteredUsers().forEach(function(r){ if((r.email || '').toLowerCase() === email) exists = r; });
-    if(exists){ setAuthError('Эта почта уже зарегистрирована. Войдите.'); switchAuthTab('login'); return; }
-    var id = slugUserId(name);
-    var avatar = avatarFor(id, name);
-    var handle = '@' + id;
-    TANHO_USERS[id] = { id: id, name: name, handle: handle, avatar: avatar, bio: 'Новый пользователь TANHO ✨', location: 'Ташкент', verified: false, isOwn: false, posts: 0, followers: '0', following: 0, isSubscribed: false, isBlocked: false };
-    var list = getRegisteredUsers();
-    list.push({ id: id, name: name, handle: handle, email: email, pass: pass, avatar: avatar, bio: 'Новый пользователь TANHO ✨', provider: 'email' });
-    saveRegisteredUsers(list);
-    loginUser(id);
-  }
-  function mockOAuthLogin(provider){
-    var loading = document.getElementById('authLoading');
-    var loadingText = document.getElementById('authLoadingText');
-    setAuthError('');
-    if(loadingText) loadingText.textContent = provider === 'google' ? 'Входим через Google…' : 'Входим через Telegram…';
-    if(loading) loading.classList.add('active');
-    setTimeout(function(){
-      if(loading) loading.classList.remove('active');
-      var list = getRegisteredUsers();
-      var found = null;
-      list.forEach(function(r){ if(r.provider === provider) found = r; });
-      if(found){
-        if(!TANHO_USERS[found.id]){
-          TANHO_USERS[found.id] = { id: found.id, name: found.name, handle: found.handle, avatar: found.avatar, bio: found.bio || 'Новый пользователь TANHO ✨', location: 'Ташкент', verified: false, isOwn: false, posts: 0, followers: '0', following: 0, isSubscribed: false, isBlocked: false };
-        }
-        loginUser(found.id);
-        return;
-      }
-      var name = provider === 'google' ? 'Google User' : 'Telegram User';
-      var id = slugUserId(name);
-      var avatar = avatarFor(id, name);
-      var handle = '@' + id;
-      var email = provider === 'google' ? 'google.user@gmail.com' : 'telegram_user@t.me';
-      TANHO_USERS[id] = { id: id, name: name, handle: handle, avatar: avatar, bio: 'Вошёл через ' + (provider === 'google' ? 'Google' : 'Telegram') + ' ✨', location: 'Ташкент', verified: false, isOwn: false, posts: 0, followers: '0', following: 0, isSubscribed: false, isBlocked: false };
-      list.push({ id: id, name: name, handle: handle, email: email, pass: '', avatar: avatar, bio: TANHO_USERS[id].bio, provider: provider });
-      saveRegisteredUsers(list);
-      loginUser(id);
-    }, 900);
-  }
-  function handleGoogleAuth(){ mockOAuthLogin('google'); }
-  function handleTelegramAuth(){ mockOAuthLogin('telegram'); }
-  // восстановить созданных пользователей и сессию
-  try {
-    getRegisteredUsers().forEach(function(r){
-      if(!TANHO_USERS[r.id]){
-        TANHO_USERS[r.id] = { id: r.id, name: r.name, handle: r.handle, avatar: r.avatar, bio: r.bio || 'Новый пользователь TANHO ✨', location: 'Ташкент', verified: false, isOwn: false, posts: 0, followers: '0', following: 0, isSubscribed: false, isBlocked: false };
-      }
-    });
-    var _savedAuth = null;
-    try { _savedAuth = JSON.parse(localStorage.getItem(TANHO_AUTH_KEY) || 'null'); } catch(e){}
-    if(_savedAuth && _savedAuth.userId && TANHO_USERS[_savedAuth.userId]){
-      OWN_USER_ID = _savedAuth.userId;
-      Object.keys(TANHO_USERS).forEach(function(k){ TANHO_USERS[k].isOwn = (k === _savedAuth.userId); });
-      currentProfileId = _savedAuth.userId;
-      syncSettingsInputs(TANHO_USERS[_savedAuth.userId]);
-    }
-  } catch(e){}
-  function setProfileButtons(user){
-    var secondaryBtn = document.getElementById('profileSecondaryBtn');
-    var secondaryText = document.getElementById('profileSecondaryText');
-    var menuWrap = document.getElementById('profileMenuWrap');
-    var blockMenuBtn = document.getElementById('profileBlockMenuBtn');
-    var settingsBtn = document.getElementById('openSettingsBtn');
-    if(user.isOwn){
-      if(secondaryBtn) secondaryBtn.style.display = 'none';
-      if(menuWrap) menuWrap.style.display = 'none';
-      if(settingsBtn) settingsBtn.style.display = 'flex';
-    } else {
-      if(secondaryBtn){
-        secondaryBtn.style.display = 'flex';
-        if(user.isBlocked){
-          if(secondaryText) secondaryText.textContent = 'Заблокирован';
-          secondaryBtn.className = 'btn btn-secondary';
-          secondaryBtn.disabled = true;
-          secondaryBtn.style.opacity = '0.6';
-        } else {
-          secondaryBtn.disabled = false;
-          secondaryBtn.style.opacity = '1';
-          if(secondaryText) secondaryText.textContent = user.isSubscribed ? 'Подписан ✓' : 'Подписаться';
-          secondaryBtn.className = user.isSubscribed ? 'btn btn-secondary subscribed' : 'btn btn-secondary';
-        }
-      }
-      if(menuWrap) menuWrap.style.display = 'flex';
-      if(blockMenuBtn) blockMenuBtn.textContent = user.isBlocked ? 'Разблокировать' : 'Заблокировать';
-      if(settingsBtn) settingsBtn.style.display = 'flex';
-    }
-    var dd = document.getElementById('profileMenuDropdown');
-    if(dd) dd.classList.remove('active');
-  }
-  function openUserProfile(userId){
-    var targetId = TANHO_USERS[userId] ? userId : OWN_USER_ID;
-    if(!isLoggedIn() && targetId === getCurrentUserId()){
-      openAuthModal('register');
-      return;
-    }
-    var user = TANHO_USERS[userId] || TANHO_USERS[OWN_USER_ID];
-    currentProfileId = user.id;
-    try { localStorage.setItem('tanho_profile_id', user.id); } catch(e){}
-    var avatarEl = document.getElementById('displayProfileAvatar');
-    if (avatarEl) avatarEl.src = user.avatar;
-    document.getElementById('displayProfileName').innerText = user.name;
-    document.getElementById('displayProfileHandle').innerText = user.handle;
-    document.getElementById('displayProfileBio').innerText = user.bio;
-    var stats = document.querySelectorAll('.stats-grid .stat-value');
-    if (stats.length >= 3) {
-      stats[0].innerText = user.posts;
-      stats[1].innerText = user.followers;
-      stats[2].innerText = user.following;
-    }
-    var metaLoc = document.querySelector('.meta-info .meta-item:first-child');
-    if (metaLoc) metaLoc.innerHTML = '📍 ' + user.location;
-    var verifiedBadge = document.querySelector('.verified-badge');
-    if (verifiedBadge) verifiedBadge.style.display = user.verified ? 'flex' : 'none';
-    // статичные тексты кнопок (без innerHTML, чтобы не ломать DOM)
-    var primaryText = document.getElementById('profilePrimaryText');
-    if(primaryText) primaryText.textContent = user.isOwn ? 'Редактировать профиль' : 'Сообщение';
-    setProfileButtons(user);
-    var pill = document.querySelector('.floating-nav-container .nav-item-pill:last-child');
-    switchPage('pageProfile', pill);
-  }
-  function handleProfilePrimaryAction(){
-    var user = TANHO_USERS[currentProfileId];
-    if(!user) return;
-    if(user.isOwn){
-      document.getElementById('settingsPage').classList.add('active');
-      setTimeout(function(){ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
-    } else {
-      openGeneralChat();
-    }
-  }
-  function handleProfileSecondaryAction(){
-    var user = TANHO_USERS[currentProfileId];
-    if(!user || user.isOwn || user.isBlocked) return;
-    user.isSubscribed = !user.isSubscribed;
-    persistUserState();
-    setProfileButtons(user);
-    if(navigator.vibrate) navigator.vibrate(20);
-  }
-  function toggleProfileMenu(e){
-    if(e) e.stopPropagation();
-    var dd = document.getElementById('profileMenuDropdown');
-    if(!dd) return;
-    var wasActive = dd.classList.contains('active');
-    document.querySelectorAll('.profile-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    document.querySelectorAll('.post-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    if(!wasActive) dd.classList.add('active');
-  }
-  function handleProfileMenuAction(action){
-    var user = TANHO_USERS[currentProfileId];
-    if(!user || user.isOwn) return;
-    var dd = document.getElementById('profileMenuDropdown');
-    if(dd) dd.classList.remove('active');
-    if(action==='report'){ alert('Жалоба отправлена ✓'); }
-    else if(action==='block'){
-      if(user.isBlocked){
-        user.isBlocked = false;
-        persistUserState();
-        setProfileButtons(user);
-        alert(user.name + ' разблокирован ✓');
-      } else {
-        if(confirm('Заблокировать ' + user.name + '?')){
-          user.isBlocked = true;
-          persistUserState();
-          setProfileButtons(user);
-          alert(user.name + ' заблокирован');
-        }
-      }
-    }
-    if(navigator.vibrate) navigator.vibrate(20);
-  }
-
-  function filterProfileFeed(chipEl) {
-    document.querySelectorAll('.filter-tabs .chip').forEach(c => c.classList.remove('active'));
-    chipEl.classList.add('active');
-  }
-
-  function toggleSubscribe(btn){
-    const isSub = btn.classList.contains('subscribed');
-    if(isSub){ btn.classList.remove('subscribed'); btn.textContent='Подписаться'; }
-    else { btn.classList.add('subscribed'); btn.textContent='Подписан ✓'; if(navigator.vibrate) navigator.vibrate(20); }
-  }
-  function isOwnPost(post){
-    if(!post) return false;
-    if(post.getAttribute('data-owner')==='self') return true;
-    if(post.getAttribute('data-owner')==='other') return false;
-    var uid = post.getAttribute('data-user-id');
-    if(uid) return uid === OWN_USER_ID;
-    return false;
-  }
-  function togglePostMenu(btn){
-    const dd = btn.nextElementSibling;
-    const wasActive = dd.classList.contains('active');
-    document.querySelectorAll('.post-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
-    document.querySelectorAll('.profile-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
-    if(!wasActive){
-      dd.classList.add('active');
-      const post = btn.closest('.post-card');
-      const isOwn = isOwnPost(post);
-      const editBtn = dd.querySelector('button[onclick*="edit"]');
-      if(editBtn) editBtn.style.display = isOwn ? 'flex' : 'none';
-    }
-  }
-  function handlePostMenuAction(action, btn){
-    const dd = btn.closest('.post-menu-dropdown');
-    const post = btn.closest('.post-card');
-    if(dd) dd.classList.remove('active');
-    if(action==='interesting'){ post.style.transform='scale(0.99)'; setTimeout(()=>post.style.transform='',200); if(navigator.vibrate) navigator.vibrate(20); }
-    else if(action==='not_interesting'){ post.style.opacity='0.6'; setTimeout(()=>post.style.opacity='1',800); }
-    else if(action==='report'){ alert('Жалоба отправлена ✓'); }
-    else if(action==='edit'){
-      const titleEl = post.querySelector('.post-title-text');
-      const capEl = post.querySelector('.caption');
-      document.getElementById('article-title').value = titleEl ? titleEl.innerText : '';
-      document.getElementById('article-content').value = capEl ? capEl.innerText : '';
-      // удалить старый пост после редактирования (как обновление)
-      post.remove();
-      openEditor();
-    }
-  }
-  document.addEventListener('click', (e)=>{
-    if(!e.target.closest('.post-header-actions')) document.querySelectorAll('.post-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
-    if(!e.target.closest('.profile-menu-wrap')) document.querySelectorAll('.profile-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
-    if(!e.target.closest('.yt-menu-wrap')) document.querySelectorAll('.yt-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
-    if(!e.target.closest('.reel-menu-wrap')) document.querySelectorAll('.reel-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
-    if(!e.target.closest('.top-nav-profile')) document.querySelectorAll('.burger-menu-dropdown.active').forEach(d=>d.classList.remove('active'));
-  });
-
-  let selectedTextPosition = 'bottom';
-
-  function switchPage(pageId, btnEl) {
-    const appHeader = document.getElementById('appHeader');
-    const headerLogo = document.getElementById('headerLogo');
-
-    document.querySelectorAll('.page-screen').forEach(p => p.classList.remove('active'));
-    document.getElementById('pageReels').classList.remove('active');
-    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.nav-item-pill').forEach(b => b.classList.remove('active'));
-
-    if (pageId === 'pageReels') {
-      appHeader.style.display = 'none';
-      document.getElementById('pageReels').classList.add('active');
-      const hashSub = location.hash.slice(1).startsWith('reels-') ? location.hash.slice(1).split('-')[1] : null;
-      if (hashSub) {
-        if (typeof switchReelsTab === 'function') switchReelsTab(hashSub, true);
-      } else {
-        try {
-          const saved = localStorage.getItem('tanho_reels_tab');
-          if (saved && typeof switchReelsTab === 'function') switchReelsTab(saved, true);
-          else if (typeof switchReelsTab === 'function') switchReelsTab('feed', true);
-        } catch(e){ if (typeof switchReelsTab === 'function') switchReelsTab('feed', true); }
-      }
-    } else if (pageId === 'pageProfile') {
-      appHeader.style.display = 'none';
-      document.getElementById('pageProfile').classList.add('active');
-    } else {
-      appHeader.style.display = 'flex';
-      document.getElementById(pageId).classList.add('active');
-      headerLogo.innerText = 'TANHO';
-    }
-    if (btnEl) btnEl.classList.add('active');
-    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
-    // persistence: hash + localStorage
-    try {
-      localStorage.setItem('tanho_page', pageId);
-      if (pageId === 'generalChat') localStorage.setItem('tanho_page', 'generalChat');
-      else {
-        const chatActive = document.getElementById('generalChatScreen')?.classList.contains('active');
-        if (!chatActive) localStorage.setItem('tanho_page_before_chat', pageId);
-      }
-    } catch(e){}
-    const map={pageMain:'main',pageReels:'reels',pageProfile:'profile',generalChat:'chat'};
-    let hash = map[pageId] || pageId.replace('page','').toLowerCase();
-    if (pageId === 'pageReels') {
-      try {
-        const sub = localStorage.getItem('tanho_reels_tab') || 'feed';
-        hash = 'reels-' + sub;
-      } catch(e){ hash='reels-feed'; }
-    }
-    if (location.hash.slice(1) !== hash) history.replaceState(null,'','#'+hash);
-  }
-
-  // ОБЩИЕ ФУНКЦИИ
-  function openSearch() {
-    document.getElementById('headerLogo').style.display = 'none';
-    document.getElementById('headerActions').style.display = 'none';
-    const searchBox = document.getElementById('headerSearchBox');
-    searchBox.classList.add('active');
-    document.getElementById('headerSearchInput').focus();
-  }
-
-  function closeSearch() {
-    document.getElementById('headerSearchBox').classList.remove('active');
-    document.getElementById('headerLogo').style.display = 'block';
-    document.getElementById('headerActions').style.display = 'flex';
-  }
-
-  function notifyNativeTheme(){
-    try {
-      var light = document.body.classList.contains('light-theme');
-      try { localStorage.setItem('tanho_theme', light ? 'light' : 'dark'); } catch(e){}
-      if(window.TanhoTheme && window.TanhoTheme.setTheme) window.TanhoTheme.setTheme(light ? 'light' : 'dark');
-    } catch(e){}
-  }
-  function toggleTheme() {
-    document.body.classList.toggle('light-theme');
-    notifyNativeTheme();
-    if(navigator.vibrate) navigator.vibrate(15);
-  }
-  // восстановить тему и мгновенно синхронизировать системные иконки
-  try {
-    if(localStorage.getItem('tanho_theme') === 'light') document.body.classList.add('light-theme');
-  } catch(e){}
-  document.addEventListener('DOMContentLoaded', function(){ setTimeout(notifyNativeTheme, 600); });
-  function openEditor() { 
-    document.getElementById('editorModal').classList.add('open'); 
-    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
-    // фокус на заголовок с задержкой чтобы клавиатура успела открыться
-    setTimeout(()=> document.getElementById('article-title')?.focus(), 350);
-  }
-  function closeEditor() { 
-    document.getElementById('editorModal').classList.remove('open'); 
-    document.getElementById('editorModal').classList.remove('keyboard-open');
-    setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); 
-  }
-  // клавиатура — держать док над ней (улучшено)
-  (function(){
-    const editorEl = document.getElementById('editorModal');
-    if (!editorEl || !window.visualViewport) return;
-    const vv = window.visualViewport;
-    let ticking = false;
-    const handler = () => {
-      if (!editorEl.classList.contains('open')) return;
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(()=>{
-        const curH = vv.height;
-        const diff = window.innerHeight - curH;
-        const bottomSection = editorEl.querySelector('.bottom-section');
-        if (diff > 100) {
-          editorEl.classList.add('keyboard-open');
-          editorEl.style.height = curH + 'px';
-          if (bottomSection) bottomSection.style.transform = `translateY(-${Math.max(0, diff - 20)}px)`;
-        } else {
-          editorEl.classList.remove('keyboard-open');
-          editorEl.style.height = '';
-          if (bottomSection) bottomSection.style.transform = '';
-        }
-        ticking = false;
-      });
-    };
-    vv.addEventListener('resize', handler);
-    vv.addEventListener('scroll', handler);
-  })();
-  // также слушать focus на инпутах чтобы поднять док
-  document.getElementById('article-title')?.addEventListener('focus', ()=>{
-    setTimeout(()=>{
-      const ed = document.getElementById('editorModal');
-      if(ed && ed.classList.contains('open') && window.visualViewport){
-        ed.style.height = window.visualViewport.height + 'px';
-        ed.classList.add('keyboard-open');
-      }
-    }, 300);
-  });
-  document.getElementById('article-content')?.addEventListener('focus', ()=>{
-    setTimeout(()=>{
-      const ed = document.getElementById('editorModal');
-      if(ed && ed.classList.contains('open') && window.visualViewport){
-        ed.style.height = window.visualViewport.height + 'px';
-        ed.classList.add('keyboard-open');
-      }
-    }, 300);
-  });
-  // чат — держать инпут над клавиатурой и не прятать за меню
-  if (window.visualViewport) {
-    const chatScreen = document.getElementById('generalChatScreen');
-    const chatInputBar = document.querySelector('.chat-input-bar');
-    if (chatScreen && chatInputBar) {
-      window.visualViewport.addEventListener('resize', () => {
-        if (!chatScreen.classList.contains('active')) return;
-        const curH = window.visualViewport.height;
-        const diff = window.innerHeight - curH;
-        if (diff > 120) {
-          chatInputBar.style.transform = `translateY(-${diff - 20}px)`;
-          chatInputBar.style.transition = 'transform 0.2s ease';
-        } else {
-          chatInputBar.style.transform = '';
-        }
-      });
-      document.getElementById('chatTextInput')?.addEventListener('focus', ()=>{
-        setTimeout(()=>{
-          const inp = document.getElementById('chatTextInput');
-          inp?.scrollIntoView({block:'center', behavior:'smooth'});
-          const cont = document.getElementById('chatMessagesContainer');
-          if(cont) cont.scrollTop = cont.scrollHeight;
-        }, 300);
-      });
-    }
-  }
-
-  function toggleTextPosition() {
-    const iconSpan = document.getElementById('headerTogglePosIcon');
-    const editorBody = document.getElementById('editorBody');
-    const textInputsBox = document.getElementById('textInputsBox');
-    const attachmentsPreview = document.getElementById('attachmentsPreview');
-
-    if (selectedTextPosition === 'bottom') {
-      selectedTextPosition = 'top';
-      iconSpan.innerHTML = `<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>`;
-      editorBody.insertBefore(textInputsBox, attachmentsPreview);
-    } else {
-      selectedTextPosition = 'bottom';
-      iconSpan.innerHTML = `<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>`;
-      editorBody.insertBefore(attachmentsPreview, textInputsBox);
-    }
-  }
-
-  function togglePostExpand(element) {
-    const card = element.closest('.post-card');
-    if (!card) return;
-    card.classList.toggle('expanded');
-    const btn = card.querySelector('.expand-toggle-btn');
-    if (btn) btn.innerText = card.classList.contains('expanded') ? 'Свернуть ↑' : 'Читать полностью ↓';
-  }
-
-  // СТИКЕРЫ И ГАЛЕРЕЯ
-  const btnSticker = document.getElementById('btn-sticker');
-  const stickerPopover = document.getElementById('sticker-popover');
-  const stickersRow = document.getElementById('stickers-row');
-  let attachedStickers = [];
-
-  btnSticker.addEventListener('click', (e) => { e.stopPropagation(); stickerPopover.classList.toggle('active'); });
-  document.querySelectorAll('.sticker-item').forEach(item => {
-    item.addEventListener('click', () => {
-      const src = item.getAttribute('data-src');
-      attachedStickers.push(src);
-      const card = document.createElement('div');
-      card.className = 'sticker-chip';
-      card.innerHTML = `<img src="${src}"><button class="remove-badge-btn" onclick="this.parentElement.remove()">×</button>`;
-      stickersRow.appendChild(card);
-      stickerPopover.classList.remove('active');
-    });
-  });
-
-  const galleryContainer = document.getElementById('gallery-container');
-  const photoGrid = document.getElementById('photo-grid');
-  let attachedPhotos = [];
-
-  document.getElementById('btn-image').addEventListener('click', () => document.getElementById('image-file-input').click());
-  document.getElementById('image-file-input').addEventListener('change', (e) => {
-    const files = Array.from(e.target.files);
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        attachedPhotos.push({ id: Date.now() + Math.random(), url: event.target.result });
-        renderGallery();
-      };
-      reader.readAsDataURL(file);
-    });
-    e.target.value = '';
-  });
-
-  function renderGallery() {
-    if (!attachedPhotos.length) { galleryContainer.classList.remove('active'); return; }
-    galleryContainer.classList.add('active');
-    document.getElementById('photo-count').innerText = attachedPhotos.length;
-    photoGrid.setAttribute('data-count', Math.min(attachedPhotos.length, 2));
-    photoGrid.innerHTML = '';
-    attachedPhotos.slice(0, 2).forEach((photo) => {
-      const item = document.createElement('div');
-      item.className = 'photo-item';
-      item.innerHTML = `<img src="${photo.url}"><button class="remove-badge-btn" onclick="removePhoto(${photo.id})">×</button>`;
-      photoGrid.appendChild(item);
-    });
-  }
-
-  function removePhoto(id) { attachedPhotos = attachedPhotos.filter(p => p.id !== id); renderGallery(); }
-
-  // МУЗЫКА И ВИДЕО МОДАЛКИ
-  const musicInput = document.getElementById('music-file-input');
-  let attachedAudioData = null;
-
-  document.getElementById('btn-music').addEventListener('click', () => musicInput.click());
-  musicInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      attachedAudioData = { name: file.name, url: URL.createObjectURL(file) };
-      document.getElementById('music-container').innerHTML = `
-        <div class="tg-audio-card">
-          <button class="tg-play-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
-          <div class="tg-audio-body"><div class="tg-audio-title">${file.name}</div><div class="tg-audio-time">Аудиозапись ready</div></div>
-          <button class="remove-badge-btn" onclick="clearAudio()">×</button>
-        </div>
-      `;
-    }
-  });
-  function clearAudio() { document.getElementById('music-container').innerHTML = ''; attachedAudioData = null; }
-
-  let attachedVideoData = null;
-  document.getElementById('btn-video').addEventListener('click', () => {
-    document.getElementById('video-url-input').value = '';
-    document.getElementById('youtube-error').style.display = 'none';
-    document.getElementById('video-modal').classList.add('active');
-  });
-
-  function attachVideoFromInput() {
-    const url = document.getElementById('video-url-input').value.trim();
-    const customName = document.getElementById('video-name-input').value.trim() || 'Видеоролик';
-
-    if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      document.getElementById('youtube-error').style.display = 'block';
-      return;
-    }
-
-    const targetUrl = url || 'https://vk.com/video_ext.php?oid=-237335724&id=456239089&js_api=1';
-    attachedVideoData = { url: targetUrl, title: customName };
-
-    let playerHtml = targetUrl.endsWith('.mp4') 
-      ? `<video controls src="${targetUrl}"></video>` 
-      : `<iframe src="${targetUrl}"></iframe>`;
-
-    document.getElementById('video-container').innerHTML = `
-      <div style="padding:0; position:relative;">
-        <div style="width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000;">${playerHtml}</div>
-        <button class="remove-badge-btn" onclick="clearVideo()">×</button>
-      </div>
-    `;
-    closeModals();
-  }
-  function clearVideo() { document.getElementById('video-container').innerHTML = ''; attachedVideoData = null; }
-
-  let selectedLocation = null;
-  document.getElementById('btn-location').addEventListener('click', () => document.getElementById('location-modal').classList.add('active'));
-  function attachCustomLocation() {
-    const val = document.getElementById('custom-location-input').value.trim();
-    if (val) {
-      selectedLocation = '📍 ' + val;
-      document.getElementById('location-container').innerHTML = `<div style="color:#38bdf8; font-size:12px;">${selectedLocation} <button class="remove-badge-btn" onclick="clearLocation()">×</button></div>`;
-    }
-    closeModals();
-  }
-  function clearLocation() { document.getElementById('location-container').innerHTML = ''; selectedLocation = null; }
-  function closeModals() {
-    document.getElementById('location-modal').classList.remove('active');
-    document.getElementById('video-modal').classList.remove('active');
-    var _am = document.getElementById('auth-modal');
-    if(_am) _am.classList.remove('active');
-    var _im = document.getElementById('info-modal');
-    if(_im) _im.classList.remove('active');
-    document.querySelectorAll('.burger-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-  }
-
-  // 🔊 Real audio playback
-  let currentAudio = null;
-  let currentBtn = null;
-  function togglePostAudio(btn, url){
-    const card = btn.closest('.tg-audio-card');
-    const audio = card.querySelector('audio');
-    if(!audio) return;
-    if(currentAudio && currentAudio !== audio){ currentAudio.pause(); if(currentBtn) currentBtn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>'; }
-    if(audio.paused){
-      audio.play().catch(()=>{});
-      btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
-      currentAudio = audio; currentBtn = btn;
-    } else {
-      audio.pause();
-      btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-    }
-  }
-  function updateAudioTime(audio){
-    const card = audio.closest('.tg-audio-card');
-    const timeEl = card.querySelector('.tg-audio-time');
-    if(timeEl && audio.duration){ timeEl.textContent = Math.floor(audio.currentTime) + 's / ' + Math.floor(audio.duration) + 's • TANHO'; }
-  }
-  function resetAudioBtn(audio){
-    const btn = audio.closest('.tg-audio-card').querySelector('.tg-play-btn');
-    if(btn) btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-    currentAudio = null; currentBtn = null;
-  }
-
-  // 🎨 Draggable stickers for posts
-  let dragSticker = null, dragOffsetX=0, dragOffsetY=0;
-  function startDragSticker(e, el){
-    e.preventDefault();
-    dragSticker = el;
-    el.classList.remove('moving');
-    const touch = e.touches ? e.touches[0] : e;
-    const rect = el.getBoundingClientRect();
-    const parentRect = el.parentElement.getBoundingClientRect();
-    dragOffsetX = touch.clientX - rect.left;
-    dragOffsetY = touch.clientY - rect.top;
-    el.style.zIndex = 10;
-    const move = (ev)=>{
-      if(!dragSticker) return;
-      const t = ev.touches ? ev.touches[0] : ev;
-      const pr = dragSticker.parentElement.getBoundingClientRect();
-      let x = t.clientX - pr.left - dragOffsetX;
-      let y = t.clientY - pr.top - dragOffsetY;
-      x = Math.max(0, Math.min(x, pr.width - dragSticker.offsetWidth));
-      y = Math.max(0, Math.min(y, pr.height - dragSticker.offsetHeight));
-      dragSticker.style.left = x + 'px';
-      dragSticker.style.top = y + 'px';
-    };
-    const up = ()=>{
-      if(dragSticker){ dragSticker.style.zIndex=''; dragSticker.classList.add('moving'); }
-      dragSticker = null;
-      document.removeEventListener('mousemove', move);
-      document.removeEventListener('mouseup', up);
-      document.removeEventListener('touchmove', move);
-      document.removeEventListener('touchend', up);
-    };
-    document.addEventListener('mousemove', move);
-    document.addEventListener('mouseup', up);
-    document.addEventListener('touchmove', move, {passive:false});
-    document.addEventListener('touchend', up);
-  }
-
-  function toggleLike(btn) {
-    const svg = btn.querySelector('.heart-icon');
-    const countSpan = btn.querySelector('.likes-count');
-    let count = parseInt(countSpan.textContent.replace(/\s/g, '')) || 0;
-    if (svg.getAttribute('fill') === 'none') {
-      svg.setAttribute('fill', 'var(--like-red)'); svg.setAttribute('stroke', 'var(--like-red)'); count++;
-      if(navigator.vibrate) navigator.vibrate(20);
-    } else {
-      svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor'); count--;
-    }
-    countSpan.textContent = count;
-  }
-  function toggleComments(btn){
-    const countSpan = btn.querySelector('.comments-count');
-    let c = parseInt(countSpan.textContent) || 0;
-    const txt = prompt('Напиши комментарий:');
-    if(txt && txt.trim()){
-      c++;
-      countSpan.textContent = c;
-      // haptic
-      if(navigator.vibrate) navigator.vibrate(20);
-    }
-  }
-  function sharePost(btn){
-    const card = btn.closest('.post-card');
-    const title = card.querySelector('.post-title-text')?.innerText || 'TANHO пост';
-    if(navigator.share){
-      navigator.share({title, text: title, url: location.href}).catch(()=>{});
-    } else {
-      // fallback copy
-      navigator.clipboard?.writeText(location.href);
-      const orig = btn.innerHTML;
-      btn.innerHTML = '✓';
-      setTimeout(()=> btn.innerHTML = orig, 1200);
-    }
-  }
-  function toggleBookmark(btn){
-    const svg = btn.querySelector('svg');
-    const isActive = btn.getAttribute('data-bookmarked') === '1';
-    if(isActive){
-      btn.setAttribute('data-bookmarked','0');
-      svg.setAttribute('fill','none');
-      svg.style.color='';
-    } else {
-      btn.setAttribute('data-bookmarked','1');
-      svg.setAttribute('fill','var(--primary-accent)');
-      svg.style.color='var(--primary-accent)';
-      if(navigator.vibrate) navigator.vibrate(20);
-    }
-  }
-
-  function switchReelsTab(tab, skipPersist) {
-    const feedTab = document.getElementById('reelsFeedTab');
-    const reelsTab = document.getElementById('reelsReelsTab');
-    const feedBtn = document.getElementById('segFeedBtn');
-    const reelsBtn = document.getElementById('segReelsBtn');
-    const header = document.querySelector('.reels-tabs-header');
-    if (!feedTab || !reelsTab) return;
-        if (tab === 'feed') {
-      feedTab.classList.add('active'); reelsTab.classList.remove('active');
-      if (feedBtn) feedBtn.classList.add('active'); if (reelsBtn) reelsBtn.classList.remove('active');
-      if (header) header.style.display = 'flex';
-      feedTab.style.paddingTop = 'calc(42px + env(safe-area-inset-top, 0px))';
-      reelsTab.style.paddingTop = 'calc(42px + env(safe-area-inset-top, 0px))';
-    } else {
-      reelsTab.classList.add('active'); feedTab.classList.remove('active');
-      if (header) header.style.display = 'flex';
-      if (reelsBtn) reelsBtn.classList.add('active'); if (feedBtn) feedBtn.classList.remove('active');
-      reelsTab.style.paddingTop = '0';
-      feedTab.style.paddingTop = 'calc(42px + env(safe-area-inset-top, 0px))';
-    }
-    if (!skipPersist) {
-      try { localStorage.setItem('tanho_reels_tab', tab); localStorage.setItem('tanho_page', 'pageReels'); } catch(e){}
-      const hash='reels-'+tab;
-      if (location.hash.slice(1)!==hash) history.replaceState(null,'','#'+hash);
-    }
-  }
-
-  // ↔️ свайп влево/вправо для переключения Лента <-> Reels
-  (function setupReelsSwipe(){
-    let sx=0, sy=0;
-    const container = document.getElementById('pageReels');
-    if(!container) return;
-    container.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }, {passive:true});
-    container.addEventListener('touchend', e=>{
-      const ex=e.changedTouches[0].clientX, ey=e.changedTouches[0].clientY;
-      const dx=sx-ex, dy=sy-ey;
-      if(Math.abs(dx)<60 || Math.abs(dx) < Math.abs(dy)) return;
-      if(!container.classList.contains('active')) return;
-      const feedActive = document.getElementById('reelsFeedTab')?.classList.contains('active');
-      const cur = feedActive ? 'feed' : 'reels';
-      if(dx>0 && cur==='feed') switchReelsTab('reels');
-      else if(dx<0 && cur==='reels') switchReelsTab('feed');
-    }, {passive:true});
-    let mDown=false, mSx=0;
-    container.addEventListener('mousedown', e=>{ mDown=true; mSx=e.clientX; });
-    container.addEventListener('mouseup', e=>{
-      if(!mDown) return; mDown=false;
-      const dx=mSx - e.clientX;
-      if(Math.abs(dx)<60) return;
-      if(!container.classList.contains('active')) return;
-      const feedActive2 = document.getElementById('reelsFeedTab')?.classList.contains('active');
-      const cur=feedActive2?'feed':'reels';
-      if(dx>0 && cur==='feed') switchReelsTab('reels');
-      else if(dx<0 && cur==='reels') switchReelsTab('feed');
-    });
-  })();
-
-  const ytVideosData = [
-    { id:1, title: 'Обзор нового TANHO — как работает лента и чат', channel: 'TANHO Official', avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100', thumb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800', duration: '8:42', views: '124K', time: '3 дня назад' },
-    { id:2, title: 'Ташкент с высоты: дрон 4K • красивый закат над городом', channel: '@urbancore', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100', thumb: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800', duration: '3:12', views: '89K', time: '5 дней назад' },
-    { id:3, title: 'Утро в горах Чимгана — релакс, природа, тишина', channel: '@naturevibe', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100', thumb: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800', duration: '12:05', views: '45K', time: '1 неделю назад' },
-    { id:4, title: 'Как собрать идеальный Reels за 60 сек — монтаж в телефоне', channel: '@CaliraVal', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100', thumb: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800', duration: '5:33', views: '210K', time: '2 дня назад' },
-    { id:5, title: 'Готовим плов по-узбекски: пошаговый рецепт от шефа', channel: '@tasty.uz', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100', thumb: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800', duration: '14:22', views: '312K', time: '4 дня назад' },
-  ];
-
-  function renderYtFeed() {
-    const container = document.getElementById('ytFeed');
-    if (!container) return;
-    container.innerHTML = ytVideosData.map(v => {
-      var uid = (typeof channelToUserId==='function') ? channelToUserId(v.channel) : 'tanho_official';
-      return `
-      <div class="yt-card" onclick="openVideoViewer(${v.id})">
-        <div class="yt-thumb"><img src="${v.thumb}" alt="" loading="lazy"><span class="yt-duration">${v.duration}</span></div>
-        <div class="yt-info">
-          <div class="yt-avatar" style="background-image:url('${v.avatar}')" onclick="event.stopPropagation(); openUserProfile('${uid}')"></div>
-          <div class="yt-meta" onclick="event.stopPropagation(); openUserProfile('${uid}')">
-            <div class="yt-title">${v.title}</div>
-            <div class="yt-channel">${v.channel}</div>
-            <div class="yt-stats"><span>${v.views} просмотров</span><span>•</span><span>${v.time}</span></div>
-          </div>
-          <div class="yt-menu-wrap">
-            <button class="yt-more-btn" onclick="event.stopPropagation(); toggleYtMenu(this)">⋮</button>
-            <div class="yt-menu-dropdown">
-              <button onclick="handleYtMenuAction('interesting', ${v.id}, this)">Интересно</button>
-              <button onclick="handleYtMenuAction('report', ${v.id}, this)">Пожаловаться</button>
-              <button onclick="handleYtMenuAction('share', ${v.id}, this)">Поделиться</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `; }).join('');
-  }
-  function toggleYtMenu(btn){
-    var dd = btn.nextElementSibling;
-    if(!dd) return;
-    var wasActive = dd.classList.contains('active');
-    document.querySelectorAll('.yt-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    document.querySelectorAll('.reel-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    if(!wasActive) dd.classList.add('active');
-    if(event) event.stopPropagation();
-  }
-  function handleYtMenuAction(action, id, btn){
-    var dd = btn.closest('.yt-menu-dropdown');
-    if(dd) dd.classList.remove('active');
-    if(event) event.stopPropagation();
-    if(action==='interesting'){ if(navigator.vibrate) navigator.vibrate(20); }
-    else if(action==='report'){ alert('Жалоба отправлена ✓'); }
-    else if(action==='share'){
-      var v = ytVideosData.find(function(x){ return x.id===id; });
-      var title = v ? v.title : 'TANHO видео';
-      if(navigator.share){ navigator.share({title: title, text: title, url: location.href}).catch(function(){}); }
-      else if(navigator.clipboard){ navigator.clipboard.writeText(location.href + '#video-' + id); alert('Ссылка скопирована ✓'); }
-    }
-  }
-  function toggleReelMenu(btn){
-    var dd = btn.nextElementSibling;
-    if(!dd) return;
-    var wasActive = dd.classList.contains('active');
-    document.querySelectorAll('.reel-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    document.querySelectorAll('.yt-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
-    if(!wasActive) dd.classList.add('active');
-  }
-  function handleReelMenuAction(action, btn){
-    var dd = btn.closest('.reel-menu-dropdown');
-    if(dd) dd.classList.remove('active');
-    if(event) event.stopPropagation();
-    if(action==='interesting'){ if(navigator.vibrate) navigator.vibrate(20); }
-    else if(action==='report'){ alert('Жалоба отправлена ✓'); }
-    else if(action==='share'){
-      if(navigator.share){ navigator.share({title: 'TANHO Reels', text: 'Смотри Reels в TANHO', url: location.href}).catch(function(){}); }
-      else alert('Ссылка скопирована ✓');
-    }
-  }
-  var currentViewerVideoId = null;
-  var viewerLiked = {};
-  var viewerCommentsCount = {};
-  var viewerCommented = {};
-  function openVideoViewer(id){
-    var v = ytVideosData.find(function(x){ return x.id===id; });
-    if(!v) return;
-    currentViewerVideoId = id;
-    document.getElementById('videoViewerTitle').textContent = v.title;
-    document.getElementById('videoViewerThumb').src = v.thumb;
-    document.getElementById('videoViewerAvatar').style.backgroundImage = "url('" + v.avatar + "')";
-    document.getElementById('videoViewerChannel').textContent = v.channel;
-    document.getElementById('videoViewerSub').textContent = v.views + ' просмотров • ' + v.time;
-    document.getElementById('videoViewerLikes').textContent = viewerLiked[id] ? '1' : '0';
-    document.getElementById('videoViewerComments').textContent = (viewerCommentsCount[id] !== undefined) ? viewerCommentsCount[id] : (12 + ((id * 29) % 90));
-    var likeIcon = document.querySelector('#videoViewer .reel-heart-icon');
-    if(likeIcon){ likeIcon.setAttribute('fill', viewerLiked[id] ? 'var(--like-red)' : 'none'); likeIcon.setAttribute('stroke', viewerLiked[id] ? 'var(--like-red)' : 'currentColor'); }
-    // подписка автора
-    var subBtn = document.getElementById('videoViewerSubBtn');
-    if(subBtn){
-      var uid = (typeof channelToUserId==='function') ? channelToUserId(v.channel) : 'tanho_official';
-      var u = (typeof TANHO_USERS!=='undefined' && TANHO_USERS[uid]) ? TANHO_USERS[uid] : null;
-      var isOwn = (u && u.isOwn) || uid === getCurrentUserId();
-      if(isOwn){ subBtn.style.display = 'none'; }
-      else {
-        subBtn.style.display = '';
-        var sub = u ? !!u.isSubscribed : false;
-        subBtn.textContent = sub ? 'Подписан ✓' : 'Подписаться';
-        subBtn.classList.toggle('subscribed', sub);
-      }
-    }
-    var sim = document.getElementById('videoViewerSimilar');
-    sim.classList.remove('hidden');
-    document.getElementById('similarToggleBtn').textContent = '›';
-    sim.innerHTML = ytVideosData.filter(function(x){ return x.id!==id; }).map(function(x){
-      return `<div class="similar-card" onclick="openVideoViewer(${x.id})"><div class="similar-thumb"><img src="${x.thumb}" alt="" loading="lazy"></div><div class="similar-title">${x.title}</div></div>`;
-    }).join('');
-    document.getElementById('videoViewer').classList.add('active');
-    var scroller = document.querySelector('#videoViewer .video-viewer-scroll');
-    if(scroller) scroller.scrollTop = 0;
-    if(navigator.vibrate) navigator.vibrate(15);
-  }
-  function closeVideoViewer(){
-    document.getElementById('videoViewer').classList.remove('active');
-    currentViewerVideoId = null;
-  }
-  function toggleSimilarPanel(e){
-    if(e) e.stopPropagation();
-    var sim = document.getElementById('videoViewerSimilar');
-    var btn = document.getElementById('similarToggleBtn');
-    if(!sim || !btn) return;
-    sim.classList.toggle('hidden');
-    btn.textContent = sim.classList.contains('hidden') ? '‹' : '›';
-  }
-  function viewerAuthorProfile(){
-    var v = ytVideosData.find(function(x){ return x.id===currentViewerVideoId; });
-    if(!v) return;
-    var uid = (typeof channelToUserId==='function') ? channelToUserId(v.channel) : 'tanho_official';
-    closeVideoViewer();
-    setTimeout(function(){ openUserProfile(uid); }, 50);
-  }
-  function toggleViewerLike(btn){
-    if(!currentViewerVideoId) return;
-    var on = !viewerLiked[currentViewerVideoId];
-    viewerLiked[currentViewerVideoId] = on;
-    document.getElementById('videoViewerLikes').textContent = on ? '1' : '0';
-    var svg = btn.querySelector('.reel-heart-icon');
-    if(svg){ svg.setAttribute('fill', on ? 'var(--like-red)' : 'none'); svg.setAttribute('stroke', on ? 'var(--like-red)' : 'currentColor'); }
-    if(navigator.vibrate) navigator.vibrate(20);
-  }
-  function shareViewerVideo(){
-    var v = ytVideosData.find(function(x){ return x.id===currentViewerVideoId; });
-    var title = v ? v.title : 'TANHO видео';
-    if(navigator.share){ navigator.share({title: title, text: title, url: location.href + '#video-' + currentViewerVideoId}).catch(function(){}); }
-    else if(navigator.clipboard){ navigator.clipboard.writeText(location.href); alert('Ссылка скопирована ✓'); }
-  }
-  function toggleViewerComments(btn){
-    if(!currentViewerVideoId) return;
-    if(viewerCommented[currentViewerVideoId]){
-      viewerCommented[currentViewerVideoId] = false;
-      viewerCommentsCount[currentViewerVideoId] = Math.max(0, (viewerCommentsCount[currentViewerVideoId] !== undefined ? viewerCommentsCount[currentViewerVideoId] : 0) - 1);
-    } else {
-      var txt = prompt('Напиши комментарий:');
-      if(!txt || !txt.trim()) return;
-      viewerCommented[currentViewerVideoId] = true;
-      var base = (viewerCommentsCount[currentViewerVideoId] !== undefined) ? viewerCommentsCount[currentViewerVideoId] : 0;
-      viewerCommentsCount[currentViewerVideoId] = base + 1;
-      if(navigator.vibrate) navigator.vibrate(20);
-    }
-    document.getElementById('videoViewerComments').textContent = viewerCommentsCount[currentViewerVideoId];
-  }
-  function toggleViewerSubscribe(){
-    var v = ytVideosData.find(function(x){ return x.id===currentViewerVideoId; });
-    if(!v) return;
-    var uid = (typeof channelToUserId==='function') ? channelToUserId(v.channel) : 'tanho_official';
-    var u = (typeof TANHO_USERS!=='undefined') ? TANHO_USERS[uid] : null;
-    if(!u || u.isOwn) return;
-    u.isSubscribed = !u.isSubscribed;
-    try {
-      if(typeof persistUserState==='function') persistUserState();
-    } catch(e){}
-    var subBtn = document.getElementById('videoViewerSubBtn');
-    if(subBtn){
-      subBtn.textContent = u.isSubscribed ? 'Подписан ✓' : 'Подписаться';
-      subBtn.classList.toggle('subscribed', u.isSubscribed);
-    }
-    if(navigator.vibrate) navigator.vibrate(20);
-  }
-  function viewerReportVideo(){ alert('Жалоба отправлена ✓'); }
-  document.addEventListener('DOMContentLoaded', renderYtFeed);
-  setTimeout(renderYtFeed, 300);
-
-  // 🔄 Persistence: restore page on reload + hash navigation
-  function restoreTanhoPage() {
-    let hash = location.hash.slice(1);
-    let pageId = null, sub = null;
-    if (hash.startsWith('reels-')) { pageId='pageReels'; sub=hash.split('-')[1]; }
-    else {
-      const rev={main:'pageMain',reels:'pageReels',profile:'pageProfile',chat:'generalChat'};
-      if (rev[hash]) pageId=rev[hash];
-    }
-    if (!pageId) {
-      try { pageId=localStorage.getItem('tanho_page'); sub=localStorage.getItem('tanho_reels_tab'); } catch(e){}
-    }
-    if (!pageId || pageId==='pageMain') return;
-    if (pageId==='generalChat') { openGeneralChat(true); return; }
-    let btn=null;
-    if (pageId==='pageMain') btn=document.querySelector('.floating-nav-container .nav-item-pill:nth-child(1)') || document.querySelector('.bottom-nav .nav-tab-btn:nth-child(1)');
-    else if (pageId==='pageReels') btn=document.querySelector('.floating-nav-container .nav-item-pill:nth-child(2)') || document.querySelector('.bottom-nav .nav-tab-btn:nth-child(2)');
-    else if (pageId==='pageProfile') btn=document.querySelector('.floating-nav-container .nav-item-pill:last-child') || document.querySelector('.bottom-nav .nav-tab-btn:last-child');
-    if (pageId==='pageProfile') {
-      try {
-        var pid = localStorage.getItem('tanho_profile_id') || 'khadija_92';
-        if(typeof openUserProfile==='function') openUserProfile(pid);
-        else if (btn && document.getElementById(pageId)) switchPage(pageId, btn);
-      } catch(e){
-        if (btn && document.getElementById(pageId)) switchPage(pageId, btn);
-      }
-      return;
-    }
-    if (btn && document.getElementById(pageId)) {
-      switchPage(pageId, btn);
-      if (pageId==='pageReels' && sub) switchReelsTab(sub, true);
-      else if (pageId==='pageReels' && sub===null) {
-        try { const s=localStorage.getItem('tanho_reels_tab'); if(s) switchReelsTab(s,true); } catch(e){}
-      }
-    } else if (pageId && document.getElementById(pageId)) {
-      switchPage(pageId, null);
-    }
-  }
-  document.addEventListener('DOMContentLoaded', () => setTimeout(restoreTanhoPage, 80));
-  window.addEventListener('hashchange', () => {
-    const h=location.hash.slice(1);
-    if (!h) return;
-    if (h==='chat') { openGeneralChat(true); return; }
-    if (h==='main') { const b=document.querySelector('.floating-nav-container .nav-item-pill:nth-child(1)') || document.querySelector('.bottom-nav .nav-tab-btn:nth-child(1)'); if(b) switchPage('pageMain', b); return; }
-    if (h==='profile') {
-      try{
-        const pid = localStorage.getItem('tanho_profile_id') || 'khadija_92';
-        openUserProfile(pid);
-      } catch(e){
-        const b=document.querySelector('.floating-nav-container .nav-item-pill:last-child') || document.querySelector('.bottom-nav .nav-tab-btn:last-child'); if(b) switchPage('pageProfile', b);
-      }
-      return;
-    }
-    if (h.startsWith('reels')) {
-      const sub=h.split('-')[1]||'feed';
-      const b=document.querySelector('.floating-nav-container .nav-item-pill:nth-child(2)') || document.querySelector('.bottom-nav .nav-tab-btn:nth-child(2)');
-      if (b) switchPage('pageReels', b);
-      setTimeout(()=>switchReelsTab(sub,true), 30);
-    }
-  });
-  // also restore immediately if DOM already ready
-  if (document.readyState !== 'loading') setTimeout(restoreTanhoPage, 50);
-
-  // 🔄 Double-tap to refresh — лента и другие вкладки
-  let lastTapTime = 0;
-  let lastTapTarget = null;
-  function handleDoubleTapRefresh(e, pageId){
-    const now = Date.now();
-    const isDouble = (now - lastTapTime < 350) && lastTapTarget === pageId;
-    lastTapTime = now;
-    lastTapTarget = pageId;
-    if(!isDouble) return;
-    // double tap detected
-    const indicator = document.getElementById(pageId==='pageMain' ? 'refreshMain' : pageId==='pageReels' ? 'refreshReels' : 'refreshProfile');
-    if(indicator) { indicator.classList.add('active'); }
-    // вибрация
-    if(navigator.vibrate) navigator.vibrate(30);
-    // прокрутка вверх и имитация обновления
-    const scrollEl = pageId==='pageMain' ? document.getElementById('pageMain') : pageId==='pageReels' ? document.getElementById('pageReels') : document.getElementById('pageProfile');
-    if(scrollEl) scrollEl.scrollTop = 0;
-    const feed = document.getElementById('ytFeed');
-    if(feed && pageId==='pageReels') { /* обновить ленту видео */ if(typeof renderYtFeed==='function') setTimeout(renderYtFeed, 400); }
-    setTimeout(()=>{
-      if(indicator) indicator.classList.remove('active');
-      if(navigator.vibrate) navigator.vibrate(20);
-    }, 900);
-  }
-  // также двойной тап по логотипу обновляет текущую страницу
-  document.getElementById('headerLogo')?.addEventListener('dblclick', (e)=>{
-    const activePage = document.querySelector('.page-screen.active')?.id || document.querySelector('.reels-screen-container.active')?.id || 'pageMain';
-    handleDoubleTapRefresh(e, activePage);
-    // визуальный эффект
-    e.target.style.transform='scale(0.92)'; setTimeout(()=>e.target.style.transform='',150);
-  });
-  // двойной тап по заголовку редактора тоже
-  document.getElementById('headerLogo')?.addEventListener('click', (e)=>{
-    // одинарный тап — скролл вверх
-    const now = Date.now();
-    if(now - lastTapTime < 350 && lastTapTarget === 'headerLogo'){
-      handleDoubleTapRefresh(e, document.querySelector('.page-screen.active')?.id || 'pageMain');
-    }
-    lastTapTime = now;
-    lastTapTarget = 'headerLogo';
-  });
-
-  function toggleReelLike(chip) {
-    const svg = chip.querySelector('.reel-heart-icon');
-    const valSpan = chip.querySelector('.reel-likes-val');
-    let count = parseInt(valSpan.textContent) || 0;
-    if (svg.getAttribute('fill') === 'none') {
-      svg.setAttribute('fill', 'var(--like-red)'); svg.setAttribute('stroke', 'var(--like-red)'); count++;
-    } else {
-      svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor'); count--;
-    }
-    valSpan.textContent = count;
-  }
-
-  function handleSliderScroll(slider) {
-    const currentIndex = Math.round(slider.scrollLeft / slider.clientWidth);
-    const container = slider.parentElement;
-    const badge = container.querySelector('.slider-badge');
-    const dots = container.querySelectorAll('.dot');
-    if (badge) badge.textContent = `${currentIndex + 1}/${dots.length}`;
-    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === currentIndex));
-  }
-
-  // 🚀 ПУБЛИКАЦИЯ В ЛЕНТУ
-  function publishArticle() {
-    if(!isLoggedIn()){ openAuthModal('register'); setAuthError('Войдите или зарегистрируйтесь, чтобы опубликовать пост.'); return; }
-    const title = document.getElementById('article-title').value.trim();
-    const content = document.getElementById('article-content').value.trim();
-
-    if (!title) { alert('Пожалуйста, введите заголовок поста!'); return; }
-
-    const textBlockHTML = `
-      <div class="post-content-text" onclick="togglePostExpand(this)">
-        <h2 class="post-title-text">${title}</h2>
-        ${content ? `<p class="caption">${content}</p><button class="expand-toggle-btn">Читать полностью ↓</button>` : ''}
-      </div>
-    `;
-
-    let mediaContentHTML = '';
-    if (attachedPhotos.length > 0) {
-      mediaContentHTML = `
-        <div class="post-slider-wrapper" onclick="togglePostExpand(this)" style="position:relative;">
-          <div class="post-media-slider" onscroll="handleSliderScroll(this)">
-            ${attachedPhotos.map(p => `<div class="slide-item"><img src="${p.url}"></div>`).join('')}
-          </div>
-          ${attachedPhotos.length > 1 ? `<div class="slider-badge">1/${attachedPhotos.length}</div>` : ''}
-          <div class="slider-dots">${Array(attachedPhotos.length).fill('<span class="dot"></span>').join('')}</div>
-          ${stickersHTML}
-        </div>
-      `;
-    } else if (attachedVideoData) {
-      const vPlayer = attachedVideoData.url.endsWith('.mp4')
-        ? `<video controls src="${attachedVideoData.url}" style="width:100%; height:100%; object-fit:cover;"></video>`
-        : `<iframe src="${attachedVideoData.url}" style="width:100%; height:100%; border:none;" allow="autoplay; fullscreen"></iframe>`;
-      mediaContentHTML = `<div style="padding: 0 14px;"><div style="width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000; position:relative;">${vPlayer}${stickersHTML}</div></div>`;
-    } else if (attachedStickers.length > 0) {
-      mediaContentHTML = `<div style="padding: 8px 14px;"><div style="width:100%; min-height:90px; background:var(--card-bg); border-radius:14px; position:relative; overflow:hidden; padding:8px;">${stickersHTML}<div style="height:70px;"></div></div></div>`;
-    }
-
-    let attachmentsBottomHTML = '';
-    if (attachedAudioData) {
-      attachmentsBottomHTML = `
-        <div class="post-attachments-bottom">
-          <div class="tg-audio-card">
-            <button class="tg-play-btn" onclick="togglePostAudio(this, '${attachedAudioData.url}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
-            <div class="tg-audio-body"><div class="tg-audio-title">${escapeHtml(attachedAudioData.name)}</div><div class="tg-audio-time">Аудиозапись • TANHO • tap to play</div></div>
-            <audio src="${attachedAudioData.url}" preload="metadata" ontimeupdate="updateAudioTime(this)" onended="resetAudioBtn(this)"></audio>
-          </div>
-        </div>
-      `;
-    }
-
-    let stickersHTML = '';
-    if (attachedStickers.length > 0) {
-      const stickersOverlay = attachedStickers.map((src, i) => {
-        const left = 12 + (i * 62) % 220;
-        const top = 12 + Math.floor(i / 3) * 62;
-        return `<div class="post-sticker moving" style="left:${left}px; top:${top}px;" onmousedown="startDragSticker(event, this)" ontouchstart="startDragSticker(event, this)"><img src="${src}" draggable="false"></div>`;
-      }).join('');
-      stickersHTML = `<div class="post-stickers-overlay">${stickersOverlay}</div>`;
-    }
-
-    const bodyOrderHTML = (selectedTextPosition === 'top') 
-      ? textBlockHTML + mediaContentHTML + attachmentsBottomHTML
-      : mediaContentHTML + attachmentsBottomHTML + textBlockHTML;
-
-    const currentUserName = document.getElementById('displayProfileName').innerText;
-
-    const newPostCardHTML = `
-      <article class="post-card" data-owner="self" data-user-id="${getCurrentUserId()}">
-        <div class="post-header">
-          <div class="post-author" onclick="openUserProfile(getCurrentUserId())">
-            <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100');"></div>
-            <div class="author-meta">
-              <div class="author-name">${currentUserName}</div>
-              <div class="post-time-top">только что</div>
-            </div>
-          </div>
-          <div class="post-header-actions">
-            <button class="post-menu-btn" onclick="togglePostMenu(this)">⋮</button>
-            <div class="post-menu-dropdown">
-              <button onclick="handlePostMenuAction('interesting', this)">Интересный</button>
-              <button onclick="handlePostMenuAction('not_interesting', this)">Неинтересный</button>
-              <button class="danger" onclick="handlePostMenuAction('report', this)">Пожаловаться</button>
-              <button onclick="handlePostMenuAction('edit', this)">✏️ Редактировать</button>
-            </div>
-          </div>
-        </div>
-
-        ${bodyOrderHTML}
-
-        <div class="post-actions">
-          <div class="action-group">
-            <button class="action-with-count" onclick="toggleLike(this)"><svg class="heart-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="likes-count">0</span></button>
-            <button class="action-with-count" onclick="toggleComments(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="comments-count">0</span></button>
-            <button class="icon-btn" onclick="sharePost(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-          </div>
-          <button class="icon-btn" onclick="toggleBookmark(this)" title="Закладка"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
-        </div>
-      </article>
-    `;
-
-    document.getElementById('postsContainer').insertAdjacentHTML('afterbegin', newPostCardHTML);
-
-    document.getElementById('article-title').value = '';
-    document.getElementById('article-content').value = '';
-    attachedPhotos = [];
-    attachedStickers = [];
-    document.getElementById('stickers-row').innerHTML = '';
-    clearVideo();
-    clearAudio();
-    clearLocation();
-    renderGallery();
-    closeEditor();
-
-    switchPage('pageMain', document.querySelectorAll('.nav-tab-btn')[0]);
-  }
-</script>
+<script src="js/utils.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/posts.js"></script>
+<script src="js/videos.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/menus.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/screens.js"></script>
+<script src="js/app.js"></script>
 
 <div style="position:fixed; bottom:2px; right:4px; font-size:8px; color:rgba(255,255,255,0.3); z-index:9999; pointer-events:none;">v55fee6e</div>
 </body>

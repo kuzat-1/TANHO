@@ -1,0 +1,84 @@
+/* TANHO — cards.css */
+.post-card:last-child { border-bottom: none; margin-bottom: 0; }
+    
+    .post-card {
+      border-bottom: 1px solid var(--border-color); background-color: var(--bg-main);
+      display: flex; flex-direction: column; padding-bottom: 12px; margin-bottom: 4px;
+    }
+
+    .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 8px 14px; position: relative; }
+    .post-author { display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; }
+    .author-avatar { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+    .author-meta { display: flex; flex-direction: column; gap: 1px; }
+    .author-name { font-size: 14px; font-weight: 700; color: var(--text-main); }
+    .post-time-top { font-size: 10.5px; color: var(--text-muted); }
+    .post-header-actions { display: flex; align-items: center; gap: 8px; }
+    .subscribe-btn { padding: 6px 14px; border-radius: 16px; background: var(--primary-accent); color: #fff; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .subscribe-btn.subscribed { background: var(--btn-secondary); color: var(--text-muted); border: 1px solid var(--border-color); }
+    .post-menu-btn { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 4px 8px; border-radius: 50%; }
+    .post-menu-btn:active { background: rgba(255,255,255,0.06); }
+    .post-menu-dropdown { position: absolute; top: 44px; right: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 20; min-width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+    .post-menu-dropdown.active { display: flex; }
+    .post-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .post-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
+    .post-menu-dropdown .danger { color: var(--danger-color); }
+
+    .post-slider-wrapper { position: relative; width: 100%; background-color: #000; overflow: hidden; }
+    .post-media-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
+    .post-media-slider::-webkit-scrollbar { display: none; }
+
+    .slide-item {
+      width: 100%; height: 260px; flex-shrink: 0; scroll-snap-align: start;
+      position: relative; display: flex; align-items: center; justify-content: center;
+    }
+    .slide-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .post-card.expanded .slide-item { height: auto; max-height: 480px; }
+    .post-card.expanded .slide-item img { object-fit: contain; max-height: 480px; }
+
+    .slider-badge {
+      position: absolute; top: 10px; right: 12px; background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px; pointer-events: none; z-index: 2;
+    }
+    .slider-dots {
+      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 5px; background: rgba(0, 0, 0, 0.4); padding: 4px 8px; border-radius: 10px; backdrop-filter: blur(4px); z-index: 2;
+    }
+
+    .post-attachments-bottom { padding: 8px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .tg-audio-card {
+      display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px 14px; width: 100%;
+    }
+    .tg-play-btn {
+      width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
+      border: none; display: flex; align-items: center; justify-content: center; color: #ffffff; cursor: pointer; flex-shrink: 0;
+    }
+    .tg-audio-body { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+    .tg-audio-title { font-size: 13px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tg-audio-time { font-size: 11px; color: var(--text-muted); }
+
+    .post-content-text { padding: 8px 14px; display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
+    .post-title-text { font-size: 16px; font-weight: 700; color: var(--text-main); line-height: 1.35; }
+    .caption { font-size: 13.5px; line-height: 1.45; color: var(--text-main); opacity: 0.88; }
+    .post-card:not(.expanded) .caption { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .post-card.expanded .caption { display: block; }
+    .expand-toggle-btn {
+      background: none; border: none; color: #a855f7; font-weight: 600;
+      font-size: 12.5px; cursor: pointer; padding-top: 2px; text-align: left; display: inline-block;
+    }
+
+    .post-actions { padding: 10px 14px 4px 14px; display: flex; justify-content: space-between; align-items: center; }
+    .action-group { display: flex; gap: 10px; align-items: center; }
+    .action-with-count {
+      display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06); border: none; color: var(--text-main); cursor: pointer; transition: transform 0.15s ease;
+    }
+    .action-with-count:active { transform: scale(0.92); }
+
+    .action-buttons { display: flex; gap: 12px; margin-top: 18px; }
+    .post-stickers-overlay { position: absolute; inset: 0; pointer-events: none; }
+    .post-sticker { position: absolute; width: 56px; height: 56px; cursor: grab; pointer-events: auto; touch-action: none; user-select: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); transition: transform 0.15s; animation: stickerPop 0.3s ease; }
+    .post-sticker:active { cursor: grabbing; transform: scale(1.1); }
+    .post-sticker img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .post-sticker.moving { animation: stickerFloat 2s ease-in-out infinite; }

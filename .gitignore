@@ -1,0 +1,3 @@
+# APK builds are distributed via GitHub Releases, not the repo
+*.apk
+*.aab
