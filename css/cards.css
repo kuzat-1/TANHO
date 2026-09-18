@@ -82,3 +82,21 @@
     .post-sticker:active { cursor: grabbing; transform: scale(1.1); }
     .post-sticker img { width: 100%; height: 100%; object-fit: contain; display: block; }
     .post-sticker.moving { animation: stickerFloat 2s ease-in-out infinite; }
+
+    /* ---------- recommended channels strip (main feed, horizontal) ---------- */
+    .channels-strip { padding: 12px 0 4px 0; }
+    .channels-title { font-size: 15px; font-weight: 700; color: var(--text-main); padding: 0 14px 10px 14px; }
+    .channels-row { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding: 0 14px 6px 14px; -webkit-overflow-scrolling: touch; }
+    .channels-row::-webkit-scrollbar { display: none; }
+    .channel-card {
+      flex: 0 0 148px; max-width: 148px; background-color: var(--card-bg);
+      border: 1px solid var(--border-color); border-radius: 18px; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      padding: 14px 10px 12px 10px; gap: 0;
+    }
+    .channel-card:active { transform: scale(0.97); }
+    .channel-avatar { width: 52px; height: 52px; border-radius: 50%; background-size: cover; background-position: center; background-color: #1a1d2e; cursor: pointer; border: 2px solid rgba(139,92,246,0.5); flex-shrink: 0; }
+    .channel-name { font-size: 12.5px; font-weight: 700; color: var(--text-main); margin-top: 8px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .channel-type { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #c4b5fd; margin-top: 3px; }
+    .channel-desc { font-size: 11px; color: var(--text-sub); line-height: 1.35; margin-top: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 30px; }
+    .channel-card .subscribe-btn { margin-top: 9px; width: 100%; }

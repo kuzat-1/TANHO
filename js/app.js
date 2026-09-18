@@ -236,6 +236,8 @@
   })();
   document.addEventListener('DOMContentLoaded', renderYtFeed);
   setTimeout(renderYtFeed, 300);
+  document.addEventListener('DOMContentLoaded', () => { if (typeof renderChannelsStrip === 'function') renderChannelsStrip(); });
+  setTimeout(() => { if (typeof renderChannelsStrip === 'function') renderChannelsStrip(); }, 300);
   document.addEventListener('DOMContentLoaded', () => setTimeout(restoreTanhoPage, 80));
   window.addEventListener('hashchange', () => {
     const h=location.hash.slice(1);

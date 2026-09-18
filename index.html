@@ -56,6 +56,10 @@
   <!-- Вкладка 1: ГЛАВНАЯ (ПОСТЫ В ЛЕНТЕ) -->
   <main class="page-screen active" id="pageMain" ondblclick="handleDoubleTapRefresh(event, 'pageMain')">
     <div class="refresh-indicator" id="refreshMain"><div class="refresh-spinner"></div> Обновление...</div>
+    <div class="channels-strip" id="channelsStrip">
+      <div class="channels-title">Рекомендуемые каналы</div>
+      <div class="channels-row" id="channelsRow"></div>
+    </div>
     <div class="posts-feed" id="postsContainer">
       <article class="post-card" data-owner="other" data-user-id="tanho_official">
         <div class="post-header">
@@ -270,6 +274,7 @@
           <div class="user-name-row">
             <span class="user-name" id="displayProfileName">Khadija_92</span>
             <div class="verified-badge">✓</div>
+            <span class="channel-badge" id="profileChannelBadge" style="display:none;">Новости</span>
           </div>
           <div class="user-handle" id="displayProfileHandle">@khadija_92</div>
           <div class="user-bio" id="displayProfileBio">Мечтай. Действуй. Будь собой ✨</div>
@@ -305,16 +310,16 @@
       </div>
     </div>
 
-    <div class="filter-tabs" role="tablist" aria-label="Категории публикаций">
-      <div class="chip active" role="tab" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-grid"/></svg>Все</div>
-      <div class="chip" role="tab" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-play"/></svg>Видео</div>
-      <div class="chip" role="tab" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-news"/></svg>Новости</div>
-      <div class="chip" role="tab" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-image"/></svg>Фото</div>
-      <div class="chip" role="tab" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-music"/></svg>Музыка</div>
+    <div class="filter-tabs" id="profileTabs" role="tablist" aria-label="Категории публикаций">
+      <div class="chip active" role="tab" data-filter="all" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-grid"/></svg>Все</div>
+      <div class="chip" role="tab" data-filter="video" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-play"/></svg>Видео</div>
+      <div class="chip" role="tab" data-filter="news" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-news"/></svg>Новости</div>
+      <div class="chip" role="tab" data-filter="photo" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-image"/></svg>Фото</div>
+      <div class="chip" role="tab" data-filter="music" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-music"/></svg>Музыка</div>
     </div>
 
     <div class="feed-grid" id="profileFeedGrid">
-      <div class="feed-card">
+      <div class="feed-card" data-ctype="photo">
         <div class="card-media">
           <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500" class="card-img" alt="Фото">
           <div class="badge-type"><svg class="ic"><use href="assets/icons.svg#i-image"/></svg>Фото</div>
@@ -330,7 +335,7 @@
           </div>
         </div>
       </div>
-      <div class="feed-card">
+      <div class="feed-card" data-ctype="video">
         <div class="card-media">
           <img src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=500" class="card-img" alt="Видео">
           <div class="badge-type"><svg class="ic"><use href="assets/icons.svg#i-play-fill"/></svg>Видео</div>

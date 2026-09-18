@@ -217,6 +217,15 @@
 
     document.getElementById('postsContainer').insertAdjacentHTML('afterbegin', newPostCardHTML);
 
+    // mirror into own profile grid so its tab appears automatically (existing types untouched)
+    try {
+      if (typeof addProfileCard === 'function') {
+        var pubType = attachedVideoData ? 'video' : (attachedAudioData ? 'music' : 'photo');
+        var pubImg = attachedPhotos.length > 0 ? attachedPhotos[0].url : ((attachedVideoData && attachedVideoData.thumb) ? attachedVideoData.thumb : '');
+        addProfileCard({ type: pubType, title: title, img: pubImg, date: 'только что', likes: 0, comments: 0 });
+      }
+    } catch(e){}
+
     document.getElementById('article-title').value = '';
     document.getElementById('article-content').value = '';
     attachedPhotos = [];

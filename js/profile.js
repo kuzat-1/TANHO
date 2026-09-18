@@ -31,8 +31,13 @@
     urbancore: { id: 'urbancore', name: 'Urbancore', handle: '@urbancore', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100', bio: 'Город с высоты • дрон 4K', location: 'Ташкент', verified: false, isOwn: false, posts: 86, followers: '8.1K', following: 210, isSubscribed: false, isBlocked: false },
     naturevibe: { id: 'naturevibe', name: 'Nature Vibe', handle: '@naturevibe', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100', bio: 'Природа, горы, тишина', location: 'Чимган', verified: false, isOwn: false, posts: 54, followers: '3.2K', following: 98, isSubscribed: false, isBlocked: false },
     caliraval: { id: 'caliraval', name: 'Calira Val', handle: '@CaliraVal', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100', bio: 'Монтаж Reels за 60 сек', location: 'Ташкент', verified: false, isOwn: false, posts: 112, followers: '21K', following: 340, isSubscribed: false, isBlocked: false },
-    tasty_uz: { id: 'tasty_uz', name: 'Tasty UZ', handle: '@tasty.uz', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100', bio: 'Узбекская кухня • рецепты шефа', location: 'Самарканд', verified: false, isOwn: false, posts: 203, followers: '89K', following: 45, isSubscribed: false, isBlocked: false }
+    tasty_uz: { id: 'tasty_uz', name: 'Tasty UZ', handle: '@tasty.uz', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100', bio: 'Узбекская кухня • рецепты шефа', location: 'Самарканд', verified: false, isOwn: false, posts: 203, followers: '89K', following: 45, isSubscribed: false, isBlocked: false, kind: 'channel', channelType: 'food' },
+    tashkent_news: { id: 'tashkent_news', name: 'Tashkent News', handle: '@tashkent_news', avatar: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=100', bio: 'Новости Ташкента и Узбекистана — коротко и по делу', location: 'Ташкент', verified: true, isOwn: false, posts: 3, followers: '28.5K', following: 4, isSubscribed: false, isBlocked: false, kind: 'channel', channelType: 'news' }
   }
+  // mark base users that are channels (keeps TANHO_USERS literal above untouched)
+  try {
+    if (TANHO_USERS.tanho_official) { TANHO_USERS.tanho_official.kind = 'channel'; TANHO_USERS.tanho_official.channelType = 'official'; }
+  } catch(e){}
   function channelToUserId(channel){
     if(!channel) return 'tanho_official';
     var c = channel.trim().toLowerCase();
@@ -123,11 +128,17 @@
     if (metaLoc) metaLoc.textContent = user.location;
     var verifiedBadge = document.querySelector('.verified-badge');
     if (verifiedBadge) verifiedBadge.style.display = user.verified ? 'flex' : 'none';
+    var channelBadge = document.getElementById('profileChannelBadge');
+    if (channelBadge) {
+      if (user.kind === 'channel') { channelBadge.textContent = channelTypeLabel(user); channelBadge.style.display = 'inline-flex'; }
+      else channelBadge.style.display = 'none';
+    }
     // статичные тексты кнопок (без innerHTML, чтобы не ломать DOM)
     var primaryText = document.getElementById('profilePrimaryText');
     if(primaryText) primaryText.textContent = user.isOwn ? 'Редактировать профиль' : 'Сообщение';
     setProfileButtons(user);
     if (typeof updateProfileAuthBadge === 'function') updateProfileAuthBadge();
+    if (typeof renderProfileContent === 'function') renderProfileContent(user);
     if (typeof updateProfileEmptyState === 'function') updateProfileEmptyState();
     var pill = document.querySelector('.floating-nav-container .nav-item-pill:last-child');
     switchPage('pageProfile', pill);
@@ -184,8 +195,16 @@
   }
 
   function filterProfileFeed(chipEl) {
-    document.querySelectorAll('.filter-tabs .chip').forEach(c => c.classList.remove('active'));
+    var tabs = document.getElementById('profileTabs');
+    if (tabs) {
+      var chips = tabs.querySelectorAll('.chip');
+      for (var i = 0; i < chips.length; i++) chips[i].classList.remove('active');
+    } else {
+      document.querySelectorAll('.filter-tabs .chip').forEach(c => c.classList.remove('active'));
+    }
     chipEl.classList.add('active');
+    TANHO_CURRENT_FILTER = chipEl.getAttribute('data-filter') || 'all';
+    applyProfileFilter();
     if (typeof updateProfileEmptyState === 'function') updateProfileEmptyState();
   }
 
@@ -258,4 +277,173 @@
     if (typeof closeScreen === 'function') closeScreen();
     else if (typeof goBackScreen === 'function') goBackScreen();
     if (navigator.vibrate) navigator.vibrate(20);
+  }
+
+  // ---------- per-profile published content (drives dynamic tabs) ----------
+  // News items: short original summary + explicit source + link to original.
+  // Full articles are never copied; read more via the source link.
+  var TANHO_PROFILE_CONTENT = {
+    tashkent_news: [
+      { type: 'news', title: 'В Ташкенте расширяют сеть электробусов', desc: 'Новые маршруты свяжут спальные районы с центром. Оплата — картами ATTO и Payme.', img: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=500', date: '2 часа назад', source: 'Gazeta.uz', url: 'https://www.gazeta.uz/ru/', likes: 128, comments: 24 },
+      { type: 'news', title: 'Курс сум: итоги недели', desc: 'Сум укрепился к доллару на фоне роста экспортной выручки. Краткий разбор цифр.', img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=500', date: '5 часов назад', source: 'Kun.uz', url: 'https://kun.uz/news', likes: 96, comments: 41 },
+      { type: 'news', title: 'Погода в Узбекистане на выходные', desc: 'Синоптики обещают тёплые выходные до +28°C, в горах возможны дожди.', img: '', date: 'вчера', source: 'Kun.uz', url: 'https://kun.uz/news', likes: 54, comments: 9 }
+    ]
+  };
+  var TANHO_DEMO_CARDS = null; // cached own-profile demo cards (profileFeedGrid initial HTML)
+  var TANHO_TAB_ORDER = ['video', 'news', 'photo', 'music'];
+  var TANHO_TAB_META = {
+    all:   { label: 'Все',     icon: 'i-grid' },
+    video: { label: 'Видео',   icon: 'i-play' },
+    news:  { label: 'Новости', icon: 'i-news' },
+    photo: { label: 'Фото',    icon: 'i-image' },
+    music: { label: 'Музыка',  icon: 'i-music' }
+  };
+  var TANHO_CURRENT_FILTER = 'all';
+  var TANHO_CHANNEL_LABEL = { news: 'Новости', official: 'Официальный', food: 'Еда' };
+
+  function escHtml(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+  function newsCardHtml(n){
+    var media = n.img
+      ? '<div class="card-media"><img src="' + escHtml(n.img) + '" class="card-img" alt="Новость"><div class="badge-type"><svg class="ic"><use href="assets/icons.svg#i-news"/></svg>Новости</div><div class="badge-time">' + escHtml(n.date) + '</div></div>'
+      : '';
+    return '<div class="feed-card" data-ctype="news">'
+      + media
+      + '<div class="card-body"><div class="card-title">' + escHtml(n.title) + '</div>'
+      + (n.desc ? '<div class="card-source">' + escHtml(n.desc) + '</div>' : '')
+      + '<div class="card-source">Источник: <a href="' + escHtml(n.url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escHtml(n.source) + '</a>' + (n.date && !n.img ? ' • ' + escHtml(n.date) : '') + '</div>'
+      + '<div class="card-stats"><div class="stat-group">'
+      + '<span class="stat-icon-val"><svg class="ic"><use href="assets/icons.svg#i-heart"/></svg>' + (n.likes || 0) + '</span>'
+      + '<span class="stat-icon-val"><svg class="ic"><use href="assets/icons.svg#i-chat"/></svg>' + (n.comments || 0) + '</span>'
+      + '</div></div></div></div>';
+  }
+
+  function genericCardHtml(c){
+    var media;
+    if (c.img) {
+      var icon = c.type === 'video' ? 'i-play-fill' : (c.type === 'music' ? 'i-music' : 'i-image');
+      var label = (TANHO_TAB_META[c.type] || {}).label || '';
+      media = '<div class="card-media"><img src="' + escHtml(c.img) + '" class="card-img" alt="' + escHtml(label) + '"><div class="badge-type"><svg class="ic"><use href="assets/icons.svg#' + icon + '"/></svg>' + escHtml(label) + '</div><div class="badge-time">' + escHtml(c.date || '') + '</div></div>';
+    } else if (c.type === 'music') {
+      media = '<div class="card-media card-media--audio"><svg class="ic"><use href="assets/icons.svg#i-music"/></svg></div>';
+    } else {
+      media = '';
+    }
+    return '<div class="feed-card" data-ctype="' + escHtml(c.type) + '">'
+      + media
+      + '<div class="card-body"><div class="card-title">' + escHtml(c.title) + '</div>'
+      + '<div class="card-stats"><div class="stat-group">'
+      + '<span class="stat-icon-val"><svg class="ic"><use href="assets/icons.svg#i-heart"/></svg>' + (c.likes || 0) + '</span>'
+      + '<span class="stat-icon-val"><svg class="ic"><use href="assets/icons.svg#i-chat"/></svg>' + (c.comments || 0) + '</span>'
+      + '</div></div></div></div>';
+  }
+
+  function profileItemHtml(item){
+    return item.type === 'news' ? newsCardHtml(item) : genericCardHtml(item);
+  }
+
+  // render grid for the opened profile: own demo cards (+live) or stored content
+  function renderProfileContent(user){
+    var grid = document.getElementById('profileFeedGrid');
+    if (!grid || !user) return;
+    if (TANHO_DEMO_CARDS === null) TANHO_DEMO_CARDS = grid.innerHTML;
+    if (user.id === OWN_USER_ID || user.isOwn) {
+      var extras = TANHO_PROFILE_CONTENT[OWN_USER_ID] || [];
+      grid.innerHTML = TANHO_DEMO_CARDS + extras.map(profileItemHtml).join('');
+    } else {
+      var items = TANHO_PROFILE_CONTENT[user.id] || [];
+      grid.innerHTML = items.map(profileItemHtml).join('');
+    }
+    renderProfileTabs();
+    applyProfileFilter();
+  }
+
+  // rebuild tabs from types actually present in the grid
+  function renderProfileTabs(){
+    var tabs = document.getElementById('profileTabs');
+    var grid = document.getElementById('profileFeedGrid');
+    if (!tabs || !grid) return;
+    var present = [];
+    TANHO_TAB_ORDER.forEach(function(t){
+      if (grid.querySelector('.feed-card[data-ctype="' + t + '"]') && present.indexOf(t) === -1) present.push(t);
+    });
+    var cards = grid.querySelectorAll('.feed-card').length;
+    tabs.classList.toggle('is-hidden', cards === 0);
+    if (TANHO_CURRENT_FILTER !== 'all' && present.indexOf(TANHO_CURRENT_FILTER) === -1) TANHO_CURRENT_FILTER = 'all';
+    var html = '<div class="chip' + (TANHO_CURRENT_FILTER === 'all' ? ' active' : '') + '" role="tab" data-filter="all" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#i-grid"/></svg>Все</div>';
+    present.forEach(function(t){
+      var m = TANHO_TAB_META[t];
+      html += '<div class="chip' + (TANHO_CURRENT_FILTER === t ? ' active' : '') + '" role="tab" data-filter="' + t + '" onclick="filterProfileFeed(this)"><svg class="ic"><use href="assets/icons.svg#' + m.icon + '"/></svg>' + m.label + '</div>';
+    });
+    tabs.innerHTML = html;
+  }
+
+  function applyProfileFilter(){
+    var grid = document.getElementById('profileFeedGrid');
+    if (!grid) return;
+    var cards = grid.querySelectorAll('.feed-card');
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      var show = TANHO_CURRENT_FILTER === 'all' || c.getAttribute('data-ctype') === TANHO_CURRENT_FILTER;
+      c.style.display = show ? '' : 'none';
+    }
+  }
+
+  // store newly published own content (auto-creates its tab on re-render)
+  function addProfileCard(c){
+    if (!TANHO_PROFILE_CONTENT[OWN_USER_ID]) TANHO_PROFILE_CONTENT[OWN_USER_ID] = [];
+    TANHO_PROFILE_CONTENT[OWN_USER_ID].unshift(c);
+    var grid = document.getElementById('profileFeedGrid');
+    if (!grid) return;
+    if (typeof currentProfileId === 'undefined') return;
+    var viewing = (typeof TANHO_USERS !== 'undefined') ? TANHO_USERS[currentProfileId] : null;
+    if (!viewing || viewing.id === OWN_USER_ID || viewing.isOwn) {
+      renderProfileContent(TANHO_USERS[OWN_USER_ID]);
+    }
+  }
+
+  // ---------- channels: strip + store-backed subscribe (existing system) ----------
+  function channelTypeLabel(u){
+    return TANHO_CHANNEL_LABEL[u.channelType] || (u.kind === 'channel' ? 'Канал' : '');
+  }
+
+  function toggleChannelSubscribe(btn, userId){
+    var user = (typeof TANHO_USERS !== 'undefined') ? TANHO_USERS[userId] : null;
+    if (!user) return;
+    user.isSubscribed = !user.isSubscribed;
+    if (typeof persistUserState === 'function') persistUserState();
+    syncChannelButtons(userId);
+    if (typeof currentProfileId !== 'undefined' && currentProfileId === userId && typeof setProfileButtons === 'function') setProfileButtons(user);
+    if (navigator.vibrate) navigator.vibrate(20);
+  }
+
+  function syncChannelButtons(userId){
+    var user = TANHO_USERS[userId];
+    if (!user) return;
+    var btns = document.querySelectorAll('[data-channel-sub="' + userId + '"]');
+    for (var i = 0; i < btns.length; i++) {
+      var b = btns[i];
+      if (user.isSubscribed) { b.classList.add('subscribed'); b.textContent = 'Подписан ✓'; }
+      else { b.classList.remove('subscribed'); b.textContent = 'Подписаться'; }
+    }
+  }
+
+  function renderChannelsStrip(){
+    var row = document.getElementById('channelsRow');
+    if (!row || typeof TANHO_USERS === 'undefined') return;
+    var html = '';
+    Object.keys(TANHO_USERS).forEach(function(k){
+      var u = TANHO_USERS[k];
+      if (!u || u.kind !== 'channel' || u.isOwn) return;
+      html += '<div class="channel-card">'
+        + '<div class="channel-avatar" style="background-image:url(\'' + escHtml(u.avatar) + '\')" onclick="openUserProfile(\'' + u.id + '\')"></div>'
+        + '<div class="channel-name" onclick="openUserProfile(\'' + u.id + '\')">' + escHtml(u.name) + '</div>'
+        + '<div class="channel-type">' + escHtml(channelTypeLabel(u)) + '</div>'
+        + '<div class="channel-desc">' + escHtml(u.bio || '') + '</div>'
+        + '<button class="subscribe-btn' + (u.isSubscribed ? ' subscribed' : '') + '" data-channel-sub="' + u.id + '" onclick="toggleChannelSubscribe(this, \'' + u.id + '\')">' + (u.isSubscribed ? 'Подписан ✓' : 'Подписаться') + '</button>'
+        + '</div>';
+    });
+    row.innerHTML = html;
+    var strip = document.getElementById('channelsStrip');
+    if (strip) strip.style.display = html ? '' : 'none';
   }
