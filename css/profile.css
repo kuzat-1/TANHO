@@ -38,7 +38,7 @@ body.light-theme .banner-overlay {
 body.light-theme .icon-btn-blur { background: rgba(255, 255, 255, 0.65); color: #0f172a; border-color: rgba(0, 0, 0, 0.08); }
 
 /* ---------- centered premium header — compact ---------- */
-.profile-header { position: relative; z-index: 10; padding: 2px 0 0 0; text-align: center; }
+.profile-header { position: relative; z-index: 10; padding: 2px 0 14px 0; text-align: center; }
 .user-hero { display: flex; flex-direction: column; align-items: center; gap: 0; }
 
 .avatar-ring {
@@ -116,16 +116,16 @@ body.light-theme .card-source a { color: #7c3aed; }
 }
 .action-buttons .btn-secondary:active { transform: scale(0.97); }
 .action-buttons .btn-secondary.subscribed { border-color: rgba(139, 92, 246, 0.5); color: #a78bfa; }
-.profile-menu-wrap { display: flex; align-items: stretch; }
+.profile-menu-wrap { display: flex; align-items: stretch; position: relative; }
 .profile-menu-btn {
   width: 48px; border-radius: 16px; background: var(--btn-secondary); color: var(--text-main);
   border: 1px solid var(--border-color); font-size: 18px; cursor: pointer;
 }
 
-/* ---------- categories — compact with breathing room ---------- */
+/* ---------- categories — separate scroll container in normal flow ---------- */
 .filter-tabs {
   display: flex; align-items: stretch; gap: 8px; overflow-x: auto; scrollbar-width: none;
-  padding: 16px 20px 12px 20px; margin: 0 -20px; padding-left: 20px; padding-right: 20px;
+  margin: 0; padding: 0 0 14px 0;
   -webkit-overflow-scrolling: touch;
 }
 .filter-tabs::-webkit-scrollbar { display: none; }
@@ -257,7 +257,6 @@ body.light-theme .card-media { background-color: #e2e8f0; }
 /* ---------- responsive — never narrow cards, no overflow ---------- */
 @media (max-width: 360px) {
   #pageProfile { padding-left: 14px; padding-right: 14px; }
-  .filter-tabs { margin-left: -14px; margin-right: -14px; padding-left: 14px; padding-right: 14px; }
   .feed-grid { gap: 10px; }
   .user-name { font-size: 18px; }
   .chip { padding: 10px 14px; font-size: 12.5px; min-height: 44px; }
