@@ -74,6 +74,9 @@
     
     
     .reaction-picker.active { display: flex; }
+    /* edge-aware anchoring: picker grows toward viewport center, never off-screen */
+    .message-bubble.outgoing .reaction-picker { left: auto; right: -4px; transform: none; }
+    .message-bubble.incoming .reaction-picker { left: -4px; right: auto; transform: none; }
     .reaction-picker button { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px 6px; border-radius: 50%; transition: transform 0.15s; }
     .reaction-picker button:hover { transform: scale(1.2); background: rgba(255,255,255,0.06); }
     .reaction-picker button:active { transform: scale(0.95); }
