@@ -251,6 +251,17 @@
   <!-- Вкладка 3: ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ -->
   <section class="page-screen" id="pageProfile" ondblclick="handleDoubleTapRefresh(event, 'pageProfile')">
     <div class="refresh-indicator" id="refreshProfile"><div class="refresh-spinner"></div> Обновление...</div>
+    <div class="profile-mini-header" id="profileMiniHeader">
+      <button class="mini-back" onclick="goBackToFeed()" aria-label="Назад">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <img class="mini-avatar" id="miniProfileAvatar" src="" alt="">
+      <div class="mini-meta">
+        <div class="mini-name"><span id="miniProfileName"></span><span class="mini-verified" id="miniVerifiedBadge">✓</span></div>
+        <div class="mini-sub" id="miniProfileSubs"></div>
+      </div>
+      <button class="subscribe-btn" id="miniSubBtn" onclick="handleProfileSecondaryAction()">Подписаться</button>
+    </div>
     <div class="banner-bg"><div class="banner-overlay"></div></div>
 
     <div class="top-nav-profile">

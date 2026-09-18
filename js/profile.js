@@ -103,6 +103,21 @@
     }
     var dd = document.getElementById('profileMenuDropdown');
     if(dd) dd.classList.remove('active');
+    // sync mini-header subscribe button with the same state (no duplicate logic)
+    try {
+      var miniBtn = document.getElementById('miniSubBtn');
+      if (miniBtn) {
+        if (user.isOwn || user.isBlocked) { miniBtn.style.display = 'none'; }
+        else {
+          miniBtn.style.display = '';
+          miniBtn.disabled = false;
+          miniBtn.style.opacity = '1';
+          miniBtn.textContent = user.isSubscribed ? 'Подписан ✓' : 'Подписаться';
+          if (user.isSubscribed) miniBtn.classList.add('subscribed');
+          else miniBtn.classList.remove('subscribed');
+        }
+      }
+    } catch(e){}
   }
   function openUserProfile(userId){
     var targetId = TANHO_USERS[userId] ? userId : OWN_USER_ID;
@@ -138,6 +153,7 @@
     if(primaryText) primaryText.textContent = user.isOwn ? 'Редактировать профиль' : 'Сообщение';
     setProfileButtons(user);
     if (typeof updateProfileAuthBadge === 'function') updateProfileAuthBadge();
+    if (typeof syncMiniHeader === 'function') syncMiniHeader(user);
     if (typeof renderProfileContent === 'function') renderProfileContent(user);
     if (typeof updateProfileEmptyState === 'function') updateProfileEmptyState();
     var pill = document.querySelector('.floating-nav-container .nav-item-pill:last-child');
@@ -192,6 +208,42 @@
       }
     }
     if(navigator.vibrate) navigator.vibrate(20);
+  }
+
+  // ---------- collapsing mini header: back + sync ----------
+  function goBackToFeed(){
+    var b = document.querySelector('.floating-nav-container .nav-item-pill:first-child');
+    if (typeof switchPage === 'function') switchPage('pageMain', b);
+  }
+
+  var TANHO_COLLAPSE_INIT = false;
+  function setupProfileCollapse(){
+    if (TANHO_COLLAPSE_INIT) return;
+    var sec = document.getElementById('pageProfile');
+    if (!sec || !sec.addEventListener) return;
+    TANHO_COLLAPSE_INIT = true;
+    sec.addEventListener('scroll', function(){
+      try { sec.classList.toggle('collapsed', sec.scrollTop > 200); } catch(e){}
+    }, { passive: true });
+  }
+  try { setupProfileCollapse(); } catch(e){}
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('DOMContentLoaded', function(){ try { setupProfileCollapse(); } catch(e){} });
+  }
+
+  function syncMiniHeader(user){
+    try {
+      var av = document.getElementById('miniProfileAvatar');
+      if (av) av.src = user.avatar;
+      var nm = document.getElementById('miniProfileName');
+      if (nm) nm.textContent = user.name;
+      var vb = document.getElementById('miniVerifiedBadge');
+      if (vb) vb.style.display = user.verified ? 'inline-flex' : 'none';
+      var sb = document.getElementById('miniProfileSubs');
+      if (sb) sb.textContent = user.followers + ' подписчиков';
+      var sec = document.getElementById('pageProfile');
+      if (sec) { try { sec.scrollTop = 0; sec.classList.remove('collapsed'); } catch(e){} }
+    } catch(e){}
   }
 
   function filterProfileFeed(chipEl) {
@@ -381,6 +433,8 @@
   function applyProfileFilter(){
     var grid = document.getElementById('profileFeedGrid');
     if (!grid) return;
+    // Новости — полноширинточная лента как на главной, остальные — сетка
+    try { grid.classList.toggle('feed-grid--list', TANHO_CURRENT_FILTER === 'news'); } catch(e){}
     var cards = grid.querySelectorAll('.feed-card');
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];

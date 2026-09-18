@@ -144,8 +144,49 @@ body.light-theme .card-source a { color: #7c3aed; }
   box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
 }
 
+/* ---------- collapsing mini header (sticky, appears on scroll) ---------- */
+.profile-mini-header {
+  position: sticky; top: 0; z-index: 60;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: -58px; /* occupies no space until collapsed */
+  min-height: 58px; padding: calc(6px + env(safe-area-inset-top, 0px)) 12px 6px 12px;
+  background: rgba(8, 9, 16, 0.86);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid transparent;
+  opacity: 0; transform: translateY(-12px); pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+body.light-theme .profile-mini-header { background: rgba(255, 255, 255, 0.86); }
+#pageProfile.collapsed .profile-mini-header {
+  opacity: 1; transform: none; pointer-events: auto;
+  border-bottom-color: var(--border-color);
+}
+.mini-back {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: var(--btn-secondary); border: 1px solid var(--border-color); color: var(--text-main);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.mini-back:active { transform: scale(0.9); }
+.mini-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background-color: #1c2030; flex-shrink: 0; }
+.mini-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.mini-name { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-name span:first-child { overflow: hidden; text-overflow: ellipsis; }
+.mini-verified {
+  width: 14px; height: 14px; background: #38bdf8; border-radius: 50%; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 8px; font-weight: bold;
+}
+.mini-sub { font-size: 11px; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-mini-header .subscribe-btn { flex-shrink: 0; }
+
 /* ---------- post cards 2-col — polished gap ---------- */
 .feed-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 4px 0 10px 0; }
+
+/* ---------- list view (Новости tab): full-width cards like main feed ---------- */
+.feed-grid--list { grid-template-columns: 1fr; gap: 16px; }
+.feed-grid--list .card-media { aspect-ratio: 16/9; }
+.feed-grid--list .card-title { font-size: 15px; }
+.feed-grid--list .card-source { font-size: 12.5px; }
 .feed-card {
   background-color: var(--card-bg); border-radius: 18px; overflow: hidden;
   display: flex; flex-direction: column; border: 1px solid var(--border-color);
