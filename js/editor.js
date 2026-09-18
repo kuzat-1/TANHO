@@ -4,6 +4,19 @@
   let selectedTextPosition = 'bottom';
   var TANHO_EDITOR_PUSHED = false;
   var TANHO_EDITOR_CLOSING = false;
+  // bottom sheet «Добавить»: строки делегируют существующим кнопкам дока
+  function openAddSheet() {
+    document.getElementById('add-media-modal').classList.add('active');
+  }
+  function closeAddSheet() {
+    document.getElementById('add-media-modal').classList.remove('active');
+  }
+  function addSheetPick(kind) {
+    closeAddSheet();
+    var map = { image: 'btn-image', video: 'btn-video', music: 'btn-music', location: 'btn-location' };
+    var btn = document.getElementById(map[kind]);
+    if (btn) btn.click();
+  }
   function openEditor() { 
     document.getElementById('editorModal').classList.add('open'); 
     try { document.body.classList.add('editor-lock'); } catch(e){}
