@@ -9,8 +9,10 @@
     const authActive = document.getElementById('auth-modal')?.classList.contains('active');
     const drawerActive = document.getElementById('drawerOverlay')?.classList.contains('active');
     const screenActive = !!document.querySelector('.screen-overlay.active');
-    if(chatActive || editorOpen || settingsActive || authActive || drawerActive || screenActive) nav.style.display = 'none';
-    else nav.style.display = 'flex';
+    const profileActive = document.getElementById('pageProfile')?.classList.contains('active');
+    const hidden = chatActive || editorOpen || settingsActive || authActive || drawerActive || screenActive || profileActive;
+    nav.style.display = hidden ? 'none' : 'flex';
+    try { document.body.classList.toggle('nav-hidden', !!hidden); } catch(e){}
   }
   // Универсальный клик по меню — надёжно
   function switchNavTab(btnEl, target) {

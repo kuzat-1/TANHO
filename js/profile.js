@@ -128,6 +128,16 @@
     var user = TANHO_USERS[userId] || TANHO_USERS[OWN_USER_ID];
     currentProfileId = user.id;
     try { localStorage.setItem('tanho_profile_id', user.id); } catch(e){}
+    // remember previous non-profile screen once (profile-to-profile keeps it)
+    try {
+      var wasProfile = document.getElementById('pageProfile').classList.contains('active');
+      if (!wasProfile) {
+        TANHO_PREV_PAGE = tanhoCurrentPageId();
+        if (TANHO_BOOTED && !TANHO_PROFILE_PUSHED) {
+          try { history.pushState({ tanhoProfile: true }, ''); TANHO_PROFILE_PUSHED = true; } catch(e){}
+        }
+      }
+    } catch(e){}
     var avatarEl = document.getElementById('displayProfileAvatar');
     if (avatarEl) avatarEl.src = user.avatar;
     document.getElementById('displayProfileName').innerText = user.name;
@@ -210,10 +220,60 @@
     if(navigator.vibrate) navigator.vibrate(20);
   }
 
-  // ---------- collapsing mini header: back + sync ----------
-  function goBackToFeed(){
-    var b = document.querySelector('.floating-nav-container .nav-item-pill:first-child');
-    if (typeof switchPage === 'function') switchPage('pageMain', b);
+  // ---------- profile as separate screen: prev page + history ----------
+  var TANHO_PREV_PAGE = null;
+  var TANHO_PROFILE_PUSHED = false;
+  var TANHO_CLOSING_PROFILE = false;
+  var TANHO_BOOTED = false;
+  setTimeout(function(){ TANHO_BOOTED = true; }, 2500);
+
+  function tanhoCurrentPageId(){
+    try {
+      if (document.getElementById('generalChatScreen').classList.contains('active')) return 'generalChat';
+      if (document.getElementById('pageReels').classList.contains('active')) return 'pageReels';
+      if (document.getElementById('pageMain').classList.contains('active')) return 'pageMain';
+    } catch(e){}
+    return 'pageMain';
+  }
+
+  // Back returns to the previous screen (uses existing switchPage/openGeneralChat)
+  function goBackFromProfile(fromPop){
+    var prev = TANHO_PREV_PAGE || 'pageMain';
+    TANHO_PREV_PAGE = null;
+    if (TANHO_PROFILE_PUSHED && !fromPop) {
+      TANHO_PROFILE_PUSHED = false;
+      TANHO_CLOSING_PROFILE = true;
+      try { history.back(); } catch(e){ TANHO_CLOSING_PROFILE = false; }
+    } else {
+      TANHO_PROFILE_PUSHED = false;
+    }
+    setTimeout(function(){
+      if (prev === 'generalChat') {
+        if (typeof openGeneralChat === 'function') openGeneralChat(true);
+      } else if (prev === 'pageReels') {
+        var b2 = document.querySelector('.floating-nav-container .nav-item-pill:nth-child(2)');
+        if (typeof switchPage === 'function') switchPage('pageReels', b2);
+      } else {
+        var b1 = document.querySelector('.floating-nav-container .nav-item-pill:first-child');
+        if (typeof switchPage === 'function') switchPage('pageMain', b1);
+      }
+      if (typeof updateFloatingNavVisibility === 'function') setTimeout(updateFloatingNavVisibility, 30);
+    }, fromPop ? 0 : 60);
+  }
+
+  if (typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('popstate', function(){
+      if (TANHO_CLOSING_PROFILE) { TANHO_CLOSING_PROFILE = false; return; }
+      try {
+        var pActive = document.getElementById('pageProfile').classList.contains('active');
+        var dr = document.getElementById('drawerOverlay');
+        var overlayOpen = !!document.querySelector('.screen-overlay.active') || (dr && dr.classList.contains('active'));
+        if (TANHO_PROFILE_PUSHED && pActive && !overlayOpen) {
+          TANHO_PROFILE_PUSHED = false;
+          goBackFromProfile(true);
+        }
+      } catch(e){}
+    });
   }
 
   var TANHO_COLLAPSE_INIT = false;

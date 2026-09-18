@@ -17,13 +17,14 @@ body.light-theme .banner-overlay {
     linear-gradient(to bottom, rgba(244, 245, 249, 0.25) 0%, rgba(244, 245, 249, 0.65) 55%, var(--bg-dark) 100%);
 }
 
-/* ---------- top buttons: equal 42px glass, safe top ---------- */
+/* ---------- top buttons: back left, share/menu right, safe top ---------- */
 .top-nav-profile {
   height: calc(52px + env(safe-area-inset-top, 0px));
   padding: calc(env(safe-area-inset-top, 0px) + 6px) 16px 0 16px;
-  display: flex; justify-content: flex-end; align-items: center;
+  display: flex; justify-content: space-between; align-items: center;
   position: relative; z-index: 10;
 }
+.top-nav-profile .icon-btn-blur { width: 44px; height: 44px; }
 .top-nav-right { display: flex; align-items: center; gap: 10px; }
 .icon-btn-blur {
   width: 42px; height: 42px; border-radius: 50%;
@@ -162,7 +163,7 @@ body.light-theme .profile-mini-header { background: rgba(255, 255, 255, 0.86); }
   border-bottom-color: var(--border-color);
 }
 .mini-back {
-  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
   background: var(--btn-secondary); border: 1px solid var(--border-color); color: var(--text-main);
   display: flex; align-items: center; justify-content: center; cursor: pointer;
   transition: transform 0.15s ease;

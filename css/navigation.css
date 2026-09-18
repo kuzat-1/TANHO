@@ -126,6 +126,10 @@ body.light-theme .nav-item-pill.active {
 #pageProfile {
   padding-bottom: calc(108px + env(safe-area-inset-bottom, 0px)) !important;
 }
+/* profile is a separate screen: nav hidden → reclaim its space */
+body.nav-hidden #pageProfile {
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+}
 
 @media (max-width: 360px) {
   .floating-nav-container { width: calc(100% - 16px); gap: 8px; }

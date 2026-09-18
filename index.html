@@ -252,7 +252,7 @@
   <section class="page-screen" id="pageProfile" ondblclick="handleDoubleTapRefresh(event, 'pageProfile')">
     <div class="refresh-indicator" id="refreshProfile"><div class="refresh-spinner"></div> Обновление...</div>
     <div class="profile-mini-header" id="profileMiniHeader">
-      <button class="mini-back" onclick="goBackToFeed()" aria-label="Назад">
+      <button class="mini-back" onclick="goBackFromProfile()" aria-label="Назад">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
       <img class="mini-avatar" id="miniProfileAvatar" src="" alt="">
@@ -265,6 +265,9 @@
     <div class="banner-bg"><div class="banner-overlay"></div></div>
 
     <div class="top-nav-profile">
+      <button class="icon-btn-blur" onclick="goBackFromProfile()" aria-label="Назад">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
       <div class="top-nav-right">
         <button class="icon-btn-blur" onclick="shareProfile()" aria-label="Поделиться профилем">
           <svg class="ic" width="19" height="19"><use href="assets/icons.svg#i-share"/></svg>
