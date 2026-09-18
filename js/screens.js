@@ -141,6 +141,7 @@ function renderScreen(name){
   else if (name === 'language') syncLanguageChecks();
   else if (name === 'storage') updateStorageInfo();
   else if (name === 'notif-settings') syncPrefSwitches();
+  else if (name === 'privacy') { if (typeof syncAllowDMSwitch === 'function') syncAllowDMSwitch(); }
   else if (name === 'settings') { updateStorageInfo(); syncLanguageLabel(); }
 }
 
@@ -336,6 +337,41 @@ function syncPrefSwitches(){
   document.querySelectorAll('.row-switch[data-pref]').forEach(function(el){
     el.classList.toggle('on', !!p[el.getAttribute('data-pref')]);
   });
+}
+
+/* ---------- DM privacy toggle (per-user, stored in tanho_users_state) ---------- */
+function ownAllowDM(){
+  try {
+    var own = (typeof getCurrentUserId === 'function') ? getCurrentUserId() : null;
+    if (own && typeof TANHO_USERS !== 'undefined' && TANHO_USERS[own]) {
+      return TANHO_USERS[own].allowDM !== false;
+    }
+  } catch(e){}
+  return true;
+}
+function syncAllowDMSwitch(){
+  var on = ownAllowDM();
+  document.querySelectorAll('.row-switch[data-dm]').forEach(function(el){
+    el.classList.toggle('on', on);
+  });
+}
+function toggleAllowDM(){
+  try {
+    var own = (typeof getCurrentUserId === 'function') ? getCurrentUserId() : null;
+    if (!own || typeof TANHO_USERS === 'undefined' || !TANHO_USERS[own]) return;
+    TANHO_USERS[own].allowDM = TANHO_USERS[own].allowDM === false ? true : false;
+    if (typeof persistUserState === 'function') persistUserState();
+  } catch(e){ return; }
+  syncAllowDMSwitch();
+  // live refresh of the underlying profile buttons (no reload needed)
+  try {
+    if (typeof currentProfileId !== 'undefined' && typeof TANHO_USERS !== 'undefined' && TANHO_USERS[currentProfileId]
+        && typeof setProfileButtons === 'function'
+        && document.getElementById('pageProfile').classList.contains('active')) {
+      setProfileButtons(TANHO_USERS[currentProfileId]);
+    }
+  } catch(e){}
+  if (navigator.vibrate) navigator.vibrate(15);
 }
 try {
   if (navigator.vibrate) {

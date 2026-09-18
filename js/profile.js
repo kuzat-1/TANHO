@@ -53,7 +53,7 @@
   function persistUserState(){
     try {
       var s = {};
-      Object.keys(TANHO_USERS).forEach(function(k){ s[k] = { isSubscribed: TANHO_USERS[k].isSubscribed, isBlocked: TANHO_USERS[k].isBlocked }; });
+      Object.keys(TANHO_USERS).forEach(function(k){ s[k] = { isSubscribed: TANHO_USERS[k].isSubscribed, isBlocked: TANHO_USERS[k].isBlocked, allowDM: TANHO_USERS[k].allowDM !== false }; });
       localStorage.setItem('tanho_users_state', JSON.stringify(s));
     } catch(e){}
   }
@@ -62,8 +62,21 @@
       var raw = localStorage.getItem('tanho_users_state');
       if(!raw) return;
       var s = JSON.parse(raw);
-      Object.keys(s).forEach(function(k){ if(TANHO_USERS[k]){ TANHO_USERS[k].isSubscribed = !!s[k].isSubscribed; TANHO_USERS[k].isBlocked = !!s[k].isBlocked; } });
+      Object.keys(s).forEach(function(k){ if(TANHO_USERS[k]){ TANHO_USERS[k].isSubscribed = !!s[k].isSubscribed; TANHO_USERS[k].isBlocked = !!s[k].isBlocked; TANHO_USERS[k].allowDM = s[k].allowDM !== false; } });
     } catch(e){}
+  }
+
+  // ---------- DM privacy: missing flag defaults to allowed (true) ----------
+  function canReceiveDM(user){
+    if (!user) return true;
+    if (user.isOwn) return true;
+    return user.allowDM !== false;
+  }
+  function dmBlockedNotice(){
+    if (typeof openInfoModal === 'function') {
+      openInfoModal('Личные сообщения', 'Этот пользователь запретил личные сообщения.');
+    } else if (typeof alert === 'function') { alert('Этот пользователь запретил личные сообщения.'); }
+    return false;
   }
   function syncSettingsInputs(user){
     try {
@@ -75,9 +88,11 @@
   function setProfileButtons(user){
     var secondaryBtn = document.getElementById('profileSecondaryBtn');
     var secondaryText = document.getElementById('profileSecondaryText');
+    var primaryBtn = document.getElementById('profilePrimaryBtn');
     var menuWrap = document.getElementById('profileMenuWrap');
     var blockMenuBtn = document.getElementById('profileBlockMenuBtn');
     var settingsBtn = document.getElementById('openSettingsBtn');
+    var dmAllowed = (typeof canReceiveDM === 'function') ? canReceiveDM(user) : true;
     if(user.isOwn){
       if(secondaryBtn) secondaryBtn.style.display = 'none';
       if(menuWrap) menuWrap.style.display = 'none';
@@ -100,6 +115,8 @@
       if(menuWrap) menuWrap.style.display = 'flex';
       if(blockMenuBtn) blockMenuBtn.textContent = user.isBlocked ? 'Разблокировать' : 'Заблокировать';
       if(settingsBtn) settingsBtn.style.display = 'flex';
+      // DM privacy: hide the message button entirely when the user disallows DMs
+      if(primaryBtn) primaryBtn.style.display = dmAllowed ? '' : 'none';
     }
     var dd = document.getElementById('profileMenuDropdown');
     if(dd) dd.classList.remove('active');
@@ -176,7 +193,8 @@
       document.getElementById('settingsPage').classList.add('active');
       setTimeout(function(){ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
     } else {
-      openGeneralChat();
+      if (typeof canReceiveDM === 'function' && !canReceiveDM(user)) return dmBlockedNotice();
+      openGeneralChat(false, currentProfileId);
     }
   }
   function handleProfileSecondaryAction(){

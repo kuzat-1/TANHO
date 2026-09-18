@@ -1,7 +1,13 @@
 /* TANHO — js/chat.js */
 
   // 💬 🔥 УПРАВЛЕНИЕ ОБЩИМ ЧАТОМ + persistence
-  function openGeneralChat(skipPersist) {
+  // withUserId: optional DM target — permission is checked here, right before opening
+  var TANHO_DM_TARGET = null;
+  function openGeneralChat(skipPersist, withUserId) {
+    if (withUserId && typeof TANHO_USERS !== 'undefined' && TANHO_USERS[withUserId]) {
+      if (typeof canReceiveDM === 'function' && !canReceiveDM(TANHO_USERS[withUserId])) return dmBlockedNotice();
+    }
+    TANHO_DM_TARGET = withUserId || null;
     document.getElementById('generalChatScreen').classList.add('active');
     const container = document.getElementById('chatMessagesContainer');
     if (container) container.scrollTop = container.scrollHeight;
@@ -13,6 +19,7 @@
   }
 
   function closeGeneralChat(skipPersist) {
+    TANHO_DM_TARGET = null;
     document.getElementById('generalChatScreen').classList.remove('active');
     // всегда показать капсулу, сбросить превью ответа
     try { document.getElementById('replyPreview')?.classList.remove('active'); document.getElementById('replyPreview').style.display='none'; } catch(e){}
@@ -143,6 +150,10 @@
   }
 
   function sendChatMessage() {
+    // permission check directly before sending (UI hiding is not enough)
+    if (TANHO_DM_TARGET && typeof TANHO_USERS !== 'undefined' && TANHO_USERS[TANHO_DM_TARGET]) {
+      if (typeof canReceiveDM === 'function' && !canReceiveDM(TANHO_USERS[TANHO_DM_TARGET])) return dmBlockedNotice();
+    }
     const input = document.getElementById('chatTextInput');
     const text = input.value.trim();
     if (!text) return;
