@@ -70,7 +70,8 @@
     if(localStorage.getItem('tanho_theme') === 'light') document.body.classList.add('light-theme');
   } catch(e){}
   document.addEventListener('DOMContentLoaded', function(){ setTimeout(notifyNativeTheme, 600); });
-  // клавиатура — держать док над ней (улучшено)
+  // клавиатура — только маркер класса; layout держит flex (100dvh) без ручных height/transform,
+  // иначе редактор сжимается и под ним просвечивает лента, а тулбар улетает
   (function(){
     const editorEl = document.getElementById('editorModal');
     if (!editorEl || !window.visualViewport) return;
@@ -83,16 +84,7 @@
       requestAnimationFrame(()=>{
         const curH = vv.height;
         const diff = window.innerHeight - curH;
-        const bottomSection = editorEl.querySelector('.bottom-section');
-        if (diff > 100) {
-          editorEl.classList.add('keyboard-open');
-          editorEl.style.height = curH + 'px';
-          if (bottomSection) bottomSection.style.transform = `translateY(-${Math.max(0, diff - 20)}px)`;
-        } else {
-          editorEl.classList.remove('keyboard-open');
-          editorEl.style.height = '';
-          if (bottomSection) bottomSection.style.transform = '';
-        }
+        editorEl.classList.toggle('keyboard-open', diff > 100);
         ticking = false;
       });
     };
@@ -103,8 +95,7 @@
   document.getElementById('article-title')?.addEventListener('focus', ()=>{
     setTimeout(()=>{
       const ed = document.getElementById('editorModal');
-      if(ed && ed.classList.contains('open') && window.visualViewport){
-        ed.style.height = window.visualViewport.height + 'px';
+      if(ed && ed.classList.contains('open')){
         ed.classList.add('keyboard-open');
       }
     }, 300);
@@ -112,8 +103,7 @@
   document.getElementById('article-content')?.addEventListener('focus', ()=>{
     setTimeout(()=>{
       const ed = document.getElementById('editorModal');
-      if(ed && ed.classList.contains('open') && window.visualViewport){
-        ed.style.height = window.visualViewport.height + 'px';
+      if(ed && ed.classList.contains('open')){
         ed.classList.add('keyboard-open');
       }
     }, 300);

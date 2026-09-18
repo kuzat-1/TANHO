@@ -2,16 +2,43 @@
 
 
   let selectedTextPosition = 'bottom';
+  var TANHO_EDITOR_PUSHED = false;
+  var TANHO_EDITOR_CLOSING = false;
   function openEditor() { 
     document.getElementById('editorModal').classList.add('open'); 
+    try { document.body.classList.add('editor-lock'); } catch(e){}
+    if (!TANHO_EDITOR_PUSHED) {
+      try { history.pushState({ tanhoEditor: true }, ''); TANHO_EDITOR_PUSHED = true; } catch(e){}
+    }
     setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
     // фокус на заголовок с задержкой чтобы клавиатура успела открыться
     setTimeout(()=> document.getElementById('article-title')?.focus(), 350);
   }
   function closeEditor() { 
-    document.getElementById('editorModal').classList.remove('open'); 
-    document.getElementById('editorModal').classList.remove('keyboard-open');
+    var ed = document.getElementById('editorModal');
+    var wasOpen = ed.classList.contains('open');
+    ed.classList.remove('open'); 
+    ed.classList.remove('keyboard-open');
+    ed.style.height = '';
+    try { document.body.classList.remove('editor-lock'); } catch(e){}
+    if (wasOpen && TANHO_EDITOR_PUSHED) {
+      TANHO_EDITOR_PUSHED = false;
+      TANHO_EDITOR_CLOSING = true;
+      try { history.back(); } catch(e){ TANHO_EDITOR_CLOSING = false; }
+    }
     setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30); 
+  }
+  if (typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('popstate', function(){
+      if (TANHO_EDITOR_CLOSING) { TANHO_EDITOR_CLOSING = false; return; }
+      try {
+        var ed = document.getElementById('editorModal');
+        if (TANHO_EDITOR_PUSHED && ed && ed.classList.contains('open')) {
+          TANHO_EDITOR_PUSHED = false;
+          closeEditor();
+        }
+      } catch(e){}
+    });
   }
 
   function toggleTextPosition() {
