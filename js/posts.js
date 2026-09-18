@@ -132,6 +132,15 @@
     `;
 
     let mediaContentHTML = '';
+    let stickersHTML = '';
+    if (attachedStickers.length > 0) {
+      const stickersOverlay = attachedStickers.map((src, i) => {
+        const left = 12 + (i * 62) % 220;
+        const top = 12 + Math.floor(i / 3) * 62;
+        return `<div class="post-sticker moving" style="left:${left}px; top:${top}px;" onmousedown="startDragSticker(event, this)" ontouchstart="startDragSticker(event, this)"><img src="${src}" draggable="false"></div>`;
+      }).join('');
+      stickersHTML = `<div class="post-stickers-overlay">${stickersOverlay}</div>`;
+    }
     if (attachedPhotos.length > 0) {
       mediaContentHTML = `
         <div class="post-slider-wrapper" onclick="togglePostExpand(this)" style="position:relative;">
@@ -163,16 +172,6 @@
           </div>
         </div>
       `;
-    }
-
-    let stickersHTML = '';
-    if (attachedStickers.length > 0) {
-      const stickersOverlay = attachedStickers.map((src, i) => {
-        const left = 12 + (i * 62) % 220;
-        const top = 12 + Math.floor(i / 3) * 62;
-        return `<div class="post-sticker moving" style="left:${left}px; top:${top}px;" onmousedown="startDragSticker(event, this)" ontouchstart="startDragSticker(event, this)"><img src="${src}" draggable="false"></div>`;
-      }).join('');
-      stickersHTML = `<div class="post-stickers-overlay">${stickersOverlay}</div>`;
     }
 
     const bodyOrderHTML = (selectedTextPosition === 'top') 
