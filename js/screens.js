@@ -44,8 +44,6 @@ function openBurgerDrawer(){
     var hv = document.getElementById('helpVersion');
     if (hv) hv.textContent = 'TANHO • Версия ' + v;
   } catch(e){}
-  var sw = document.getElementById('drawerThemeSwitch');
-  if (sw) sw.classList.toggle('on', !document.body.classList.contains('light-theme'));
   ov.classList.add('active');
   dr.classList.add('active');
   TANHO_DRAWER_OPEN = true;
@@ -79,12 +77,6 @@ function drawerGoProfile(){
     if (typeof openUserProfile === 'function' && typeof getCurrentUserId === 'function') openUserProfile(getCurrentUserId());
     else if (typeof switchPage === 'function') switchPage('pageProfile', document.querySelector('.floating-nav-container .nav-item-pill:last-child'));
   }, 60);
-}
-function drawerToggleTheme(){
-  if (typeof toggleTheme === 'function') toggleTheme();
-  var sw = document.getElementById('drawerThemeSwitch');
-  if (sw) setTimeout(function(){ sw.classList.toggle('on', !document.body.classList.contains('light-theme')); }, 50);
-  syncAppearanceChecks();
 }
 function drawerLogout(){
   tanhoHideDrawer();
@@ -301,8 +293,6 @@ function setThemeMode(mode){
   try { localStorage.setItem('tanho_theme', light ? 'light' : 'dark'); } catch(e){}
   if (typeof notifyNativeTheme === 'function') notifyNativeTheme();
   syncAppearanceChecks();
-  var sw = document.getElementById('drawerThemeSwitch');
-  if (sw) sw.classList.toggle('on', !light);
 }
 function syncAppearanceChecks(){
   var light = document.body.classList.contains('light-theme');
