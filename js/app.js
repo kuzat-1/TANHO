@@ -155,9 +155,11 @@
   document.getElementById('image-file-input').addEventListener('change', (e) => {
     const files = Array.from(e.target.files);
     files.forEach(file => {
+      const dup = attachedPhotos.some(p => p.name === file.name && p.size === file.size && p.lastModified === file.lastModified);
+      if (dup) return;
       const reader = new FileReader();
       reader.onload = (event) => {
-        attachedPhotos.push({ id: Date.now() + Math.random(), url: event.target.result });
+        attachedPhotos.push({ id: Date.now() + Math.random(), url: event.target.result, name: file.name, size: file.size, lastModified: file.lastModified });
         renderGallery();
       };
       reader.readAsDataURL(file);

@@ -69,12 +69,14 @@
     if (!attachedPhotos.length) { galleryContainer.classList.remove('active'); return; }
     galleryContainer.classList.add('active');
     document.getElementById('photo-count').innerText = attachedPhotos.length;
-    photoGrid.setAttribute('data-count', Math.min(attachedPhotos.length, 2));
+    photoGrid.setAttribute('data-count', attachedPhotos.length > 4 ? 'many' : String(attachedPhotos.length));
     photoGrid.innerHTML = '';
-    attachedPhotos.slice(0, 2).forEach((photo) => {
+    attachedPhotos.slice(0, 4).forEach((photo, idx) => {
       const item = document.createElement('div');
       item.className = 'photo-item';
-      item.innerHTML = `<img src="${photo.url}"><button class="remove-badge-btn" onclick="removePhoto(${photo.id})">×</button>`;
+      const extra = (attachedPhotos.length > 4 && idx === 3)
+        ? `<div class="photo-more">+${attachedPhotos.length - 4}</div>` : '';
+      item.innerHTML = `<img src="${photo.url}" alt="">${extra}<button class="remove-badge-btn" onclick="removePhoto(${photo.id})">×</button>`;
       photoGrid.appendChild(item);
     });
   }
