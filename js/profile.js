@@ -352,14 +352,52 @@
     badge.style.display = text ? 'inline-flex' : 'none';
   }
 
-  // ---------- empty state when no posts ----------
+  function profileIsOwn(){
+    try {
+      if (typeof currentProfileId !== 'undefined' && typeof TANHO_USERS !== 'undefined' && TANHO_USERS[currentProfileId]) {
+        return !!TANHO_USERS[currentProfileId].isOwn;
+      }
+      if (typeof currentProfileId !== 'undefined' && typeof OWN_USER_ID !== 'undefined') {
+        return currentProfileId === OWN_USER_ID;
+      }
+    } catch(e){}
+    return false;
+  }
+
+  // ---------- empty state: owner sees create action, others see neutral text ----------
   function updateProfileEmptyState(){
     var grid = document.getElementById('profileFeedGrid');
     var empty = document.getElementById('profileEmptyState');
     if (!grid || !empty) return;
-    var hasCards = grid.querySelectorAll('.feed-card').length > 0;
-    empty.style.display = hasCards ? 'none' : 'flex';
-    grid.style.display = hasCards ? 'grid' : 'none';
+    var cards = grid.querySelectorAll('.feed-card');
+    var visible = 0;
+    for (var i = 0; i < cards.length; i++) {
+      if (cards[i].style.display !== 'none') visible++;
+    }
+    var titleEl = empty.querySelector('.profile-empty-title');
+    var textEl = empty.querySelector('.profile-empty-text');
+    var btn = empty.querySelector('.profile-empty-btn');
+    var own = profileIsOwn();
+    if (cards.length === 0) {
+      if (titleEl) titleEl.textContent = 'Пока нет публикаций';
+      if (own) {
+        if (textEl) textEl.textContent = 'Поделитесь своим первым видео, фотографией или новостью.';
+        if (btn) btn.style.display = '';
+      } else {
+        if (textEl) textEl.textContent = 'У этого пользователя пока нет публикаций.';
+        if (btn) btn.style.display = 'none';
+      }
+      empty.style.display = 'flex';
+      grid.style.display = 'none';
+    } else if (visible === 0) {
+      if (titleEl) titleEl.textContent = 'Нет публикаций';
+      if (textEl) textEl.textContent = own ? 'В этой категории пока нет публикаций.' : 'У этого пользователя пока нет публикаций в этой категории.';
+      if (btn) btn.style.display = own ? '' : 'none';
+      empty.style.display = 'flex';
+    } else {
+      empty.style.display = 'none';
+      grid.style.display = 'grid';
+    }
   }
 
   // ---------- save from the dedicated Edit Profile screen ----------
