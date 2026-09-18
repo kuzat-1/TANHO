@@ -108,26 +108,13 @@
       }
     }, 300);
   });
-  // чат — держать инпут над клавиатурой и не прятать за меню
+  // чат — composer следует за клавиатурой через flex + resizes-content (без transform-хаков:
+  // ручной translateY давал устаревшее смещение, а scrollIntoView сдвигал весь absolute-экран)
   if (window.visualViewport) {
     const chatScreen = document.getElementById('generalChatScreen');
-    const chatInputBar = document.querySelector('.chat-input-bar');
-    if (chatScreen && chatInputBar) {
-      window.visualViewport.addEventListener('resize', () => {
-        if (!chatScreen.classList.contains('active')) return;
-        const curH = window.visualViewport.height;
-        const diff = window.innerHeight - curH;
-        if (diff > 120) {
-          chatInputBar.style.transform = `translateY(-${diff - 20}px)`;
-          chatInputBar.style.transition = 'transform 0.2s ease';
-        } else {
-          chatInputBar.style.transform = '';
-        }
-      });
+    if (chatScreen) {
       document.getElementById('chatTextInput')?.addEventListener('focus', ()=>{
         setTimeout(()=>{
-          const inp = document.getElementById('chatTextInput');
-          inp?.scrollIntoView({block:'center', behavior:'smooth'});
           const cont = document.getElementById('chatMessagesContainer');
           if(cont) cont.scrollTop = cont.scrollHeight;
         }, 300);

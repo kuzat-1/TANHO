@@ -6,7 +6,7 @@
 
     /* ---------------- 💬 5. 🔥 ПОЛНОЭКРАННЫЙ ОБЩИЙ ЧАТ ---------------- */
     .general-chat-screen {
-      position: absolute; inset: 0; background-color: var(--bg-dark); z-index: 170;
+      position: fixed; inset: 0; height: 100vh; height: 100dvh; background-color: var(--bg-dark); z-index: 170;
       display: none; flex-direction: column; overflow: hidden;
       /* адаптив: на больших экранах центрируем */
       width: 100%; max-width: 100%;
