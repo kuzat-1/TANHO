@@ -215,6 +215,8 @@
   })();
   document.addEventListener('DOMContentLoaded', renderYtFeed);
   setTimeout(renderYtFeed, 300);
+  document.addEventListener('DOMContentLoaded', () => { if (typeof restorePublishedPosts === 'function') restorePublishedPosts().catch(function(){}); });
+  setTimeout(() => { if (typeof restorePublishedPosts === 'function') restorePublishedPosts().catch(function(){}); }, 350);
   document.addEventListener('DOMContentLoaded', () => { if (typeof renderChannelsStrip === 'function') renderChannelsStrip(); });
   setTimeout(() => { if (typeof renderChannelsStrip === 'function') renderChannelsStrip(); }, 300);
   document.addEventListener('DOMContentLoaded', () => setTimeout(restoreTanhoPage, 80));

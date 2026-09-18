@@ -100,6 +100,28 @@
 
   let attachedVideoData = null;
 
+  // normalize VK/video URLs to a playable embed src.
+  // Watch pages (vk.com/video-.., vkvideo.ru, clips) send X-Frame-Options: DENY,
+  // so they must be converted to the official video_ext.php embed format.
+  function normalizeVideoUrl(url){
+    var u = String(url || '').trim();
+    if (!u) return '';
+    var m = u.match(/video_ext\.php\?([^#]*)/i);
+    if (m) {
+      var q = m[1];
+      var oid = (q.match(/(?:^|&)oid=([^&]*)/) || [])[1] || '';
+      var vid = (q.match(/(?:^|&)id=([^&]*)/) || [])[1] || '';
+      if (oid && vid) return 'https://vk.com/video_ext.php?oid=' + oid + '&id=' + vid + '&hd=2';
+      return u;
+    }
+    m = u.match(/(?:vk\.com|vkvideo\.ru|m\.vk\.com)\/(?:video|clip)(-?\d+)_(\d+)/i);
+    if (m) return 'https://vk.com/video_ext.php?oid=' + m[1] + '&id=' + m[2] + '&hd=2';
+    return u;
+  }
+  function isMp4Url(url){
+    return /\.mp4($|\?)/i.test(String(url || '').split('#')[0]);
+  }
+
   function attachVideoFromInput() {
     const url = document.getElementById('video-url-input').value.trim();
     const customName = document.getElementById('video-name-input').value.trim() || 'Видеоролик';
@@ -109,12 +131,13 @@
       return;
     }
 
-    const targetUrl = url || 'https://vk.com/video_ext.php?oid=-237335724&id=456239089&js_api=1';
+    const rawUrl = url || 'https://vk.com/video_ext.php?oid=-237335724&id=456239089&js_api=1';
+    const targetUrl = normalizeVideoUrl(rawUrl);
     attachedVideoData = { url: targetUrl, title: customName };
 
-    let playerHtml = targetUrl.endsWith('.mp4') 
+    let playerHtml = isMp4Url(targetUrl)
       ? `<video controls src="${targetUrl}"></video>` 
-      : `<iframe src="${targetUrl}"></iframe>`;
+      : `<iframe src="${targetUrl}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
 
     document.getElementById('video-container').innerHTML = `
       <div style="padding:0; position:relative;">

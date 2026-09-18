@@ -25,6 +25,8 @@
       const isOwn = isOwnPost(post);
       const editBtn = dd.querySelector('button[onclick*="edit"]');
       if(editBtn) editBtn.style.display = isOwn ? 'flex' : 'none';
+      const delBtn = dd.querySelector('button[onclick*="delete"]');
+      if(delBtn) delBtn.style.display = isOwn ? 'flex' : 'none';
     }
   }
   function handlePostMenuAction(action, btn){
@@ -39,9 +41,24 @@
       const capEl = post.querySelector('.caption');
       document.getElementById('article-title').value = titleEl ? titleEl.innerText : '';
       document.getElementById('article-content').value = capEl ? capEl.innerText : '';
+      // keep stable ID across edit; drop old stored copy now (publish overwrites same ID)
+      try {
+        var eid = post.getAttribute('data-post-id');
+        if (eid) { TANHO_EDITING_ID = eid; deletePostRecord(eid); }
+      } catch(e){}
       // удалить старый пост после редактирования (как обновление)
       post.remove();
       openEditor();
+    }
+    else if(action==='delete'){
+      if(!isOwnPost(post)) return;
+      if(!confirm('Удалить публикацию?')) return;
+      try {
+        var did = post.getAttribute('data-post-id');
+        if (did) deletePostRecord(did);
+      } catch(e){}
+      post.remove();
+      if(navigator.vibrate) navigator.vibrate(20);
     }
   }
 
@@ -117,19 +134,215 @@
   }
 
   // 🚀 ПУБЛИКАЦИЯ В ЛЕНТУ
+  var TANHO_EDITING_ID = null;
+  function newPostId(){ return 'p' + Date.now().toString(36) + Math.floor(Math.random()*1e6).toString(36); }
+
+  // ---------- local persistence: records in localStorage, blobs in IndexedDB ----------
+  // Photos/audio are stored as Blobs in IndexedDB (never huge base64 in localStorage).
+  // localStorage['tanho_posts_v1'] keeps only small JSON records with stable IDs.
+  var TANHO_POSTS_KEY = 'tanho_posts_v1';
+  function tanhoIDB(){
+    return new Promise(function(res, rej){
+      try {
+        var r = indexedDB.open('tanho_db', 1);
+        r.onupgradeneeded = function(){ try { r.result.createObjectStore('media'); } catch(e){} };
+        r.onsuccess = function(){ res(r.result); };
+        r.onerror = function(){ rej(r.error); };
+      } catch(e){ rej(e); }
+    });
+  }
+  // serialize all IndexedDB access through one queue: rapid parallel
+  // open/put/close cycles from successive publishes can otherwise abort each other
+  var TANHO_IDB_Q = Promise.resolve();
+  function idbSerial(fn){
+    var r = TANHO_IDB_Q.then(fn, fn);
+    TANHO_IDB_Q = r.catch(function(){});
+    return r;
+  }
+  function idbPut(key, blob, tries){
+    tries = (typeof tries === 'number') ? tries : 3;
+    return idbSerial(function(){
+      return tanhoIDB().then(function(db){
+        return new Promise(function(res, rej){
+          try {
+            var tx = db.transaction('media', 'readwrite');
+            var q = tx.objectStore('media').put(blob, key);
+            q.onsuccess = function(){ try { db.close(); } catch(e){} res(); };
+            q.onerror = function(){ try { db.close(); } catch(e){} rej(q.error); };
+            tx.onerror = function(){ try { db.close(); } catch(e){} rej(tx.error); };
+            tx.onabort = function(){ try { db.close(); } catch(e){} rej(tx.error || new Error('tx abort')); };
+          } catch(e){ rej(e); }
+        });
+      }).catch(function(e){
+        if (tries > 1) return idbPut(key, blob, tries - 1);
+        throw e;
+      });
+    });
+  }
+  function idbGet(key){
+    return idbSerial(function(){
+      return tanhoIDB().then(function(db){
+        return new Promise(function(res, rej){
+          try {
+            var tx = db.transaction('media', 'readonly');
+            var q = tx.objectStore('media').get(key);
+            q.onsuccess = function(){ try { db.close(); } catch(e){} res(q.result || null); };
+            q.onerror = function(){ rej(q.error); };
+          } catch(e){ rej(e); }
+        });
+      });
+    });
+  }
+  function idbDel(key){
+    return idbSerial(function(){
+      return tanhoIDB().then(function(db){
+        return new Promise(function(res){
+          try {
+            var tx = db.transaction('media', 'readwrite');
+            tx.objectStore('media').delete(key);
+            tx.oncomplete = function(){ try { db.close(); } catch(e){} res(); };
+            tx.onerror = function(){ res(); };
+          } catch(e){ res(); }
+        });
+      });
+    });
+  }
+  function getPostRecords(){
+    try { var l = JSON.parse(localStorage.getItem(TANHO_POSTS_KEY) || '[]'); return Array.isArray(l) ? l : []; }
+    catch(e){ return []; }
+  }
+  function savePostRecords(list){
+    try { localStorage.setItem(TANHO_POSTS_KEY, JSON.stringify(list.slice(0, 30))); } catch(e){}
+  }
+  function dataURLtoBlob(dataURL){
+    return fetch(dataURL).then(function(r){ return r.blob(); });
+  }
+  // build the exact same card markup for publish and for restore (single source)
+  function postCardHTML(d){
+    var mediaContentHTML = d.mediaHTML || '';
+    var attachmentsBottomHTML = d.audioHTML || '';
+    var textBlockHTML = '';
+    if (d.title || d.content) {
+      textBlockHTML = ''
+      + '<div class="post-content-text" onclick="togglePostExpand(this)">'
+      + (d.title ? '<h2 class="post-title-text">' + d.title + '</h2>' : '')
+      + (d.content ? '<p class="caption">' + d.content + '</p><button class="expand-toggle-btn">Читать полностью ↓</button>' : '')
+      + '</div>';
+    }
+    var bodyOrderHTML = (d.textOnTop) ? textBlockHTML + mediaContentHTML + attachmentsBottomHTML
+                                      : mediaContentHTML + attachmentsBottomHTML + textBlockHTML;
+    return ''
+    + '<article class="post-card" data-owner="self" data-user-id="' + d.userId + '" data-post-id="' + d.id + '">'
+    + '<div class="post-header">'
+    + '<div class="post-author" onclick="openUserProfile(getCurrentUserId())">'
+    + '<div class="author-avatar" style="background-image: url(\'' + d.avatar + '\');"></div>'
+    + '<div class="author-meta"><div class="author-name">' + d.authorName + '</div>'
+    + '<div class="post-time-top">' + d.timeLabel + '</div></div></div>'
+    + '<div class="post-header-actions">'
+    + '<button class="post-menu-btn" onclick="togglePostMenu(this)">⋮</button>'
+    + '<div class="post-menu-dropdown">'
+    + '<button onclick="handlePostMenuAction(\'interesting\', this)">Интересный</button>'
+    + '<button onclick="handlePostMenuAction(\'not_interesting\', this)">Неинтересный</button>'
+    + '<button class="danger" onclick="handlePostMenuAction(\'report\', this)">Пожаловаться</button>'
+            + '<button onclick="handlePostMenuAction(\'edit\', this)">✏️ Редактировать</button>'
+            + '<button class="danger" onclick="handlePostMenuAction(\'delete\', this)">Удалить</button>'
+    + '<button class="danger" onclick="handlePostMenuAction(\'delete\', this)">Удалить</button>'
+    + '</div></div></div>'
+    + bodyOrderHTML
+    + '<div class="post-actions">'
+    + '<div class="action-group">'
+    + '<button class="action-with-count" onclick="toggleLike(this)"><svg class="heart-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="likes-count">0</span></button>'
+    + '<button class="action-with-count" onclick="toggleComments(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="comments-count">0</span></button>'
+    + '<button class="icon-btn" onclick="sharePost(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>'
+    + '</div>'
+    + '<button class="icon-btn" onclick="toggleBookmark(this)" title="Закладка"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>'
+    + '</div></article>';
+  }
+  function persistPublishedPost(record){
+    try {
+      var list = getPostRecords().filter(function(r){ return r.id !== record.id; });
+      list.unshift(record);
+      savePostRecords(list);
+    } catch(e){}
+  }
+  function deletePostRecord(id){
+    try {
+      var rec = null;
+      var list = getPostRecords().filter(function(r){ if (r.id === id) { rec = r; return false; } return true; });
+      savePostRecords(list);
+      var kills = [];
+      (rec && rec.photos || []).forEach(function(p){ if (p.blobId) kills.push(idbDel(p.blobId)); });
+      if (rec && rec.audio && rec.audio.blobId) kills.push(idbDel(rec.audio.blobId));
+      return Promise.all(kills).catch(function(){});
+    } catch(e){ return Promise.resolve(); }
+  }
+  // restore user posts on boot: same markup, blobs resolved to object URLs, no duplicates.
+  // Runs once (both DOMContentLoaded and fallback timer call it; the sync flag wins the race).
+  var TANHO_RESTORE_DONE = false;
+  function restorePublishedPosts(){
+    if (TANHO_RESTORE_DONE) return Promise.resolve(0);
+    TANHO_RESTORE_DONE = true;
+    var list = getPostRecords();
+    if (!list.length) return Promise.resolve(0);
+    var box = document.getElementById('postsContainer');
+    if (!box) return Promise.resolve(0);
+    var chain = Promise.resolve();
+    var restored = 0;
+    list.slice().reverse().forEach(function(rec){
+      chain = chain.then(function(){
+        if (box.querySelector('[data-post-id="' + rec.id + '"]')) return;
+        var jobs = (rec.photos || []).map(function(p){
+          return p.blobId ? idbGet(p.blobId).then(function(b){ return b ? URL.createObjectURL(b) : ''; }).catch(function(){ return ''; }) : Promise.resolve('');
+        });
+        var audioJob = (rec.audio && rec.audio.blobId)
+          ? idbGet(rec.audio.blobId).then(function(b){ return b ? URL.createObjectURL(b) : ''; }).catch(function(){ return ''; })
+          : Promise.resolve('');
+        return Promise.all([Promise.all(jobs), audioJob]).then(function(r){
+          var urls = r[0], audioUrl = r[1];
+          var d = { id: rec.id, userId: rec.userId, authorName: rec.authorName, avatar: rec.avatar,
+                    title: rec.title, content: rec.content, timeLabel: rec.timeLabel || 'ранее',
+                    textOnTop: rec.textOnTop !== false, mediaHTML: '', audioHTML: '' };
+          if ((rec.photos || []).length) {
+            d.mediaHTML = '<div class="post-slider-wrapper" style="position:relative;">'
+              + '<div class="post-media-slider">'
+              + rec.photos.map(function(p, i){ return '<div class="slide-item"><img src="' + (urls[i] || '') + '"></div>'; }).join('')
+              + '</div>'
+              + (rec.photos.length > 1 ? '<div class="slider-badge">1/' + rec.photos.length + '</div>' : '')
+              + '<div class="slider-dots">' + rec.photos.map(function(){ return '<span class="dot"></span>'; }).join('') + '</div></div>';
+          } else if (rec.video) {
+            var isMp4 = /\.mp4($|\?)/i.test(rec.video.url || '');
+            var vp = isMp4
+              ? '<video controls src="' + rec.video.url + '" style="width:100%; height:100%; object-fit:cover;"></video>'
+              : '<iframe src="' + rec.video.url + '" style="width:100%; height:100%; border:none;" allow="autoplay; fullscreen"></iframe>';
+            d.mediaHTML = '<div style="padding: 0 14px;"><div style="width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000; position:relative;">' + vp + '</div></div>';
+          }
+          if (rec.audio) {
+            d.audioHTML = '<div class="post-attachments-bottom"><div class="tg-audio-card">'
+              + '<button class="tg-play-btn" onclick="togglePostAudio(this, \'' + audioUrl + '\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>'
+              + '<div class="tg-audio-body"><div class="tg-audio-title">' + rec.audio.name + '</div><div class="tg-audio-time">Аудиозапись • TANHO • tap to play</div></div>'
+              + '<audio src="' + audioUrl + '" preload="metadata"></audio></div></div>';
+          }
+          box.insertAdjacentHTML('afterbegin', postCardHTML(d));
+          restored++;
+        }).catch(function(){});
+      });
+    });
+    return chain.then(function(){ return restored; });
+  }
   function publishArticle() {
     if(!isLoggedIn()){ openAuthModal('register'); setAuthError('Войдите или зарегистрируйтесь, чтобы опубликовать пост.'); return; }
     const title = document.getElementById('article-title').value.trim();
     const content = document.getElementById('article-content').value.trim();
 
-    if (!title) { alert('Пожалуйста, введите заголовок поста!'); return; }
+    var hasMedia = attachedPhotos.length > 0 || !!attachedVideoData || !!attachedAudioData || attachedStickers.length > 0;
+    if (!title && !content && !hasMedia) { alert('Добавьте текст или прикрепите медиа!'); return; }
 
-    const textBlockHTML = `
+    const textBlockHTML = (title || content) ? `
       <div class="post-content-text" onclick="togglePostExpand(this)">
-        <h2 class="post-title-text">${title}</h2>
+        ${title ? `<h2 class="post-title-text">${title}</h2>` : ''}
         ${content ? `<p class="caption">${content}</p><button class="expand-toggle-btn">Читать полностью ↓</button>` : ''}
       </div>
-    `;
+    ` : '';
 
     let mediaContentHTML = '';
     let stickersHTML = '';
@@ -153,7 +366,8 @@
         </div>
       `;
     } else if (attachedVideoData) {
-      const vPlayer = attachedVideoData.url.endsWith('.mp4')
+      const isMp4 = (typeof isMp4Url === 'function') ? isMp4Url(attachedVideoData.url) : /\.mp4($|\?)/i.test(attachedVideoData.url);
+      const vPlayer = isMp4
         ? `<video controls src="${attachedVideoData.url}" style="width:100%; height:100%; object-fit:cover;"></video>`
         : `<iframe src="${attachedVideoData.url}" style="width:100%; height:100%; border:none;" allow="autoplay; fullscreen"></iframe>`;
       mediaContentHTML = `<div style="padding: 0 14px;"><div style="width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000; position:relative;">${vPlayer}${stickersHTML}</div></div>`;
@@ -178,43 +392,51 @@
       ? textBlockHTML + mediaContentHTML + attachmentsBottomHTML
       : mediaContentHTML + attachmentsBottomHTML + textBlockHTML;
 
-    const currentUserName = document.getElementById('displayProfileName').innerText;
+    const postId = TANHO_EDITING_ID || newPostId();
+    TANHO_EDITING_ID = null;
 
-    const newPostCardHTML = `
-      <article class="post-card" data-owner="self" data-user-id="${getCurrentUserId()}">
-        <div class="post-header">
-          <div class="post-author" onclick="openUserProfile(getCurrentUserId())">
-            <div class="author-avatar" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100');"></div>
-            <div class="author-meta">
-              <div class="author-name">${currentUserName}</div>
-              <div class="post-time-top">только что</div>
-            </div>
-          </div>
-          <div class="post-header-actions">
-            <button class="post-menu-btn" onclick="togglePostMenu(this)">⋮</button>
-            <div class="post-menu-dropdown">
-              <button onclick="handlePostMenuAction('interesting', this)">Интересный</button>
-              <button onclick="handlePostMenuAction('not_interesting', this)">Неинтересный</button>
-              <button class="danger" onclick="handlePostMenuAction('report', this)">Пожаловаться</button>
-              <button onclick="handlePostMenuAction('edit', this)">✏️ Редактировать</button>
-            </div>
-          </div>
-        </div>
-
-        ${bodyOrderHTML}
-
-        <div class="post-actions">
-          <div class="action-group">
-            <button class="action-with-count" onclick="toggleLike(this)"><svg class="heart-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="likes-count">0</span></button>
-            <button class="action-with-count" onclick="toggleComments(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="comments-count">0</span></button>
-            <button class="icon-btn" onclick="sharePost(this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-          </div>
-          <button class="icon-btn" onclick="toggleBookmark(this)" title="Закладка"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
-        </div>
-      </article>
-    `;
+    const newPostCardHTML = postCardHTML({
+      id: postId,
+      userId: getCurrentUserId(),
+      authorName: document.getElementById('displayProfileName').innerText,
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100',
+      title: title, content: content, timeLabel: 'только что',
+      textOnTop: (selectedTextPosition === 'top'),
+      mediaHTML: mediaContentHTML, audioHTML: attachmentsBottomHTML
+    });
 
     document.getElementById('postsContainer').insertAdjacentHTML('afterbegin', newPostCardHTML);
+
+    // persist record (metadata small JSON; photo/audio blobs go to IndexedDB).
+    // Record is saved synchronously FIRST so an instant reload never loses the post;
+    // blob uploads finish async and re-save the same stable ID.
+    var rec = null;
+    try {
+      rec = { id: postId, userId: getCurrentUserId(),
+        authorName: document.getElementById('displayProfileName').innerText,
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100',
+        title: title, content: content, timeLabel: 'только что',
+        textOnTop: (selectedTextPosition === 'top'),
+        photos: [], video: null, audio: null, stickers: attachedStickers.slice() };
+      if (attachedVideoData) rec.video = { url: attachedVideoData.url, title: attachedVideoData.title || '' };
+      persistPublishedPost(rec);
+      var photoJobs = attachedPhotos.map(function(p, i){
+        var bid = postId + '_ph' + i;
+        return dataURLtoBlob(p.url).then(function(b){ return idbPut(bid, b).then(function(){ return { blobId: bid, name: p.name || '' }; }); })
+          .catch(function(){ return { blobId: '', name: p.name || '' }; });
+      });
+      var audioJob = attachedAudioData
+        ? (function(){ var aUrl = attachedAudioData.url, aName = attachedAudioData.name;
+            return fetch(aUrl).then(function(r){ return r.blob(); })
+            .then(function(b){ var bid = postId + '_au'; return idbPut(bid, b).then(function(){ return { blobId: bid, name: aName }; }); })
+            .catch(function(){ return { blobId: '', name: aName }; }); })()
+        : Promise.resolve(null);
+      Promise.all([Promise.all(photoJobs), audioJob]).then(function(r){
+        rec.photos = r[0];
+        rec.audio = r[1];
+        persistPublishedPost(rec);
+      }).catch(function(){});
+    } catch(e){}
 
     // mirror into own profile grid so its tab appears automatically (existing types untouched)
     try {
