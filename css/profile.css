@@ -125,6 +125,7 @@ body.light-theme .card-source a { color: #7c3aed; }
 /* ---------- categories — separate scroll container in normal flow ---------- */
 .filter-tabs {
   display: flex; align-items: stretch; gap: 8px; overflow-x: auto; scrollbar-width: none;
+  flex-shrink: 0; /* never collapse inside #pageProfile flex column when content overflows */
   margin: 0; padding: 0 0 14px 0;
   -webkit-overflow-scrolling: touch;
 }
