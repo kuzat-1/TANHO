@@ -8,14 +8,14 @@
     .page-settings.active { transform: translateX(0); }
 
     .settings-header {
-      height: calc(56px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 16px 0 16px; display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06); position: sticky; top: 0;
-      background: rgba(8, 9, 16, 0.95); backdrop-filter: blur(15px); z-index: 20;
+      height: calc(58px + env(safe-area-inset-top, 0px)); padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 10px 12px; display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border-color); position: sticky; top: 0;
+      background: var(--bg-dark); z-index: 20;
     }
-    .settings-title-box { display: flex; align-items: center; gap: 12px; }
-    .settings-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+    .settings-title-box { display: flex; align-items: center; gap: 8px; flex: 1; }
+    .settings-title { flex: 1; font-size: 17px; font-weight: 700; color: var(--text-main); text-align: center; }
 
-    .settings-content { padding: 20px 16px; display: flex; flex-direction: column; gap: 24px; }
+    .settings-content { padding: 16px 16px 28px 16px; display: flex; flex-direction: column; gap: 28px; }
 
     .section-block { display: flex; flex-direction: column; gap: 14px; }
     .section-label { font-size: 13px; font-weight: 700; color: var(--primary-accent); text-transform: uppercase; letter-spacing: 0.8px; }

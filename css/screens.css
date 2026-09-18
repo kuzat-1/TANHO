@@ -2,7 +2,6 @@
 .screen-overlay {
   position: fixed; inset: 0; z-index: 2100;
   background: var(--bg-dark);
-  padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   display: flex; flex-direction: column;
   opacity: 0; pointer-events: none;
@@ -13,9 +12,9 @@
 
 .screen-header {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 12px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 10px 12px;
   border-bottom: 1px solid var(--border-color);
-  min-height: 58px; flex-shrink: 0;
+  min-height: calc(58px + env(safe-area-inset-top, 0px)); flex-shrink: 0;
 }
 .screen-back {
   width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
@@ -34,9 +33,9 @@
 }
 body.light-theme .screen-action { color: #7c3aed; }
 
-.screen-body { flex: 1; overflow-y: auto; padding: 14px 16px 24px 16px; -webkit-overflow-scrolling: touch; }
-.screen-section { margin-bottom: 18px; }
-.screen-section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-sub); margin: 0 4px 8px 4px; }
+.screen-body { flex: 1; overflow-y: auto; padding: 16px 16px 28px 16px; -webkit-overflow-scrolling: touch; }
+.screen-section { margin-bottom: 22px; }
+.screen-section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-sub); margin: 0 4px 10px 4px; }
 .screen-card {
   background: var(--card-bg); border: 1px solid var(--border-color);
   border-radius: 18px; overflow: hidden;

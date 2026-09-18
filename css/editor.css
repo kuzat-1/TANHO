@@ -14,5 +14,6 @@
     .editor-header { display: flex; align-items: center; justify-content: space-between; position: relative; padding: calc(8px + env(safe-area-inset-top, 0px)) 0 12px 0; z-index: 10; }
     .editor-header-title { position: absolute; left: 0; right: 0; text-align: center; font-size: 18px; font-weight: 700; color: var(--text-main); pointer-events: none; }
 
-    .editor-body { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; scrollbar-width: none; }
+    .editor-body { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; scrollbar-width: none; scroll-padding-bottom: 120px; padding-bottom: 8px; }
     .editor-body::-webkit-scrollbar { display: none; }
+    .editor-body .input-content:focus { scroll-margin-bottom: 140px; }
