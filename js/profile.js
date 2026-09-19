@@ -301,7 +301,12 @@
     if (!sec || !sec.addEventListener) return;
     TANHO_COLLAPSE_INIT = true;
     sec.addEventListener('scroll', function(){
-      try { sec.classList.toggle('collapsed', sec.scrollTop > 200); } catch(e){}
+      // hysteresis: collapse past 200, expand only near top (<80),
+      // so async content shifts (images/fonts) don't flicker the header
+      try {
+        if (sec.scrollTop > 200) sec.classList.add('collapsed');
+        else if (sec.scrollTop < 80) sec.classList.remove('collapsed');
+      } catch(e){}
     }, { passive: true });
   }
   try { setupProfileCollapse(); } catch(e){}
