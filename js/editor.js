@@ -118,6 +118,22 @@
     if (m) return 'https://vk.com/video_ext.php?oid=' + m[1] + '&id=' + m[2] + '&hd=2';
     return u;
   }
+
+  // Build VK embed URL with parameters to disable autoplay and recommendations
+  function buildVkEmbedUrl(url){
+    var base = normalizeVideoUrl(url);
+    if (base.includes('video_ext.php')) {
+      var sep = base.includes('?') ? '&' : '?';
+      // autoplay=0 - disable autoplay
+      // start=0 - start from beginning
+      // is_replay=0 - disable replay button suggestions
+      // muted=0 - don't mute by default
+      // controls=1 - show controls
+      // loop=0 - don't loop
+      return base + '&autoplay=0&start=0&is_replay=0&muted=0&controls=1&loop=0&js_api=1';
+    }
+    return base;
+  }
   function isMp4Url(url){
     return /\.mp4($|\?)/i.test(String(url || '').split('#')[0]);
   }
@@ -132,7 +148,7 @@
     }
 
     const rawUrl = url || 'https://vk.com/video_ext.php?oid=-237335724&id=456239089&js_api=1';
-    const targetUrl = normalizeVideoUrl(rawUrl);
+    const targetUrl = buildVkEmbedUrl(rawUrl);
     attachedVideoData = { url: targetUrl, title: customName };
 
     let playerHtml = isMp4Url(targetUrl)

@@ -1,7 +1,34 @@
 /* TANHO — js/posts.js */
 
 
-  function toggleSubscribe(btn){
+// normalize VK/video URLs to a playable embed src.
+function normalizeVideoUrl(url){
+  var u = String(url || '').trim();
+  if (!u) return '';
+  var m = u.match(/video_ext\.php\?([^#]*)/i);
+  if (m) {
+    var q = m[1];
+    var oid = (q.match(/(?:^|&)oid=([^&]*)/) || [])[1] || '';
+    var vid = (q.match(/(?:^|&)&id=([^&]*)/) || [])[1] || '';
+    if (oid && vid) return 'https://vk.com/video_ext.php?oid=' + oid + '&id=' + vid + '&hd=2';
+    return u;
+  }
+  m = u.match(/(?:vk\.com|vkvideo\.ru|m\.vk\.com)\/(?:video|clip)(-?\d+)_(\d+)/i);
+  if (m) return 'https://vk.com/video_ext.php?oid=' + m[1] + '&id=' + m[2] + '&hd=2';
+  return u;
+}
+
+// Build VK embed URL with parameters to disable autoplay and recommendations
+function buildVkEmbedUrl(url){
+  var base = normalizeVideoUrl(url);
+  if (base.includes('video_ext.php')) {
+    var sep = base.includes('?') ? '&' : '?';
+    return base + '&autoplay=0&start=0&is_replay=0&muted=0&controls=1&loop=0&js_api=1';
+  }
+  return base;
+}
+
+function toggleSubscribe(btn){
     const isSub = btn.classList.contains('subscribed');
     if(isSub){ btn.classList.remove('subscribed'); btn.textContent='Подписаться'; }
     else { btn.classList.add('subscribed'); btn.textContent='Подписан ✓'; if(navigator.vibrate) navigator.vibrate(20); }
@@ -310,10 +337,11 @@
               + (rec.photos.length > 1 ? '<div class="slider-badge">1/' + rec.photos.length + '</div>' : '')
               + '<div class="slider-dots">' + rec.photos.map(function(){ return '<span class="dot"></span>'; }).join('') + '</div></div>';
           } else if (rec.video) {
-            var isMp4 = /\.mp4($|\?)/i.test(rec.video.url || '');
+            var isMp4 = (typeof isMp4Url === 'function') ? isMp4Url(rec.video.url) : /\.mp4($|\?)/i.test(rec.video.url || '');
+            var embedUrl = isMp4 ? rec.video.url : ((typeof buildVkEmbedUrl === 'function') ? buildVkEmbedUrl(rec.video.url) : rec.video.url);
             var vp = isMp4
-              ? '<video controls src="' + rec.video.url + '" style="width:100%; height:100%; object-fit:cover;"></video>'
-              : '<iframe src="' + rec.video.url + '" style="width:100%; height:100%; border:none;" allow="autoplay; fullscreen"></iframe>';
+              ? '<video controls src="' + embedUrl + '" style="width:100%; height:100%; object-fit:cover;"></video>'
+              : '<iframe src="' + embedUrl + '" style="width:100%; height:100%; border:none;" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>';
             d.mediaHTML = '<div style="padding: 0 14px;"><div style="width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000; position:relative;">' + vp + '</div></div>';
           }
           if (rec.audio) {
@@ -324,6 +352,10 @@
           }
           box.insertAdjacentHTML('afterbegin', postCardHTML(d));
           restored++;
+          try {
+            var art = box.querySelector('[data-post-id="' + rec.id + '"]');
+            if (art && art.querySelector('iframe[src*="video_ext"]') && typeof TANHO_VIDEO_PLAYER !== 'undefined' && TANHO_VIDEO_PLAYER.observePost) TANHO_VIDEO_PLAYER.observePost(art);
+          } catch (e) {}
         }).catch(function(){});
       });
     });
@@ -365,12 +397,19 @@
           ${stickersHTML}
         </div>
       `;
-    } else if (attachedVideoData) {
+} else if (attachedVideoData) {
       const isMp4 = (typeof isMp4Url === 'function') ? isMp4Url(attachedVideoData.url) : /\.mp4($|\?)/i.test(attachedVideoData.url);
       const vPlayer = isMp4
         ? `<video controls src="${attachedVideoData.url}" style="width:100%; height:100%; object-fit:cover;"></video>`
-        : `<iframe src="${attachedVideoData.url}" style="width:100%; height:100%; border:none;" allow="autoplay; fullscreen"></iframe>`;
+        : `<iframe src="${buildVkEmbedUrl(attachedVideoData.url)}" style="width:100%; height:100%; border:none;" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>`;
       mediaContentHTML = `<div style="padding: 0 14px;"><div style="width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000; position:relative;">${vPlayer}${stickersHTML}</div></div>`;
+      // let the video manager observe this post (active state comes from real VK play events)
+      setTimeout(function() {
+        try {
+          var art = document.querySelector('[data-post-id="' + postId + '"]');
+          if (art && typeof TANHO_VIDEO_PLAYER !== 'undefined' && TANHO_VIDEO_PLAYER.observePost) TANHO_VIDEO_PLAYER.observePost(art);
+        } catch (e) {}
+      }, 0);
     } else if (attachedStickers.length > 0) {
       mediaContentHTML = `<div style="padding: 8px 14px;"><div style="width:100%; min-height:90px; background:var(--card-bg); border-radius:14px; position:relative; overflow:hidden; padding:8px;">${stickersHTML}<div style="height:70px;"></div></div></div>`;
     }
@@ -460,3 +499,4 @@
 
     switchPage('pageMain', document.querySelectorAll('.nav-tab-btn')[0]);
   }
+
