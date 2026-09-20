@@ -209,8 +209,10 @@ var TANHO_VIDEO_PLAYER = {
       if (type === 'started' || type === 'play' || type === 'playing' || type === 'resumed' || type === 'unpaused') {
         self.setActiveVideo(pid, srcEl, title);
         if (self.activeVideo) { self.activeVideo.paused = false; self.updateMiniPlayerUI(); }
+        try { if (typeof TANHO_MEDIA !== 'undefined') TANHO_MEDIA.onVkStarted(pid, srcEl, title); } catch (e) {}
       } else if (type === 'paused' || type === 'pause' || type === 'ended' || type === 'end') {
         if (self.activeVideo && self.activeVideo.postId === pid) { self.activeVideo.paused = true; self.updateMiniPlayerUI(); }
+        try { if (typeof TANHO_MEDIA !== 'undefined' && TANHO_MEDIA.active && TANHO_MEDIA.active.type === 'vk' && TANHO_MEDIA.active.postId === pid) TANHO_MEDIA.active = null; } catch (e) {}
       }
     });
     document.addEventListener('visibilitychange', function() {

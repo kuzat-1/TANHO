@@ -101,14 +101,18 @@ function toggleSubscribe(btn){
     const card = btn.closest('.tg-audio-card');
     const audio = card.querySelector('audio');
     if(!audio) return;
-    if(currentAudio && currentAudio !== audio){ currentAudio.pause(); if(currentBtn) currentBtn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>'; }
+    // unified: stop any other playing media (VK/video/audio) before this one
+    try { if (typeof TANHO_MEDIA !== 'undefined' && audio.paused) { var _c = audio.closest('[data-post-id]'); var _pid = _c ? _c.getAttribute('data-post-id') : null; var _title = ''; try { var _card = audio.closest('.post-card'); var _t = _card ? _card.querySelector('.post-title-text') : null; if (_t) _title = _t.textContent.trim(); } catch (e) {} TANHO_MEDIA.stopAllExcept(audio); } } catch (e) {}
+    if(currentAudio && currentAudio !== audio){ try { currentAudio.pause(); } catch (e) {} if(currentBtn) currentBtn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>'; }
     if(audio.paused){
+      try { if (typeof TANHO_MEDIA !== 'undefined') { var _cc = audio.closest('[data-post-id]'); var _pp = _cc ? _cc.getAttribute('data-post-id') : null; var _tt2 = ''; try { var _ca = audio.closest('.post-card'); var _tt = _ca ? _ca.querySelector('.post-title-text') : null; if (_tt) _tt2 = _tt.textContent.trim(); } catch (e) {} TANHO_MEDIA.activate(audio, 'audio', { postId: _pp, title: _tt2 || 'Audio' }); } } catch (e) {}
       audio.play().catch(()=>{});
       btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
       currentAudio = audio; currentBtn = btn;
     } else {
       audio.pause();
       btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+      try { if (typeof TANHO_MEDIA !== 'undefined' && TANHO_MEDIA.active && TANHO_MEDIA.active.element === audio) TANHO_MEDIA.active = null; } catch (e) {}
     }
   }
   function updateAudioTime(audio){
