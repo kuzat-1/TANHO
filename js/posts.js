@@ -54,6 +54,12 @@ function toggleSubscribe(btn){
       if(editBtn) editBtn.style.display = isOwn ? 'flex' : 'none';
       const delBtn = dd.querySelector('button[onclick*="delete"]');
       if(delBtn) delBtn.style.display = isOwn ? 'flex' : 'none';
+      const interestingBtn = dd.querySelector('button[onclick*="interesting"]');
+      if(interestingBtn) interestingBtn.style.display = isOwn ? 'none' : 'flex';
+      const notIntBtn = dd.querySelector('button[onclick*="not_interesting"]');
+      if(notIntBtn) notIntBtn.style.display = isOwn ? 'none' : 'flex';
+      const reportBtn = dd.querySelector('button[onclick*="report"]');
+      if(reportBtn) reportBtn.style.display = isOwn ? 'none' : 'flex';
     }
   }
   function handlePostMenuAction(action, btn){
@@ -64,16 +70,51 @@ function toggleSubscribe(btn){
     else if(action==='not_interesting'){ post.style.opacity='0.6'; setTimeout(()=>post.style.opacity='1',800); }
     else if(action==='report'){ alert('Жалоба отправлена ✓'); }
     else if(action==='edit'){
+      if(!isOwnPost(post)) return;
       const titleEl = post.querySelector('.post-title-text');
       const capEl = post.querySelector('.caption');
       document.getElementById('article-title').value = titleEl ? titleEl.innerText : '';
       document.getElementById('article-content').value = capEl ? capEl.innerText : '';
+      // reset editor state
+      try { attachedPhotos = []; attachedStickers = []; clearVideo(); clearAudio(); clearLocation(); document.getElementById('stickers-row').innerHTML = ''; } catch(e){}
+      // repopulate photos from post slider (supports multiple)
+      try {
+        var imgs = post.querySelectorAll('.post-media-slider .slide-item img');
+        imgs.forEach(function(img){
+          var src = img.getAttribute('src') || img.src;
+          if (src) attachedPhotos.push({ id: Date.now() + Math.random(), url: src, name: 'photo.jpg', size: 0, lastModified: Date.now() });
+        });
+        if (imgs.length) renderGallery();
+      } catch(e){}
+      // repopulate video (MP4 or VK iframe)
+      try {
+        var vEl = post.querySelector('video');
+        var fEl = post.querySelector('iframe');
+        if (vEl && vEl.getAttribute('src')) {
+          attachedVideoData = { url: vEl.getAttribute('src'), title: 'Видео' };
+          var pHtml = '<video controls src="' + attachedVideoData.url + '"></video>';
+          document.getElementById('video-container').innerHTML = '<div style="padding:0; position:relative;"><div style="width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000;">' + pHtml + '</div><button class="remove-badge-btn" onclick="clearVideo()">×</button></div>';
+        } else if (fEl && fEl.getAttribute('src')) {
+          var fSrc = fEl.getAttribute('src');
+          attachedVideoData = { url: fSrc, title: 'VK Video' };
+          var fHtml = '<iframe src="' + fSrc + '"></iframe>';
+          document.getElementById('video-container').innerHTML = '<div style="padding:0; position:relative;"><div style="width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000;">' + fHtml + '</div><button class="remove-badge-btn" onclick="clearVideo()">×</button></div>';
+        }
+      } catch(e){}
+      // repopulate audio
+      try {
+        var aEl = post.querySelector('.tg-audio-card audio');
+        var aTitle = post.querySelector('.tg-audio-title');
+        if (aEl && aEl.getAttribute('src')) {
+          attachedAudioData = { url: aEl.getAttribute('src'), name: aTitle ? aTitle.innerText : 'Аудио' };
+          document.getElementById('music-container').innerHTML = '<div class="tg-audio-card"><button class="tg-play-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button><div class="tg-audio-body"><div class="tg-audio-title">' + attachedAudioData.name + '</div><div class="tg-audio-time">Аудиозапись</div></div><button class="remove-badge-btn" onclick="clearAudio()">×</button></div>';
+        }
+      } catch(e){}
       // keep stable ID across edit; drop old stored copy now (publish overwrites same ID)
       try {
         var eid = post.getAttribute('data-post-id');
         if (eid) { TANHO_EDITING_ID = eid; deletePostRecord(eid); }
       } catch(e){}
-      // удалить старый пост после редактирования (как обновление)
       post.remove();
       openEditor();
     }
@@ -272,12 +313,11 @@ function toggleSubscribe(btn){
     + '<div class="post-header-actions">'
     + '<button class="post-menu-btn" onclick="togglePostMenu(this)">⋮</button>'
     + '<div class="post-menu-dropdown">'
-    + '<button onclick="handlePostMenuAction(\'interesting\', this)">Интересный</button>'
-    + '<button onclick="handlePostMenuAction(\'not_interesting\', this)">Неинтересный</button>'
-    + '<button class="danger" onclick="handlePostMenuAction(\'report\', this)">Пожаловаться</button>'
-            + '<button onclick="handlePostMenuAction(\'edit\', this)">✏️ Редактировать</button>'
-            + '<button class="danger" onclick="handlePostMenuAction(\'delete\', this)">Удалить</button>'
-    + '<button class="danger" onclick="handlePostMenuAction(\'delete\', this)">Удалить</button>'
+    + '<button onclick="handlePostMenuAction(\'interesting\', this)"><svg class="ic" width="14" height="14"><use href="assets/icons.svg#i-check"/></svg>Интересный</button>'
+    + '<button onclick="handlePostMenuAction(\'not_interesting\', this)"><svg class="ic" width="14" height="14"><use href="assets/icons.svg#i-x"/></svg>Не интересно</button>'
+    + '<button class="danger" onclick="handlePostMenuAction(\'report\', this)"><svg class="ic" width="14" height="14"><use href="assets/icons.svg#i-info"/></svg>Пожаловаться</button>'
+    + '<button onclick="handlePostMenuAction(\'edit\', this)"><svg class="ic" width="14" height="14"><use href="assets/icons.svg#i-edit"/></svg>Редактировать</button>'
+    + '<button class="danger" onclick="handlePostMenuAction(\'delete\', this)"><svg class="ic" width="14" height="14"><use href="assets/icons.svg#i-trash"/></svg>Удалить</button>'
     + '</div></div></div>'
     + bodyOrderHTML
     + '<div class="post-actions">'

@@ -75,9 +75,9 @@
             <button class="subscribe-btn" onclick="toggleSubscribe(this)">Подписаться</button>
             <button class="post-menu-btn" onclick="togglePostMenu(this)">⋮</button>
             <div class="post-menu-dropdown">
-              <button onclick="handlePostMenuAction('interesting', this)">Интересный</button>
-              <button onclick="handlePostMenuAction('not_interesting', this)">Неинтересный</button>
-              <button class="danger" onclick="handlePostMenuAction('report', this)">Пожаловаться</button>
+              <button onclick="handlePostMenuAction('interesting', this)"><svg class="ic" width="14" height="14"><use href="assets/icons.svg#i-check"/></svg>Интересный</button>
+              <button onclick="handlePostMenuAction('not_interesting', this)"><svg class="ic" width="14" height="14"><use href="assets/icons.svg#i-x"/></svg>Не интересно</button>
+              <button class="danger" onclick="handlePostMenuAction('report', this)"><svg class="ic" width="14" height="14"><use href="assets/icons.svg#i-info"/></svg>Пожаловаться</button>
             </div>
           </div>
         </div>
