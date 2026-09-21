@@ -3,6 +3,8 @@
   // 💬 🔥 УПРАВЛЕНИЕ ОБЩИМ ЧАТОМ + persistence
   // withUserId: optional DM target — permission is checked here, right before opening
   var TANHO_DM_TARGET = null;
+  var TANHO_CHAT_PUSHED = false;
+  var TANHO_CHAT_CLOSING = false;
   function openGeneralChat(skipPersist, withUserId) {
     if (withUserId && typeof TANHO_USERS !== 'undefined' && TANHO_USERS[withUserId]) {
       if (typeof canReceiveDM === 'function' && !canReceiveDM(TANHO_USERS[withUserId])) return dmBlockedNotice();
@@ -13,13 +15,27 @@
     if (container) container.scrollTop = container.scrollHeight;
     if (!skipPersist) {
       try { localStorage.setItem('tanho_page', 'generalChat'); } catch(e){}
-      if (location.hash.slice(1) !== 'chat') history.replaceState(null,'','#chat');
+      if (location.hash.slice(1) !== 'chat') {
+        try { history.pushState({tanhoChat:true}, '', '#chat'); TANHO_CHAT_PUSHED = true; } catch(e){ history.replaceState(null,'','#chat'); }
+      }
     }
     setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
   }
 
   function closeGeneralChat(skipPersist) {
     TANHO_DM_TARGET = null;
+    var wasPushed = TANHO_CHAT_PUSHED;
+    if (wasPushed && !skipPersist) {
+      TANHO_CHAT_PUSHED = false;
+      TANHO_CHAT_CLOSING = true;
+      try { history.back(); } catch(e){ TANHO_CHAT_CLOSING = false; }
+      // actual DOM cleanup will happen on popstate; do minimal now
+      document.getElementById('generalChatScreen').classList.remove('active');
+      try { document.getElementById('replyPreview')?.classList.remove('active'); document.getElementById('replyPreview').style.display='none'; } catch(e){}
+      document.querySelectorAll('.reaction-picker.active').forEach(p=>p.classList.remove('active'));
+      setTimeout(()=>{ TANHO_CHAT_CLOSING=false; if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
+      return;
+    }
     document.getElementById('generalChatScreen').classList.remove('active');
     // всегда показать капсулу, сбросить превью ответа
     try { document.getElementById('replyPreview')?.classList.remove('active'); document.getElementById('replyPreview').style.display='none'; } catch(e){}
@@ -188,5 +204,31 @@
     clearReply();
     container.scrollTop = container.scrollHeight;
   }
+  window.addEventListener('popstate', function(e){
+    if (TANHO_CHAT_CLOSING) { TANHO_CHAT_CLOSING = false; TANHO_CHAT_PUSHED = false; return; }
+    var isActive = document.getElementById('generalChatScreen')?.classList.contains('active');
+    // if we were pushed and now the history state is not chat, user pressed back -> close
+    if (TANHO_CHAT_PUSHED && isActive) {
+      var isChatState = e.state && e.state.tanhoChat;
+      // if popped state was chat (now state is not chat) or hash is not #chat, close
+      if (!isChatState && location.hash.slice(1) !== 'chat') {
+        TANHO_CHAT_PUSHED = false;
+        // close without pushing history again
+        document.getElementById('generalChatScreen').classList.remove('active');
+        try { document.getElementById('replyPreview')?.classList.remove('active'); document.getElementById('replyPreview').style.display='none'; } catch(err){}
+        document.querySelectorAll('.reaction-picker.active').forEach(p=>p.classList.remove('active'));
+        try {
+          var last = localStorage.getItem('tanho_page_before_chat') || 'pageMain';
+          var map={pageMain:'main',pageReels:'reels',pageProfile:'profile'};
+          var h = map[last] || 'main';
+          if (location.hash.slice(1)==='chat') history.replaceState(null,'', h==='main' ? '#main' : '#'+h);
+        } catch(err){}
+        setTimeout(()=>{ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
+      }
+    } else if (TANHO_CHAT_PUSHED && !isActive) {
+      TANHO_CHAT_PUSHED = false;
+    }
+  });
+
   const statusEl = document.getElementById('chatHeaderStatus');
   const defaultStatus = '1,284 участников • 142 онлайн';

@@ -78,6 +78,99 @@
     if (location.hash.slice(1) !== hash) history.replaceState(null,'','#'+hash);
   }
 
+  // --- unified hardware/gesture Back: close topmost layer or go to main ---
+  (function(){
+    var lastBackExitToast = 0;
+    function isModalOverlayActive(){
+      try {
+        if (document.getElementById('info-modal')?.classList.contains('active')) return true;
+        if (document.getElementById('location-modal')?.classList.contains('active')) return true;
+        if (document.getElementById('video-modal')?.classList.contains('active')) return true;
+        if (document.getElementById('auth-modal')?.classList.contains('active')) return true;
+      } catch(e){}
+      return false;
+    }
+    function handleBack(){
+      // 1) close topmost overlay/screen first (those already use pushState)
+      try {
+        if (document.getElementById('editorModal')?.classList.contains('open')) { if(typeof closeEditor==='function') closeEditor(); return true; }
+        if (document.querySelector('.screen-overlay.active')) { if(typeof closeScreen==='function') closeScreen(); else if(typeof goBackScreen==='function') goBackScreen(); return true; }
+        if (document.getElementById('drawerOverlay')?.classList.contains('active')) { if(typeof closeBurgerDrawer==='function') closeBurgerDrawer(); return true; }
+        if (isModalOverlayActive()) { if(typeof closeInfoModal==='function') closeInfoModal(); try{ document.querySelectorAll('.modal-overlay.active').forEach(function(m){m.classList.remove('active');}); }catch(e){} return true; }
+        if (document.getElementById('generalChatScreen')?.classList.contains('active')) { if(typeof closeGeneralChat==='function') closeGeneralChat(); return true; }
+        if (document.getElementById('settingsPage')?.classList.contains('active')) { try{ document.getElementById('settingsPage').classList.remove('active'); if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }catch(e){} return true; }
+      } catch(e){}
+      // 2) profile as separate screen: back to previous tab
+      try {
+        if (document.getElementById('pageProfile')?.classList.contains('active')) {
+          if (typeof goBackFromProfile === 'function') goBackFromProfile();
+          else {
+            var b=document.querySelector('.floating-nav-container .nav-item-pill:first-child');
+            if(typeof switchPage==='function') switchPage('pageMain', b);
+          }
+          return true;
+        }
+      } catch(e){}
+      // 3) other tabs: back to main instead of exiting
+      try {
+        var isMain = document.getElementById('pageMain')?.classList.contains('active');
+        if (!isMain) {
+          var b=document.querySelector('.floating-nav-container .nav-item-pill:first-child');
+          if(typeof switchPage==='function') switchPage('pageMain', b);
+          try { history.replaceState(null,'','#main'); } catch(e){}
+          return true;
+        }
+      } catch(e){}
+      // 4) on main: double-press to exit
+      try {
+        var now = Date.now();
+        if (now - lastBackExitToast < 2000) return false;
+        lastBackExitToast = now;
+        if (typeof openInfoModal === 'function') openInfoModal('Выход', 'Нажмите Назад ещё раз, чтобы выйти.');
+        else alert('Нажмите Назад ещё раз, чтобы выйти.');
+        setTimeout(function(){ try{ closeInfoModal(); }catch(e){} }, 1500);
+      } catch(e){}
+      return true;
+    }
+    // history pop (gesture / system back)
+    window.addEventListener('popstate', function(e){
+      // if we pushed tanho states, let their own handlers run first; otherwise handle here
+      // delay to let other popstate handlers fire, then check if still needing handling
+      setTimeout(function(){
+        // if any overlay was just closed by its own handler, nothing to do
+        try {
+          var anyOverlay = document.getElementById('editorModal')?.classList.contains('open')
+            || document.querySelector('.screen-overlay.active')
+            || document.getElementById('drawerOverlay')?.classList.contains('active')
+            || isModalOverlayActive()
+            || document.getElementById('generalChatScreen')?.classList.contains('active')
+            || document.getElementById('settingsPage')?.classList.contains('active')
+            || document.getElementById('pageProfile')?.classList.contains('active');
+          // if still any overlay, or not on main, handleBack will have been called via its own popstate;
+          // if we are here due to root pop, ensure we don't exit immediately
+          if (!anyOverlay) {
+            var isMain = document.getElementById('pageMain')?.classList.contains('active');
+            if (!isMain) { handleBack(); history.pushState({tanhoRoot:true},''); }
+            else { history.pushState({tanhoRoot:true},''); handleBack(); }
+          }
+        } catch(err){}
+      }, 30);
+    });
+    // Capacitor hardware back
+    try {
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+        window.Capacitor.Plugins.App.addListener('backButton', function(e){
+          if (handleBack()) e.canGoBack = false;
+        });
+      } else {
+        document.addEventListener('backbutton', function(e){ if(handleBack()){ e.preventDefault(); e.stopPropagation(); } }, false);
+      }
+    } catch(e){}
+    // ensure there is a history entry to intercept first back on main
+    try { history.pushState({tanhoRoot:true},''); } catch(e){}
+    window.TANHO_handleBack = handleBack;
+  })();
+
   // ОБЩИЕ ФУНКЦИИ
   function openSearch() {
     document.getElementById('headerLogo').style.display = 'none';
