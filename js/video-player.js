@@ -87,9 +87,27 @@ var TANHO_VIDEO_PLAYER = {
     this.updateMiniPlayerUI();
   },
 
+  _vkPlayer: function(iframe) {
+    try {
+      if (!iframe) return null;
+      if (iframe._vkPlayer) return iframe._vkPlayer;
+      if (typeof VK !== 'undefined' && VK.VideoPlayer) {
+        var pl = VK.VideoPlayer(iframe);
+        iframe._vkPlayer = pl;
+        return pl;
+      }
+    } catch (e) {}
+    return null;
+  },
+
   pauseVideo: function(st) {
     if (!st || !st.iframe) return;
-    try { st.iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }), '*'); } catch (e) {}
+    var handled = false;
+    try {
+      var pl = this._vkPlayer(st.iframe);
+      if (pl && pl.pause) { pl.pause(); handled = true; }
+    } catch (e) {}
+    if (!handled) try { st.iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }), '*'); } catch (e) {}
     try {
       var v = st.iframe.parentElement ? st.iframe.parentElement.querySelector('video') : null;
       if (v && !v.paused) v.pause();
@@ -101,7 +119,12 @@ var TANHO_VIDEO_PLAYER = {
   resumeVideo: function(st) {
     st = st || this.activeVideo;
     if (!st || !st.iframe) return;
-    try { st.iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*'); } catch (e) {}
+    var handled = false;
+    try {
+      var pl = this._vkPlayer(st.iframe);
+      if (pl && pl.play) { pl.play(); handled = true; }
+    } catch (e) {}
+    if (!handled) try { st.iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*'); } catch (e) {}
     try {
       var v = st.iframe.parentElement ? st.iframe.parentElement.querySelector('video') : null;
       if (v && v.paused) { var pr = v.play(); if (pr && pr.catch) pr.catch(function() {}); }
