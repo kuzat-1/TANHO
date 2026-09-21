@@ -142,6 +142,7 @@ function renderScreen(name){
   else if (name === 'storage') updateStorageInfo();
   else if (name === 'notif-settings') syncPrefSwitches();
   else if (name === 'privacy') { if (typeof syncAllowDMSwitch === 'function') syncAllowDMSwitch(); }
+  else if (name === 'comments') { if (typeof renderCommentsList === 'function') renderCommentsList(); }
   else if (name === 'settings') { updateStorageInfo(); syncLanguageLabel(); }
 }
 

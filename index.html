@@ -1006,6 +1006,24 @@
     <div class="screen-body"><div class="screen-card" id="followingList"></div></div>
   </div>
 
+  <!-- 💬 Комментарии — Instagram style bottom sheet -->
+  <div class="screen-overlay comments-sheet" id="screen-comments" aria-label="Комментарии">
+    <div class="comments-header">
+      <div class="comments-title">Комментарии <span id="commentsCount">0</span></div>
+      <button class="comments-close" onclick="closeComments()" aria-label="Закрыть">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="comments-list" id="commentsList"></div>
+    <div class="comments-input-bar">
+      <img class="comments-input-avatar" id="commentsInputAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="">
+      <input type="text" class="comments-input" id="commentsInput" placeholder="Добавьте комментарий..." autocomplete="off" onkeypress="if(event.key==='Enter') sendComment()">
+      <button class="comments-send" onclick="sendComment()" aria-label="Отправить">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
 </div>
 
 <!-- СКТРИПТЫ И ИНТЕРАКТИВ -->

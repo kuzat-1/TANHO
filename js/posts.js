@@ -179,17 +179,135 @@ function toggleSubscribe(btn){
     }
     countSpan.textContent = count;
   }
-  function toggleComments(btn){
-    const countSpan = btn.querySelector('.comments-count');
-    let c = parseInt(countSpan.textContent) || 0;
-    const txt = prompt('Напиши комментарий:');
-    if(txt && txt.trim()){
-      c++;
-      countSpan.textContent = c;
-      // haptic
-      if(navigator.vibrate) navigator.vibrate(20);
+  var TANHO_COMMENTS = {};
+  var TANHO_CURRENT_COMMENT_POST = null;
+  try {
+    var _cc = JSON.parse(localStorage.getItem('tanho_comments') || '{}');
+    if (_cc && typeof _cc === 'object') TANHO_COMMENTS = _cc;
+  } catch(e){}
+  function saveComments(){ try { localStorage.setItem('tanho_comments', JSON.stringify(TANHO_COMMENTS)); } catch(e){} }
+  function getComments(postId){ return TANHO_COMMENTS[postId] || []; }
+  function openComments(btn){
+    var post = btn ? btn.closest('.post-card') : null;
+    var postId = post ? post.getAttribute('data-post-id') : null;
+    if (!postId) {
+      postId = 'static_' + (post ? post.querySelector('.post-title-text')?.textContent.trim().slice(0,20) : 'unknown');
+      if (post) post.setAttribute('data-post-id', postId);
+    }
+    TANHO_CURRENT_COMMENT_POST = postId;
+    var storedCount = getComments(postId).length;
+    var domCount = 0;
+    try { domCount = parseInt(btn.querySelector('.comments-count')?.textContent) || 0; } catch(e){}
+    var displayCount = Math.max(storedCount, domCount);
+    // if stored is 0 and dom is 84, keep 84 until new comments are added
+    if (storedCount === 0 && domCount > 0) displayCount = domCount;
+    document.getElementById('commentsCount').textContent = displayCount;
+    renderCommentsList();
+    if (typeof openScreen === 'function') openScreen('comments');
+    else {
+      document.getElementById('screen-comments').classList.add('active');
+      try { history.pushState({tanhoComments:true}, ''); } catch(e){}
+    }
+    setTimeout(function(){ document.getElementById('commentsInput')?.focus(); }, 300);
+    try {
+      var av = document.getElementById('commentsInputAvatar');
+      var cur = TANHO_USERS[getCurrentUserId()];
+      if (av && cur) av.src = cur.avatar;
+    } catch(e){}
+    if (typeof updateFloatingNavVisibility === 'function') updateFloatingNavVisibility();
+  }
+  function closeComments(){
+    if (typeof closeScreen === 'function' && document.getElementById('screen-comments')?.classList.contains('active')) {
+      closeScreen();
+    } else {
+      document.getElementById('screen-comments').classList.remove('active');
+      try { if (history.state && history.state.tanhoComments) history.back(); } catch(e){}
+    }
+    TANHO_CURRENT_COMMENT_POST = null;
+    setTimeout(function(){ if(typeof updateFloatingNavVisibility==='function') updateFloatingNavVisibility(); }, 30);
+  }
+  function renderCommentsList(){
+    var list = document.getElementById('commentsList');
+    if (!list || !TANHO_CURRENT_COMMENT_POST) return;
+    var comments = getComments(TANHO_CURRENT_COMMENT_POST);
+    if (!comments.length) {
+      list.innerHTML = '<div style="text-align:center; padding:40px 20px; color:var(--text-sub);"><div style="width:48px;height:48px;border-radius:50%;background:var(--btn-secondary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px auto;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div><div style="font-size:14px; font-weight:600; color:var(--text-main);">Пока нет комментариев</div><div style="font-size:13px; margin-top:4px;">Станьте первым, кто оставит комментарий</div></div>';
+      return;
+    }
+    list.innerHTML = comments.map(function(c){
+      return '<div class="comment-item">'
+        + '<img class="comment-avatar" src="' + (c.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100') + '" alt="">'
+        + '<div class="comment-body">'
+        + '<div class="comment-author">' + escapeHtml(c.author) + ' <span style="font-weight:400; color:var(--text-sub); font-size:12px;">• ' + escapeHtml(c.time) + '</span></div>'
+        + '<div class="comment-text">' + escapeHtml(c.text) + '</div>'
+        + '<div class="comment-meta"><span class="comment-like' + (c.liked ? ' active' : '') + '" onclick="toggleCommentLike(\'' + c.id + '\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="' + (c.liked ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> ' + (c.likes || 0) + '</span><span onclick="replyToComment(\'' + c.id + '\')" style="cursor:pointer;">Ответить</span></div>'
+        + '</div></div>';
+    }).join('');
+    list.scrollTop = list.scrollHeight;
+  }
+  function sendComment(){
+    var input = document.getElementById('commentsInput');
+    var text = input ? input.value.trim() : '';
+    if (!text || !TANHO_CURRENT_COMMENT_POST) return;
+    var postId = TANHO_CURRENT_COMMENT_POST;
+    var cur = null;
+    try { cur = TANHO_USERS[getCurrentUserId()]; } catch(e){}
+    var comment = {
+      id: 'c' + Date.now(),
+      author: cur ? cur.name : 'Вы',
+      avatar: cur ? cur.avatar : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100',
+      text: text,
+      time: 'сейчас',
+      likes: 0,
+      liked: false
+    };
+    if (!TANHO_COMMENTS[postId]) TANHO_COMMENTS[postId] = [];
+    TANHO_COMMENTS[postId].push(comment);
+    saveComments();
+    try {
+      var post = document.querySelector('.post-card[data-post-id="' + postId + '"]');
+      if (post) {
+        var span = post.querySelector('.comments-count');
+        if (span) {
+          var curCount = parseInt(span.textContent) || 0;
+          span.textContent = curCount + 1;
+          document.getElementById('commentsCount').textContent = curCount + 1;
+        } else {
+          document.getElementById('commentsCount').textContent = TANHO_COMMENTS[postId].length;
+        }
+      } else {
+        document.getElementById('commentsCount').textContent = TANHO_COMMENTS[postId].length;
+      }
+    } catch(e){
+      try { document.getElementById('commentsCount').textContent = TANHO_COMMENTS[postId].length; } catch(err){}
+    }
+    input.value = '';
+    renderCommentsList();
+    if (navigator.vibrate) navigator.vibrate(20);
+  }
+  function toggleCommentLike(id){
+    if (!TANHO_CURRENT_COMMENT_POST) return;
+    var list = TANHO_COMMENTS[TANHO_CURRENT_COMMENT_POST];
+    if (!list) return;
+    var c = list.find(function(x){ return x.id === id; });
+    if (!c) return;
+    c.liked = !c.liked;
+    c.likes = (c.likes || 0) + (c.liked ? 1 : -1);
+    if (c.likes < 0) c.likes = 0;
+    saveComments();
+    renderCommentsList();
+    if (navigator.vibrate) navigator.vibrate(15);
+  }
+  function replyToComment(id){
+    var c = (TANHO_COMMENTS[TANHO_CURRENT_COMMENT_POST] || []).find(function(x){ return x.id === id; });
+    if (c) {
+      var inp = document.getElementById('commentsInput');
+      inp.value = '@' + c.author + ' ';
+      inp.focus();
     }
   }
+  // keep old name for compatibility, but now opens screen
+  function toggleComments(btn){ openComments(btn); }
   function toggleBookmark(btn){
     const svg = btn.querySelector('svg');
     const isActive = btn.getAttribute('data-bookmarked') === '1';
