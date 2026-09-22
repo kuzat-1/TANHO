@@ -35,28 +35,51 @@
 }
 .nav-capsule-box, .floating-add-btn { pointer-events: auto; }
 
-/* ---------- wide dark capsule with large rounding ---------- */
+/* ---------- wide dark capsule with true concave notch ---------- */
 .nav-capsule-box {
   position: relative;
   flex: 1;
   min-height: 68px;
-  background: rgba(18, 20, 34, 0.96);
-  backdrop-filter: blur(24px) saturate(1.2);
-  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  background: transparent;
   border-radius: 32px;
   padding: 6px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: none;
+  overflow: visible;
 }
-body.light-theme .nav-capsule-box {
+/* masked fill — true hole in the panel */
+.nav-capsule-box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: rgba(18, 20, 34, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border-radius: 32px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.06);
+  -webkit-mask: radial-gradient(circle 38px at 50% 0, transparent 37.5px, black 38.5px);
+  mask: radial-gradient(circle 38px at 50% 0, transparent 37.5px, black 38.5px);
+  pointer-events: none;
+  z-index: 0;
 }
+/* 1px rim that follows the notch contour */
+.nav-capsule-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 32px;
+  -webkit-mask: radial-gradient(circle 39.5px at 50% 0, transparent 39px, black 40px);
+  mask: radial-gradient(circle 39.5px at 50% 0, transparent 39px, black 40px);
+  pointer-events: none;
+  z-index: 0;
+}
+body.light-theme .nav-capsule-box { background: transparent; }
+body.light-theme .nav-capsule-box::after { background: rgba(18, 20, 34, 0.96); }
+body.light-theme .nav-capsule-box::before { background: rgba(255,255,255,0.08); }
 
 /* ---------- nav items — neat modern ---------- */
 .nav-item-pill {
@@ -103,17 +126,17 @@ body.light-theme .nav-item-pill { color: #7a8196; }
 body.light-theme .nav-item-pill.active { background: transparent; color: #8b5cf6; }
 body.light-theme .nav-item-pill.active .nav-icon { color: #8b5cf6; }
 
-/* center spacer for FAB notch */
+/* center spacer for FAB notch — keeps tabs clear of hole */
 .nav-center-gap {
-  flex: 0 0 72px;
+  flex: 0 0 78px;
   height: 1px;
 }
 
-/* ---------- FAB 64px centered, protruding above capsule ---------- */
+/* ---------- FAB 64px integrated in concave notch ---------- */
 .floating-add-btn {
   position: absolute;
   left: 50%;
-  top: -18px;
+  top: -28px;
   transform: translateX(-50%);
   width: 64px;
   height: 64px;
@@ -130,6 +153,8 @@ body.light-theme .nav-item-pill.active .nav-icon { color: #8b5cf6; }
   transition: transform 0.15s ease, box-shadow 0.2s ease;
   z-index: 2;
 }
+/* ensure tab buttons render above the pseudo border layers */
+.nav-item-pill, .nav-center-gap { position: relative; z-index: 1; }
 .floating-add-btn:active {
   transform: translateX(-50%) scale(0.93);
   box-shadow: 0 6px 18px rgba(124, 58, 237, 0.55);
@@ -149,12 +174,16 @@ body.nav-hidden #pageProfile {
 @media (max-width: 360px) {
   .floating-nav-container { width: calc(100% - 14px); }
   .nav-capsule-box { min-height: 64px; border-radius: 28px; padding: 6px 6px; }
+  .nav-capsule-box::after { -webkit-mask: radial-gradient(circle 36px at 50% 0, transparent 35.5px, black 36.5px); mask: radial-gradient(circle 36px at 50% 0, transparent 35.5px, black 36.5px); }
+  .nav-capsule-box::before { -webkit-mask: radial-gradient(circle 37.5px at 50% 0, transparent 37px, black 38px); mask: radial-gradient(circle 37.5px at 50% 0, transparent 37px, black 38px); }
   .nav-center-gap { flex-basis: 64px; }
-  .floating-add-btn { width: 60px; height: 60px; top: -16px; }
+  .floating-add-btn { width: 60px; height: 60px; top: -26px; }
   .nav-item-pill .nav-text { font-size: 10px; }
   .nav-item-pill .nav-icon { width: 22px; height: 22px; }
 }
 @media (max-width: 320px) {
+  .nav-capsule-box::after { -webkit-mask: radial-gradient(circle 34px at 50% 0, transparent 33.5px, black 34.5px); mask: radial-gradient(circle 34px at 50% 0, transparent 33.5px, black 34.5px); }
+  .nav-capsule-box::before { -webkit-mask: radial-gradient(circle 35.5px at 50% 0, transparent 35px, black 36px); mask: radial-gradient(circle 35.5px at 50% 0, transparent 35px, black 36px); }
   .nav-center-gap { flex-basis: 56px; }
-  .floating-add-btn { width: 56px; height: 56px; }
+  .floating-add-btn { width: 56px; height: 56px; top: -24px; }
 }
