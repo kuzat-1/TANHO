@@ -136,7 +136,7 @@ body.light-theme .nav-item-pill.active .nav-icon { color: #8b5cf6; }
 .floating-add-btn {
   position: absolute;
   left: 50%;
-  top: -30px;
+  top: -22px;
   transform: translateX(-50%);
   width: 64px;
   height: 64px;
@@ -177,7 +177,7 @@ body.nav-hidden #pageProfile {
   .nav-capsule-box::after { -webkit-mask: radial-gradient(ellipse 50px 34px at 50% 0, transparent 33.5px, black 34.5px); mask: radial-gradient(ellipse 50px 34px at 50% 0, transparent 33.5px, black 34.5px); }
   .nav-capsule-box::before { -webkit-mask: radial-gradient(ellipse 51px 35px at 50% 0, transparent 34.5px, black 35.5px); mask: radial-gradient(ellipse 51px 35px at 50% 0, transparent 34.5px, black 35.5px); }
   .nav-center-gap { flex-basis: 78px; }
-  .floating-add-btn { width: 60px; height: 60px; top: -28px; }
+  .floating-add-btn { width: 60px; height: 60px; top: -20px; }
   .nav-item-pill .nav-text { font-size: 10px; }
   .nav-item-pill .nav-icon { width: 22px; height: 22px; }
 }
@@ -185,5 +185,5 @@ body.nav-hidden #pageProfile {
   .nav-capsule-box::after { -webkit-mask: radial-gradient(ellipse 48px 32px at 50% 0, transparent 31.5px, black 32.5px); mask: radial-gradient(ellipse 48px 32px at 50% 0, transparent 31.5px, black 32.5px); }
   .nav-capsule-box::before { -webkit-mask: radial-gradient(ellipse 49px 33px at 50% 0, transparent 32.5px, black 33.5px); mask: radial-gradient(ellipse 49px 33px at 50% 0, transparent 32.5px, black 33.5px); }
   .nav-center-gap { flex-basis: 72px; }
-  .floating-add-btn { width: 56px; height: 56px; top: -26px; }
+  .floating-add-btn { width: 56px; height: 56px; top: -18px; }
 }
