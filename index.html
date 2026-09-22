@@ -1006,8 +1006,8 @@
     <div class="screen-body"><div class="screen-card" id="followingList"></div></div>
   </div>
 
-  <!-- 💬 Комментарии — Instagram style bottom sheet -->
-  <div class="screen-overlay comments-sheet" id="screen-comments" aria-label="Комментарии">
+  <!-- 💬 Комментарии — Telegram/Instagram bottom sheet (не на весь экран) -->
+  <div class="screen-overlay comments-sheet" id="screen-comments" aria-label="Комментарии" onclick="if(event.target===this) closeComments()">
     <div class="comments-header">
       <div class="comments-title">Комментарии <span id="commentsCount">0</span></div>
       <button class="comments-close" onclick="closeComments()" aria-label="Закрыть">

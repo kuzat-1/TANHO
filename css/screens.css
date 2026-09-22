@@ -128,19 +128,31 @@ textarea.field-input { height: auto; min-height: 86px; padding: 12px 14px; resiz
   .screen-row { padding-left: 12px; padding-right: 12px; }
 }
 
-/* 💬 Комментарии — Instagram bottom sheet */
+/* 💬 Комментарии — Telegram/Instagram bottom sheet (не на весь экран) */
 .comments-sheet {
-  background: var(--bg-dark);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
   justify-content: flex-end;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+.comments-sheet .comments-header,
+.comments-sheet .comments-list,
+.comments-sheet .comments-input-bar {
+  background: var(--bg-dark);
+}
 .comments-sheet .comments-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px 16px;
+  padding: 14px 16px 14px 16px;
   border-bottom: 1px solid var(--border-color);
   background: var(--card-bg);
   border-radius: 20px 20px 0 0;
   flex-shrink: 0;
+}
+.comments-sheet .comments-list {
+  max-height: 55vh;
+}
+.comments-sheet .comments-input-bar {
+  border-radius: 0;
 }
 .comments-title {
   font-size: 16px; font-weight: 700; color: var(--text-main);
