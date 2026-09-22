@@ -50,7 +50,7 @@
   border: none;
   overflow: visible;
 }
-/* masked fill — true hole in the panel */
+/* masked fill — wide smooth concave notch */
 .nav-capsule-box::after {
   content: "";
   position: absolute;
@@ -59,21 +59,21 @@
   backdrop-filter: blur(24px) saturate(1.2);
   -webkit-backdrop-filter: blur(24px) saturate(1.2);
   border-radius: 32px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.06);
-  -webkit-mask: radial-gradient(circle 38px at 50% 0, transparent 37.5px, black 38.5px);
-  mask: radial-gradient(circle 38px at 50% 0, transparent 37.5px, black 38.5px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.05);
+  -webkit-mask: radial-gradient(ellipse 54px 36px at 50% 0, transparent 35.5px, black 36.5px);
+  mask: radial-gradient(ellipse 54px 36px at 50% 0, transparent 35.5px, black 36.5px);
   pointer-events: none;
   z-index: 0;
 }
-/* 1px rim that follows the notch contour */
+/* subtle rim that follows the wide notch — thinner to reduce ring effect */
 .nav-capsule-box::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 32px;
-  -webkit-mask: radial-gradient(circle 39.5px at 50% 0, transparent 39px, black 40px);
-  mask: radial-gradient(circle 39.5px at 50% 0, transparent 39px, black 40px);
+  -webkit-mask: radial-gradient(ellipse 55px 37px at 50% 0, transparent 36.5px, black 37.5px);
+  mask: radial-gradient(ellipse 55px 37px at 50% 0, transparent 36.5px, black 37.5px);
   pointer-events: none;
   z-index: 0;
 }
@@ -126,28 +126,28 @@ body.light-theme .nav-item-pill { color: #7a8196; }
 body.light-theme .nav-item-pill.active { background: transparent; color: #8b5cf6; }
 body.light-theme .nav-item-pill.active .nav-icon { color: #8b5cf6; }
 
-/* center spacer for FAB notch — keeps tabs clear of hole */
+/* center spacer for FAB notch — wider to match smooth notch */
 .nav-center-gap {
-  flex: 0 0 78px;
+  flex: 0 0 88px;
   height: 1px;
 }
 
-/* ---------- FAB 64px integrated in concave notch ---------- */
+/* ---------- FAB 64px integrated in wide notch — sits inside, not floating ---------- */
 .floating-add-btn {
   position: absolute;
   left: 50%;
-  top: -28px;
+  top: -30px;
   transform: translateX(-50%);
   width: 64px;
   height: 64px;
   border-radius: 50%;
   background: linear-gradient(135deg, #7c3aed 0%, #6366f1 55%, #3b82f6 100%);
-  border: 4px solid rgba(18, 20, 34, 1);
+  border: 3px solid rgba(18, 20, 34, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.55), 0 4px 14px rgba(59,130,246,0.35), 0 0 18px rgba(139,92,246,0.35);
+  box-shadow: 0 8px 22px rgba(124, 58, 237, 0.45), 0 3px 10px rgba(59,130,246,0.30);
   cursor: pointer;
   flex-shrink: 0;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
@@ -174,16 +174,16 @@ body.nav-hidden #pageProfile {
 @media (max-width: 360px) {
   .floating-nav-container { width: calc(100% - 14px); }
   .nav-capsule-box { min-height: 64px; border-radius: 28px; padding: 6px 6px; }
-  .nav-capsule-box::after { -webkit-mask: radial-gradient(circle 36px at 50% 0, transparent 35.5px, black 36.5px); mask: radial-gradient(circle 36px at 50% 0, transparent 35.5px, black 36.5px); }
-  .nav-capsule-box::before { -webkit-mask: radial-gradient(circle 37.5px at 50% 0, transparent 37px, black 38px); mask: radial-gradient(circle 37.5px at 50% 0, transparent 37px, black 38px); }
-  .nav-center-gap { flex-basis: 64px; }
-  .floating-add-btn { width: 60px; height: 60px; top: -26px; }
+  .nav-capsule-box::after { -webkit-mask: radial-gradient(ellipse 50px 34px at 50% 0, transparent 33.5px, black 34.5px); mask: radial-gradient(ellipse 50px 34px at 50% 0, transparent 33.5px, black 34.5px); }
+  .nav-capsule-box::before { -webkit-mask: radial-gradient(ellipse 51px 35px at 50% 0, transparent 34.5px, black 35.5px); mask: radial-gradient(ellipse 51px 35px at 50% 0, transparent 34.5px, black 35.5px); }
+  .nav-center-gap { flex-basis: 78px; }
+  .floating-add-btn { width: 60px; height: 60px; top: -28px; }
   .nav-item-pill .nav-text { font-size: 10px; }
   .nav-item-pill .nav-icon { width: 22px; height: 22px; }
 }
 @media (max-width: 320px) {
-  .nav-capsule-box::after { -webkit-mask: radial-gradient(circle 34px at 50% 0, transparent 33.5px, black 34.5px); mask: radial-gradient(circle 34px at 50% 0, transparent 33.5px, black 34.5px); }
-  .nav-capsule-box::before { -webkit-mask: radial-gradient(circle 35.5px at 50% 0, transparent 35px, black 36px); mask: radial-gradient(circle 35.5px at 50% 0, transparent 35px, black 36px); }
-  .nav-center-gap { flex-basis: 56px; }
-  .floating-add-btn { width: 56px; height: 56px; top: -24px; }
+  .nav-capsule-box::after { -webkit-mask: radial-gradient(ellipse 48px 32px at 50% 0, transparent 31.5px, black 32.5px); mask: radial-gradient(ellipse 48px 32px at 50% 0, transparent 31.5px, black 32.5px); }
+  .nav-capsule-box::before { -webkit-mask: radial-gradient(ellipse 49px 33px at 50% 0, transparent 32.5px, black 33.5px); mask: radial-gradient(ellipse 49px 33px at 50% 0, transparent 32.5px, black 33.5px); }
+  .nav-center-gap { flex-basis: 72px; }
+  .floating-add-btn { width: 56px; height: 56px; top: -26px; }
 }
