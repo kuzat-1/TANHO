@@ -635,7 +635,7 @@
 <nav class="floating-nav-container">
   
   <div class="nav-capsule-box">
-    
+
     <!-- 1. Лента -->
     <button class="nav-item-pill active" onclick="switchNavTab(this, 'pageMain')">
       <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
@@ -658,6 +658,8 @@
       <span class="nav-text">Видео</span>
     </button>
 
+    <div class="nav-center-gap" aria-hidden="true"></div>
+
     <!-- 3. Чаты -->
     <button class="nav-item-pill" onclick="switchNavTab(this, 'openChat')">
       <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
@@ -675,15 +677,15 @@
       <span class="nav-text">Профиль</span>
     </button>
 
-  </div>
+    <!-- Центральный FAB 64px — главный акцент -->
+    <button class="floating-add-btn" onclick="openEditor()" title="Создать" aria-label="Создать пост">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
 
-  <!-- Кнопка "+" -->
-  <button class="floating-add-btn" onclick="openEditor()" title="Создать">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round">
-      <line x1="12" y1="5" x2="12" y2="19"/>
-      <line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-  </button>
+  </div>
 
 </nav>
 
