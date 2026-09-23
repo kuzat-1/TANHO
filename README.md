@@ -76,7 +76,7 @@ JS — от утилит к `screens.js` и `app.js` (init последним). 
 `pageMain`, `pageReels`, `pageProfile`, `generalChatScreen`, `settingsPage`,
 `editorModal`, `auth-modal`, `info-modal`, `burgerDrawer`, `drawerOverlay`,
 `screen-*`, `displayProfile*`, `profilePrimaryBtn`, `profileSecondaryBtn`,
-`filter-tabs .chip`, `feed-grid .feed-card`, `bottom-nav`, `.nav-items`, `.nav-item`, `.nav-gap`, `floating-add-btn`.
+`filter-tabs .chip`, `feed-grid .feed-card`, `bottom-nav`, `.nav-items`, `.nav-item`, `.nav-action-btn`, `.action-btn-circle`.
 
 ## Development
 
