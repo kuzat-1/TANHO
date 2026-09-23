@@ -77,9 +77,8 @@
     if (location.hash.slice(1) !== hash) history.replaceState(null,'','#'+hash);
   }
 
-  // --- unified hardware/gesture Back: close topmost layer or go to main ---
+  // --- unified hardware/gesture Back: close topmost layer or go to main (never exits app) ---
   (function(){
-    var lastBackExitToast = 0;
     function isModalOverlayActive(){
       try {
         if (document.getElementById('info-modal')?.classList.contains('active')) return true;
@@ -120,15 +119,8 @@
           return true;
         }
       } catch(e){}
-      // 4) on main: double-press to exit
-      try {
-        var now = Date.now();
-        if (now - lastBackExitToast < 2000) return false;
-        lastBackExitToast = now;
-        if (typeof openInfoModal === 'function') openInfoModal('Выход', 'Нажмите Назад ещё раз, чтобы выйти.');
-        else alert('Нажмите Назад ещё раз, чтобы выйти.');
-        setTimeout(function(){ try{ closeInfoModal(); }catch(e){} }, 1500);
-      } catch(e){}
+      // 4) on main: Back never exits the app — stays inside (light tap feedback, no hint)
+      try { if (navigator.vibrate) navigator.vibrate(15); } catch(e){}
       return true;
     }
     // history pop (gesture / system back)
