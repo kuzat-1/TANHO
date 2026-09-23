@@ -31,9 +31,10 @@
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   background:
-    linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12)) left top / calc(50% - 52px) 1.5px no-repeat,
-    linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12)) right top / calc(50% - 52px) 1.5px no-repeat,
-    radial-gradient(ellipse 52px 44px at 50% 0, transparent 43px, rgba(255, 255, 255, 0.12) 43.5px, rgba(255, 255, 255, 0.12) 45px, transparent 45.5px),
+    linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)) left top / calc(50% - 52px) 1.5px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)) right top / calc(50% - 52px) 1.5px no-repeat,
+    radial-gradient(ellipse 52px 44px at 50% 0, transparent 42.5px, rgba(255, 255, 255, 0.25) 43.5px, rgba(255, 255, 255, 0.25) 45px, transparent 46px),
+    radial-gradient(ellipse 52px 44px at 50% 0, transparent 45px, rgba(0, 0, 0, 0.35) 48px, transparent 54px),
     radial-gradient(ellipse 52px 44px at 50% 0, transparent 43.5px, rgba(21, 24, 39, 0.82) 44.5px);
   filter: drop-shadow(0 -6px 20px rgba(0, 0, 0, 0.25));
 }
@@ -117,9 +118,10 @@
 /* ---------- light theme: same shape, light panel ---------- */
 body.light-theme .bottom-nav {
   background:
-    linear-gradient(rgba(15, 23, 42, 0.10), rgba(15, 23, 42, 0.10)) left top / calc(50% - 52px) 1.5px no-repeat,
-    linear-gradient(rgba(15, 23, 42, 0.10), rgba(15, 23, 42, 0.10)) right top / calc(50% - 52px) 1.5px no-repeat,
-    radial-gradient(ellipse 52px 44px at 50% 0, transparent 43px, rgba(15, 23, 42, 0.10) 43.5px, rgba(15, 23, 42, 0.10) 45px, transparent 45.5px),
+    linear-gradient(rgba(15, 23, 42, 0.20), rgba(15, 23, 42, 0.20)) left top / calc(50% - 52px) 1.5px no-repeat,
+    linear-gradient(rgba(15, 23, 42, 0.20), rgba(15, 23, 42, 0.20)) right top / calc(50% - 52px) 1.5px no-repeat,
+    radial-gradient(ellipse 52px 44px at 50% 0, transparent 42.5px, rgba(15, 23, 42, 0.20) 43.5px, rgba(15, 23, 42, 0.20) 45px, transparent 46px),
+    radial-gradient(ellipse 52px 44px at 50% 0, transparent 45px, rgba(15, 23, 42, 0.10) 48px, transparent 54px),
     radial-gradient(ellipse 52px 44px at 50% 0, transparent 43.5px, rgba(255, 255, 255, 0.94) 44.5px);
   filter: drop-shadow(0 -6px 20px rgba(15, 23, 42, 0.12));
 }
