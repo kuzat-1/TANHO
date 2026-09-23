@@ -1,7 +1,7 @@
 /* TANHO — js/navigation.js */
 
   function updateFloatingNavVisibility(){
-    const nav = document.querySelector('.floating-nav-container');
+    const nav = document.querySelector('.bottom-nav, .floating-nav-container');
     if(!nav) return;
     const chatActive = document.getElementById('generalChatScreen')?.classList.contains('active');
     const editorOpen = document.getElementById('editorModal')?.classList.contains('open');
@@ -16,7 +16,7 @@
   }
   // Универсальный клик по меню — надёжно
   function switchNavTab(btnEl, target) {
-    document.querySelectorAll('.nav-item-pill').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.nav-item, .nav-item-pill').forEach(btn => btn.classList.remove('active'));
     btnEl.classList.add('active');
     if (target === 'openChat') {
       if (typeof openGeneralChat === 'function') openGeneralChat();
@@ -33,7 +33,7 @@
     document.querySelectorAll('.page-screen').forEach(p => p.classList.remove('active'));
     document.getElementById('pageReels').classList.remove('active');
     document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.nav-item-pill').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.nav-item, .nav-item-pill').forEach(b => b.classList.remove('active'));
 
     if (pageId === 'pageReels') {
       appHeader.style.display = 'none';
@@ -105,7 +105,7 @@
         if (document.getElementById('pageProfile')?.classList.contains('active')) {
           if (typeof goBackFromProfile === 'function') goBackFromProfile();
           else {
-            var b=document.querySelector('.floating-nav-container .nav-item-pill:first-child');
+            var b=document.querySelector('.bottom-nav .nav-item:first-child, .floating-nav-container .nav-item-pill:first-child');
             if(typeof switchPage==='function') switchPage('pageMain', b);
           }
           return true;
@@ -115,7 +115,7 @@
       try {
         var isMain = document.getElementById('pageMain')?.classList.contains('active');
         if (!isMain) {
-          var b=document.querySelector('.floating-nav-container .nav-item-pill:first-child');
+          var b=document.querySelector('.bottom-nav .nav-item:first-child, .floating-nav-container .nav-item-pill:first-child');
           if(typeof switchPage==='function') switchPage('pageMain', b);
           try { history.replaceState(null,'','#main'); } catch(e){}
           return true;
