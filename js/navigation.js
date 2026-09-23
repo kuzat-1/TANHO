@@ -184,3 +184,25 @@
     document.getElementById('headerLogo').style.display = 'block';
     document.getElementById('headerActions').style.display = 'flex';
   }
+
+  /* Запасной замер системных отступов для Android WebView, где
+     env(safe-area-inset-*) иногда равен 0: натив отдаёт реальную высоту
+     навбара через window.TanhoTheme.getNavBarHeight() (CSS px), кладём в
+     --tanho-sab. В браузере моста нет — остаётся чистый env(). */
+  (function(){
+    function tanhoSyncNavInset(){
+      var h = 0;
+      try {
+        if (window.TanhoTheme && typeof window.TanhoTheme.getNavBarHeight === 'function') {
+          h = parseInt(window.TanhoTheme.getNavBarHeight(), 10) || 0;
+        }
+      } catch (e) { h = 0; }
+      try { document.documentElement.style.setProperty('--tanho-sab', (h > 0 ? h : 0) + 'px'); } catch (e) {}
+    }
+    window.tanhoSyncNavInset = tanhoSyncNavInset;
+    try {
+      document.addEventListener('DOMContentLoaded', function(){ tanhoSyncNavInset(); setTimeout(tanhoSyncNavInset, 600); });
+      window.addEventListener('resize', tanhoSyncNavInset);
+      window.addEventListener('orientationchange', function(){ setTimeout(tanhoSyncNavInset, 300); });
+    } catch (e) {}
+  })();
