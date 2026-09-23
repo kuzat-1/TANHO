@@ -1,6 +1,7 @@
 /* TANHO — theme.css */
 /* ☀️ СВЕТЛАЯ ТЕМА */
     body.light-theme {
+      background-color: #f4f5f9;
       --bg-main: #f4f5f9;
       --bg-dark: #f4f5f9;
       --card-bg: #ffffff;
