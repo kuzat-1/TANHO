@@ -14,12 +14,14 @@
 }
 .nav-tab-btn.active { color: #a855f7; font-weight: 700; }
 
-/* Нижнее меню на всю ширину с матовым эффектом */
+/* Нижнее меню с матовым эффектом — центрировано, max 500px, чтобы SVG-выемка не растягивалась на широких экранах */
 .bottom-nav {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
+  max-width: 500px;
   height: 65px;
   z-index: 1000;
   padding-bottom: env(safe-area-inset-bottom, 0px);

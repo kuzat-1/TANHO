@@ -15,13 +15,7 @@
       --glass-border: rgba(0, 0, 0, 0.1);
       --input-bg: #e2e8f0;
     }
-    /* светлая тема: нижнее меню всегда тёмное, Reels всегда тёмный */
-    body.light-theme .bottom-nav {
-      background: rgba(8, 9, 16, 0.92) !important;
-      border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-    }
-    body.light-theme .bottom-nav .nav-tab-btn { color: #64748b !important; }
-    body.light-theme .bottom-nav .nav-tab-btn.active { color: #a855f7 !important; }
+    /* светлая тема: панель нижнего меню красится SVG-заливкой в navigation.css — без фоновых прямоугольников, чтобы выемка оставалась прозрачной; Reels всегда тёмный */
     body.light-theme #reelsReelsTab { background: #000 !important; }
     body.light-theme #reelsReelsTab .reel-card { color: #fff; }
     body.light-theme #reelsReelsTab .reel-author-handle,
