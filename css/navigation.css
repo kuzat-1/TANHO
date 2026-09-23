@@ -1,8 +1,8 @@
-/* TANHO — navigation.css — Bottom-Navigation 1:1 + light-theme support */
+/* TANHO — navigation.css — Bottom-Navigation.html 1:1 */
 .page-screen { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding-bottom: 90px; position: relative; background: var(--bg-dark); }
 .page-screen.active { display: flex; }
 
-/* legacy selectors (kept for JS compatibility) */
+/* legacy selectors (kept for JS compatibility, no visual effect) */
 .floating-nav-container { display: contents; }
 .nav-capsule-box { display: contents; }
 .nav-center-gap { display: none; }
@@ -14,34 +14,31 @@
 }
 .nav-tab-btn.active { color: #a855f7; font-weight: 700; }
 
-/* Нижнее меню во всю ширину — выемка нарисована CSS-градиентами с фиксированным
-   размером (эллипс 52x44 по центру), поэтому форма одинакова на любой ширине
-   экрана: от 320px телефона до широкого десктопа. Ничего не растягивается. */
+/* Нижнее меню на всю ширину с матовым эффектом */
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: calc(65px + env(safe-area-inset-bottom, 0px));
-  box-sizing: border-box;
+  height: 65px;
   z-index: 1000;
   padding-bottom: env(safe-area-inset-bottom, 0px);
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)) left top / calc(50% - 52px) 1.5px no-repeat,
-    linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)) right top / calc(50% - 52px) 1.5px no-repeat,
-    radial-gradient(ellipse 52px 44px at 50% 0, transparent 42.5px, rgba(255, 255, 255, 0.25) 43.5px, rgba(255, 255, 255, 0.25) 45px, transparent 46px),
-    radial-gradient(ellipse 52px 44px at 50% 0, transparent 45px, rgba(0, 0, 0, 0.35) 48px, transparent 54px),
-    radial-gradient(ellipse 52px 44px at 50% 0, transparent 43.5px, rgba(21, 24, 39, 0.82) 44.5px);
+}
+
+.nav-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
   filter: drop-shadow(0 -6px 20px rgba(0, 0, 0, 0.25));
 }
 
-/* SVG-фон из референса больше не нужен — геометрия переехала в background выше (адаптивно).
-   Сам тег остаётся в DOM, просто скрыт. */
-.nav-bg { display: none; }
 .nav-bg .nav-bg-fill { fill: rgba(21, 24, 39, 0.82); }
 .nav-bg .nav-bg-stroke { stroke: rgba(255, 255, 255, 0.12); }
 
@@ -112,24 +109,15 @@
 
 .nav-item.active .nav-icon {
   color: #A78BFA;
-  filter: drop-shadow(0 0 6px rgba(167,139,250,0.5));
 }
 
-/* ---------- light theme: same shape, light panel ---------- */
-body.light-theme .bottom-nav {
-  background:
-    linear-gradient(rgba(15, 23, 42, 0.20), rgba(15, 23, 42, 0.20)) left top / calc(50% - 52px) 1.5px no-repeat,
-    linear-gradient(rgba(15, 23, 42, 0.20), rgba(15, 23, 42, 0.20)) right top / calc(50% - 52px) 1.5px no-repeat,
-    radial-gradient(ellipse 52px 44px at 50% 0, transparent 42.5px, rgba(15, 23, 42, 0.20) 43.5px, rgba(15, 23, 42, 0.20) 45px, transparent 46px),
-    radial-gradient(ellipse 52px 44px at 50% 0, transparent 45px, rgba(15, 23, 42, 0.10) 48px, transparent 54px),
-    radial-gradient(ellipse 52px 44px at 50% 0, transparent 43.5px, rgba(255, 255, 255, 0.94) 44.5px);
-  filter: drop-shadow(0 -6px 20px rgba(15, 23, 42, 0.12));
-}
+/* ---------- light theme: same SVG shape, light fill ---------- */
+body.light-theme .nav-bg { filter: drop-shadow(0 -6px 20px rgba(15, 23, 42, 0.12)); }
 body.light-theme .nav-bg .nav-bg-fill { fill: rgba(255, 255, 255, 0.94); }
 body.light-theme .nav-bg .nav-bg-stroke { stroke: rgba(15, 23, 42, 0.10); }
 body.light-theme .nav-item { color: #64748b; }
 body.light-theme .nav-item.active { color: #7c3aed; }
-body.light-theme .nav-item.active .nav-icon { color: #7c3aed; filter: none; }
+body.light-theme .nav-item.active .nav-icon { color: #7c3aed; }
 body.light-theme .floating-add-btn {
   box-shadow: 0 8px 25px rgba(124, 58, 237, 0.45),
               0 0 20px rgba(99, 102, 241, 0.25);
