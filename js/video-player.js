@@ -10,6 +10,8 @@ var TANHO_VIDEO_PLAYER = {
     this.createMiniPlayer();
     this.setupIntersectionObserver();
     this.bindGlobalEvents();
+    this.guardVkIframes();
+    this.observeNewIframes();
   },
 
   createMiniPlayer: function() {
@@ -69,6 +71,124 @@ var TANHO_VIDEO_PLAYER = {
     try { this.observer.unobserve(postEl); } catch (e) {}
   },
 
+  /* ----- single-playback guard: taps inside a VK iframe never reach our
+     document, so every VK iframe gets a transparent catcher. First tap on a
+     video stops everything else, then starts this one via the VK API. ----- */
+  guardVkIframes: function(root) {
+    var self = this;
+    var frames = [];
+    try {
+      var scope = root || document;
+      var box = document.getElementById('postsContainer');
+      if (box && (scope === document || (scope.contains && scope.contains(box)) || scope === box)) scope = box;
+      if (scope.querySelectorAll) frames = Array.prototype.slice.call(scope.querySelectorAll('iframe[src*="video_ext"]'));
+    } catch (e) { frames = []; }
+    frames.forEach(function(fr) { self.ensureCatcher(fr); });
+  },
+
+  ensureCatcher: function(iframe) {
+    try {
+      if (!iframe || iframe._vkGuarded) return;
+      var wrap = iframe.parentElement;
+      if (!wrap) return;
+      try {
+        var cs = window.getComputedStyle ? window.getComputedStyle(wrap) : null;
+        if (cs && cs.position === 'static') wrap.style.position = 'relative';
+      } catch (e) {}
+      var c = document.createElement('div');
+      c.className = 'vk-tap-catcher';
+      var self = this;
+      c.addEventListener('click', function(ev) { self.onCatcherTap(ev, iframe); });
+      wrap.appendChild(c);
+      iframe._vkGuarded = true;
+      iframe._vkCatcher = c;
+      this.refreshCatchers();
+    } catch (e) {}
+  },
+
+  pauseAllVkExcept: function(exceptIframe) {
+    var frames = [];
+    try { frames = Array.prototype.slice.call(document.querySelectorAll('#postsContainer iframe[src*="video_ext"]')); } catch (e) {}
+    frames.forEach(function(fr) {
+      if (fr === exceptIframe) return;
+      try {
+        var pl = fr._vkPlayer || null;
+        if (!pl && typeof VK !== 'undefined' && VK.VideoPlayer) { pl = VK.VideoPlayer(fr); fr._vkPlayer = pl; }
+        if (pl && pl.pause) pl.pause();
+        else if (fr.contentWindow) fr.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }), '*');
+      } catch (e) {}
+    });
+  },
+
+  playVk: function(iframe) {
+    try {
+      var pl = iframe._vkPlayer || null;
+      if (!pl && typeof VK !== 'undefined' && VK.VideoPlayer) { pl = VK.VideoPlayer(iframe); iframe._vkPlayer = pl; }
+      if (pl && pl.play) { pl.play(); return true; }
+    } catch (e) {}
+    try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: '' }), '*'); return true; } catch (e) {}
+    return false;
+  },
+
+  onCatcherTap: function(ev, iframe) {
+    try { ev.preventDefault(); ev.stopPropagation(); } catch (e) {}
+    // 1) stop everything else: HTML media + known active VK player
+    try { if (typeof TANHO_MEDIA !== 'undefined') TANHO_MEDIA.stopAll(); } catch (e) {}
+    try { document.querySelectorAll('video, audio').forEach(function(m) { try { if (!m.paused) m.pause(); } catch (e) {} }); } catch (e) {}
+    // 2) pause every other VK iframe explicitly (their taps never notify us)
+    try { this.pauseAllVkExcept(iframe); } catch (e) {}
+    // 3) identify the post
+    var postEl = (iframe.closest && iframe.closest('[data-post-id]')) || null;
+    var pid = postEl ? postEl.getAttribute('data-post-id') : null;
+    if (!pid) { try { pid = 'vk-' + Array.prototype.indexOf.call(document.querySelectorAll('#postsContainer iframe[src*="video_ext"]'), iframe); } catch (e) { pid = 'vk-unknown'; } }
+    var title = 'Video';
+    try { var t = postEl ? postEl.querySelector('.post-title-text') : null; if (t && t.textContent) title = t.textContent.trim(); } catch (e) {}
+    // 4) this one becomes active and starts playing (single tap, no double-tap needed)
+    var started = false;
+    try { this.setActiveVideo(pid, iframe, title); } catch (e) {}
+    try { if (typeof TANHO_MEDIA !== 'undefined') TANHO_MEDIA.onVkStarted(pid, iframe, title); } catch (e) {}
+    try { started = this.playVk(iframe); } catch (e) {}
+    if (!started) {
+      // VK API unreachable: remove catcher so the user controls the player directly
+      try { var c = iframe._vkCatcher; if (c) c.classList.add('hidden'); } catch (e) {}
+    }
+    try { this.refreshCatchers(); } catch (e) {}
+  },
+
+  refreshCatchers: function() {
+    var activeIframe = (this.activeVideo && this.activeVideo.iframe) ? this.activeVideo.iframe : null;
+    var playing = !!(this.activeVideo && !this.activeVideo.paused && !this.activeVideo.isMini);
+    var frames = [];
+    try { frames = Array.prototype.slice.call(document.querySelectorAll('#postsContainer iframe[src*="video_ext"]')); } catch (e) {}
+    frames.forEach(function(fr) {
+      var c = fr._vkCatcher;
+      if (!c) return;
+      if (fr === activeIframe && playing) c.classList.add('hidden');
+      else c.classList.remove('hidden');
+    });
+  },
+
+  observeNewIframes: function() {
+    var self = this;
+    try {
+      if (!('MutationObserver' in window)) return;
+      var box = document.getElementById('postsContainer');
+      if (!box) return;
+      var mo = new MutationObserver(function(muts) {
+        var need = false;
+        muts.forEach(function(mu) {
+          Array.prototype.forEach.call(mu.addedNodes || [], function(n) {
+            if (!n || n.nodeType !== 1) return;
+            if ((n.tagName === 'IFRAME' && n.src && n.src.indexOf('video_ext') !== -1) ||
+                (n.querySelector && n.querySelector('iframe[src*="video_ext"]'))) need = true;
+          });
+        });
+        if (need) { try { self.guardVkIframes(); } catch (e) {} }
+      });
+      mo.observe(box, { childList: true, subtree: true });
+    } catch (e) {}
+  },
+
   setActiveVideo: function(postId, iframe, title) {
     if (this.activeVideo && this.activeVideo.postId !== postId) {
       try { this.pauseVideo(this.activeVideo); } catch (e) {}
@@ -85,6 +205,7 @@ var TANHO_VIDEO_PLAYER = {
       if (postEl) this.observePost(postEl);
     } catch (e) {}
     this.updateMiniPlayerUI();
+    try { this.refreshCatchers(); } catch (e) {}
   },
 
   _vkPlayer: function(iframe) {
@@ -114,6 +235,7 @@ var TANHO_VIDEO_PLAYER = {
     } catch (e) {}
     st.paused = true;
     this.updateMiniPlayerUI();
+    try { this.refreshCatchers(); } catch (e) {}
   },
 
   resumeVideo: function(st) {
@@ -131,6 +253,7 @@ var TANHO_VIDEO_PLAYER = {
     } catch (e) {}
     st.paused = false;
     this.updateMiniPlayerUI();
+    try { this.refreshCatchers(); } catch (e) {}
   },
 
   togglePlayPause: function() {
@@ -199,6 +322,7 @@ var TANHO_VIDEO_PLAYER = {
     if (this.activeVideo) { try { this.pauseVideo(this.activeVideo); } catch (e) {} }
     this.activeVideo = null;
     this.hideMiniPlayer();
+    try { this.refreshCatchers(); } catch (e) {}
   },
 
   setupVisibilityHandling: function() {},
@@ -233,9 +357,11 @@ var TANHO_VIDEO_PLAYER = {
         self.setActiveVideo(pid, srcEl, title);
         if (self.activeVideo) { self.activeVideo.paused = false; self.updateMiniPlayerUI(); }
         try { if (typeof TANHO_MEDIA !== 'undefined') TANHO_MEDIA.onVkStarted(pid, srcEl, title); } catch (e) {}
+        try { self.refreshCatchers(); } catch (e) {}
       } else if (type === 'paused' || type === 'pause' || type === 'ended' || type === 'end') {
         if (self.activeVideo && self.activeVideo.postId === pid) { self.activeVideo.paused = true; self.updateMiniPlayerUI(); }
         try { if (typeof TANHO_MEDIA !== 'undefined' && TANHO_MEDIA.active && TANHO_MEDIA.active.type === 'vk' && TANHO_MEDIA.active.postId === pid) TANHO_MEDIA.active = null; } catch (e) {}
+        try { self.refreshCatchers(); } catch (e) {}
       }
     });
     document.addEventListener('visibilitychange', function() {

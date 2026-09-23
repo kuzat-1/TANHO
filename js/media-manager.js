@@ -39,7 +39,27 @@ var TANHO_MEDIA = {
     } catch (e) {}
   },
 
+  pauseAllVk: function(exceptEl) {
+    // VK iframes never notify us about taps inside them, so whenever any
+    // other media starts we pause every VK player explicitly (belt & braces
+    // next to the per-post tap catchers in video-player.js).
+    try {
+      if (typeof TANHO_VIDEO_PLAYER !== 'undefined' && TANHO_VIDEO_PLAYER.pauseAllVkExcept) {
+        TANHO_VIDEO_PLAYER.pauseAllVkExcept(exceptEl || null);
+        return;
+      }
+    } catch (e) {}
+    try {
+      var frames = document.querySelectorAll('#postsContainer iframe[src*="video_ext"]');
+      Array.prototype.forEach.call(frames, function(fr) {
+        if (fr === exceptEl) return;
+        try { fr.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }), '*'); } catch (e) {}
+      });
+    } catch (e) {}
+  },
+
   stopAllExcept: function(el) {
+    try { this.pauseAllVk(el); } catch (e) {}
     if (this.active && this.active.element !== el) {
       var prev = this.active;
       this.active = null;
@@ -48,6 +68,7 @@ var TANHO_MEDIA = {
   },
 
   stopAll: function() {
+    try { this.pauseAllVk(null); } catch (e) {}
     if (this.active) {
       var prev = this.active;
       this.active = null;

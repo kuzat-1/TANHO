@@ -113,3 +113,8 @@
     .reel-author-info { display: flex; flex-direction: column; gap: 4px; }
     .reel-author-handle { font-size: 14px; font-weight: 700; color: #fff; }
     .reel-caption-text { font-size: 13px; color: rgba(255, 255, 255, 0.88); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Перехватчик тапов по VK-iframe: клики внутри iframe не всплывают наружу,
+       поэтому первый тап гасит всё остальное и запускает это видео через VK API */
+    .vk-tap-catcher { position: absolute; inset: 0; z-index: 5; cursor: pointer; background: transparent; }
+    .vk-tap-catcher.hidden { display: none; }
