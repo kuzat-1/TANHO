@@ -224,19 +224,19 @@
     const h=location.hash.slice(1);
     if (!h) return;
     if (h==='chat') { openGeneralChat(true); return; }
-    if (h==='main') { const b=document.querySelector('.floating-nav-container .nav-item-pill:nth-child(1)') || document.querySelector('.bottom-nav .nav-tab-btn:nth-child(1)'); if(b) switchPage('pageMain', b); return; }
+    if (h==='main') { const b=document.querySelector('.bottom-nav .nav-item[onclick*="pageMain"]'); if(b) switchPage('pageMain', b); return; }
     if (h==='profile') {
       try{
         const pid = localStorage.getItem('tanho_profile_id') || 'khadija_92';
         openUserProfile(pid);
       } catch(e){
-        const b=document.querySelector('.floating-nav-container .nav-item-pill:last-child') || document.querySelector('.bottom-nav .nav-tab-btn:last-child'); if(b) switchPage('pageProfile', b);
+        const b=document.querySelector('.bottom-nav .nav-item[onclick*="openUserProfile"]'); if(b) switchPage('pageProfile', b);
       }
       return;
     }
     if (h.startsWith('reels')) {
       const sub=h.split('-')[1]||'feed';
-      const b=document.querySelector('.floating-nav-container .nav-item-pill:nth-child(2)') || document.querySelector('.bottom-nav .nav-tab-btn:nth-child(2)');
+      const b=document.querySelector('.bottom-nav .nav-item[onclick*="pageReels"]');
       if (b) switchPage('pageReels', b);
       setTimeout(()=>switchReelsTab(sub,true), 30);
     }

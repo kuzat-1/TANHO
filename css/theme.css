@@ -25,10 +25,4 @@
     body.light-theme .reels-tabs-header { background: transparent !important; }
     body.light-theme .reels-tabs-header .seg-btn { color: #64748b !important; }
     body.light-theme .reels-tabs-header .seg-btn.active { color: #0f172a !important; }
-  body.light-theme .nav-capsule-box {
-    background: rgba(255,255,255,0.30);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    backdrop-filter: blur(24px) saturate(1.35);
-    -webkit-backdrop-filter: blur(24px) saturate(1.35);
-  }
-  body.light-theme .nav-item-pill { color: #64748b; }
+

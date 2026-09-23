@@ -659,6 +659,6 @@ function toggleSubscribe(btn){
     renderGallery();
     closeEditor();
 
-    switchPage('pageMain', document.querySelectorAll('.nav-tab-btn')[0]);
+    switchPage('pageMain', document.querySelector('.bottom-nav .nav-item[onclick*="pageMain"]'));
   }
 

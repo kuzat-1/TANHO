@@ -183,7 +183,7 @@
     if (typeof syncMiniHeader === 'function') syncMiniHeader(user);
     if (typeof renderProfileContent === 'function') renderProfileContent(user);
     if (typeof updateProfileEmptyState === 'function') updateProfileEmptyState();
-    var pill = document.querySelector('.floating-nav-container .nav-item-pill:last-child');
+    var pill = document.querySelector('.bottom-nav .nav-item[onclick*="openUserProfile"]');
     switchPage('pageProfile', pill);
   }
   function handleProfilePrimaryAction(){
@@ -269,10 +269,10 @@
       if (prev === 'generalChat') {
         if (typeof openGeneralChat === 'function') openGeneralChat(true);
       } else if (prev === 'pageReels') {
-        var b2 = document.querySelector('.floating-nav-container .nav-item-pill:nth-child(2)');
+        var b2 = document.querySelector('.bottom-nav .nav-item[onclick*="pageReels"]');
         if (typeof switchPage === 'function') switchPage('pageReels', b2);
       } else {
-        var b1 = document.querySelector('.floating-nav-container .nav-item-pill:first-child');
+        var b1 = document.querySelector('.bottom-nav .nav-item[onclick*="pageMain"]');
         if (typeof switchPage === 'function') switchPage('pageMain', b1);
       }
       if (typeof updateFloatingNavVisibility === 'function') setTimeout(updateFloatingNavVisibility, 30);

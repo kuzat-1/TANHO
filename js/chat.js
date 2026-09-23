@@ -50,17 +50,18 @@
         if (location.hash.slice(1)==='chat') history.replaceState(null,'', h==='main' ? '#main' : '#'+h);
         // надёжно восстановить страницу и пилюлю
         const btnMap = {
-          pageMain: document.querySelector('.floating-nav-container .nav-item-pill:nth-child(1)'),
-          pageReels: document.querySelector('.floating-nav-container .nav-item-pill:nth-child(2)'),
-          pageProfile: document.querySelector('.floating-nav-container .nav-item-pill:last-child')
+          pageMain: document.querySelector('.bottom-nav .nav-item[onclick*="pageMain"]'),
+          pageReels: document.querySelector('.bottom-nav .nav-item[onclick*="pageReels"]'),
+          pageProfile: document.querySelector('.bottom-nav .nav-item[onclick*="openUserProfile"]')
         };
         const btn = btnMap[last];
         // сбросить все пилюли и поставить нужную
-        document.querySelectorAll('.nav-item-pill').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(b=>b.classList.remove('active'));
         if (btn) btn.classList.add('active');
         else {
-          // fallback по hash
-          const fallback = document.querySelector(`.floating-nav-container .nav-item-pill[onclick*="${last}"]`);
+          // fallback по hash (у профиля onclick=openUserProfile, а не pageProfile)
+          const key = last === 'pageProfile' ? 'openUserProfile' : last;
+          const fallback = document.querySelector(`.bottom-nav .nav-item[onclick*="${key}"]`);
           if(fallback) fallback.classList.add('active');
         }
         // показать правильную страницу

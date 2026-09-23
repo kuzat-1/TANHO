@@ -229,9 +229,9 @@
     if (!pageId || pageId==='pageMain') return;
     if (pageId==='generalChat') { openGeneralChat(true); return; }
     let btn=null;
-    if (pageId==='pageMain') btn=document.querySelector('.floating-nav-container .nav-item-pill:nth-child(1)') || document.querySelector('.bottom-nav .nav-tab-btn:nth-child(1)');
-    else if (pageId==='pageReels') btn=document.querySelector('.floating-nav-container .nav-item-pill:nth-child(2)') || document.querySelector('.bottom-nav .nav-tab-btn:nth-child(2)');
-    else if (pageId==='pageProfile') btn=document.querySelector('.floating-nav-container .nav-item-pill:last-child') || document.querySelector('.bottom-nav .nav-tab-btn:last-child');
+    if (pageId==='pageMain') btn=document.querySelector('.bottom-nav .nav-item[onclick*="pageMain"]');
+    else if (pageId==='pageReels') btn=document.querySelector('.bottom-nav .nav-item[onclick*="pageReels"]');
+    else if (pageId==='pageProfile') btn=document.querySelector('.bottom-nav .nav-item[onclick*="openUserProfile"]');
     if (pageId==='pageProfile') {
       try {
         var pid = localStorage.getItem('tanho_profile_id') || 'khadija_92';

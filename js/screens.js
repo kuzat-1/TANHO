@@ -75,7 +75,7 @@ function drawerGoProfile(){
   tanhoPopOverlay();
   setTimeout(function(){
     if (typeof openUserProfile === 'function' && typeof getCurrentUserId === 'function') openUserProfile(getCurrentUserId());
-    else if (typeof switchPage === 'function') switchPage('pageProfile', document.querySelector('.floating-nav-container .nav-item-pill:last-child'));
+    else if (typeof switchPage === 'function') switchPage('pageProfile', document.querySelector('.bottom-nav .nav-item[onclick*="openUserProfile"]'));
   }, 60);
 }
 function drawerLogout(){
@@ -192,7 +192,7 @@ function renderSaved(){
   } catch(e){}
   if (!marked.length) {
     box.innerHTML = '<div class="notif-item"><span class="notif-avatar"><svg class="ic"><use href="assets/icons.svg#i-bookmark"/></svg></span><div class="notif-text">Ничего не сохранено. Нажмите на флажок под постом, чтобы добавить его сюда.<div class="notif-time">TANHO</div></div></div>'
-      + '<div style="padding:12px 14px;"><button class="mini-btn accent" onclick="closeScreen(); setTimeout(function(){ switchPage(\'pageMain\', document.querySelector(\'.floating-nav-container .nav-item-pill:first-child\')); }, 80);">Перейти к ленте</button></div>';
+      + '<div style="padding:12px 14px;"><button class="mini-btn accent" onclick="closeScreen(); setTimeout(function(){ switchPage(\'pageMain\', document.querySelector(\'.bottom-nav .nav-item[onclick*="pageMain"]\')); }, 80);">Перейти к ленте</button></div>';
     return;
   }
   box.innerHTML = marked.map(function(card, i){
@@ -208,7 +208,7 @@ function openSavedPost(idx){
   var card = document.querySelector('#postsContainer [data-saved-idx="' + idx + '"]');
   closeScreen();
   setTimeout(function(){
-    if (typeof switchPage === 'function') switchPage('pageMain', document.querySelector('.floating-nav-container .nav-item-pill:first-child'));
+    if (typeof switchPage === 'function') switchPage('pageMain', document.querySelector('.bottom-nav .nav-item[onclick*="pageMain"]'));
     setTimeout(function(){ if (card && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 120);
   }, 80);
 }
@@ -251,7 +251,7 @@ function renderFollowing(){
   } catch(e){}
   if (!rows.length) {
     box.innerHTML = '<div class="notif-item"><span class="notif-avatar"><svg class="ic"><use href="assets/icons.svg#i-user"/></svg></span><div class="notif-text">Вы ни на кого не подписаны.<div class="notif-time">Найдите авторов в ленте</div></div></div>'
-      + '<div style="padding:12px 14px;"><button class="mini-btn accent" onclick="closeScreen(); setTimeout(function(){ switchPage(\'pageMain\', document.querySelector(\'.floating-nav-container .nav-item-pill:first-child\')); }, 80);">Перейти к ленте</button></div>';
+      + '<div style="padding:12px 14px;"><button class="mini-btn accent" onclick="closeScreen(); setTimeout(function(){ switchPage(\'pageMain\', document.querySelector(\'.bottom-nav .nav-item[onclick*="pageMain"]\')); }, 80);">Перейти к ленте</button></div>';
   } else {
     box.innerHTML = rows.join('');
   }
