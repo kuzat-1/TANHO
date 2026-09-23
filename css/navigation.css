@@ -14,33 +14,33 @@
 }
 .nav-tab-btn.active { color: #a855f7; font-weight: 700; }
 
-/* Нижнее меню с матовым эффектом — центрировано, max 500px, чтобы SVG-выемка не растягивалась на широких экранах */
+/* Нижнее меню во всю ширину — выемка нарисована CSS-градиентами с фиксированным
+   размером (эллипс 52x44 по центру), поэтому форма одинакова на любой ширине
+   экрана: от 320px телефона до широкого десктопа. Ничего не растягивается. */
 .bottom-nav {
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   width: 100%;
-  max-width: 500px;
-  height: 65px;
+  height: calc(65px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
   z-index: 1000;
   padding-bottom: env(safe-area-inset-bottom, 0px);
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-}
-
-.nav-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12)) left top / calc(50% - 52px) 1.5px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12)) right top / calc(50% - 52px) 1.5px no-repeat,
+    radial-gradient(ellipse 52px 44px at 50% 0, transparent 43px, rgba(255, 255, 255, 0.12) 43.5px, rgba(255, 255, 255, 0.12) 45px, transparent 45.5px),
+    radial-gradient(ellipse 52px 44px at 50% 0, transparent 43.5px, rgba(21, 24, 39, 0.82) 44.5px);
   filter: drop-shadow(0 -6px 20px rgba(0, 0, 0, 0.25));
 }
 
+/* SVG-фон из референса больше не нужен — геометрия переехала в background выше (адаптивно).
+   Сам тег остаётся в DOM, просто скрыт. */
+.nav-bg { display: none; }
 .nav-bg .nav-bg-fill { fill: rgba(21, 24, 39, 0.82); }
 .nav-bg .nav-bg-stroke { stroke: rgba(255, 255, 255, 0.12); }
 
@@ -115,7 +115,14 @@
 }
 
 /* ---------- light theme: same shape, light panel ---------- */
-body.light-theme .nav-bg { filter: drop-shadow(0 -6px 20px rgba(15, 23, 42, 0.12)); }
+body.light-theme .bottom-nav {
+  background:
+    linear-gradient(rgba(15, 23, 42, 0.10), rgba(15, 23, 42, 0.10)) left top / calc(50% - 52px) 1.5px no-repeat,
+    linear-gradient(rgba(15, 23, 42, 0.10), rgba(15, 23, 42, 0.10)) right top / calc(50% - 52px) 1.5px no-repeat,
+    radial-gradient(ellipse 52px 44px at 50% 0, transparent 43px, rgba(15, 23, 42, 0.10) 43.5px, rgba(15, 23, 42, 0.10) 45px, transparent 45.5px),
+    radial-gradient(ellipse 52px 44px at 50% 0, transparent 43.5px, rgba(255, 255, 255, 0.94) 44.5px);
+  filter: drop-shadow(0 -6px 20px rgba(15, 23, 42, 0.12));
+}
 body.light-theme .nav-bg .nav-bg-fill { fill: rgba(255, 255, 255, 0.94); }
 body.light-theme .nav-bg .nav-bg-stroke { stroke: rgba(15, 23, 42, 0.10); }
 body.light-theme .nav-item { color: #64748b; }
