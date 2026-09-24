@@ -118,3 +118,8 @@
        поэтому первый тап гасит всё остальное и запускает это видео через VK API */
     .vk-tap-catcher { position: absolute; inset: 0; z-index: 5; cursor: pointer; background: transparent; }
     .vk-tap-catcher.hidden { display: none; }
+
+    /* Хост настоящего плеера в развёрнутом просмотре (поверх превью-картинки) */
+    #videoViewerPlayerHost { position: absolute; inset: 0; display: none; background: #000; }
+    #videoViewerPlayerHost.active { display: block; }
+    #videoViewerPlayerHost iframe, #videoViewerPlayerHost video { width: 100%; height: 100%; border: none; }

@@ -143,7 +143,12 @@ var TANHO_VIDEO_PLAYER = {
     if (!pid) { try { pid = 'vk-' + Array.prototype.indexOf.call(document.querySelectorAll('#postsContainer iframe[src*="video_ext"]'), iframe); } catch (e) { pid = 'vk-unknown'; } }
     var title = 'Video';
     try { var t = postEl ? postEl.querySelector('.post-title-text') : null; if (t && t.textContent) title = t.textContent.trim(); } catch (e) {}
-    // 4) this one becomes active and starts playing (single tap, no double-tap needed)
+    // 4) open expanded viewer for this post (fallback: inline playback)
+    if (postEl && pid && typeof openPostVideoViewer === 'function') {
+      try { openPostVideoViewer(pid); } catch (e) {}
+      try { this.refreshCatchers(); } catch (e) {}
+      return;
+    }
     var started = false;
     try { this.setActiveVideo(pid, iframe, title); } catch (e) {}
     try { if (typeof TANHO_MEDIA !== 'undefined') TANHO_MEDIA.onVkStarted(pid, iframe, title); } catch (e) {}
