@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>TANHO — Видео (копия страницы)</title>
+<style>
+/* ===== оболочка + переменные (кратко из base/variables/cards) ===== */
+
+:root {
+  --bg-dark: #080910; --bg-main: #080910; --card-bg: #121522;
+  --border-color: rgba(255,255,255,0.08); --text-main: #ffffff;
+  --text-sub: #8a92a6; --text-muted: #8a92a6; --primary-accent: #6c5ce7;
+  --like-red: #ff3040;
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-stack); }
+html, body { height: 100%; }
+body { background: #030407; display: flex; justify-content: center; min-height: 100vh; }
+.standalone-shell { width: 100%; max-width: 430px; height: 100vh; height: 100dvh; background: var(--bg-dark); position: relative; overflow: hidden; }
+.standalone-shell .reels-screen-container { position: relative; height: 100%; }
+.refresh-indicator { position: absolute; top: 10px; left: 50%; transform: translateX(-50%) translateY(-40px); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; z-index: 10; opacity: 0; pointer-events: none; }
+.refresh-spinner { width: 14px; height: 14px; border: 2px solid var(--border-color); border-top-color: var(--primary-accent); border-radius: 50%; }
+#reelsFeedTab { background: transparent; padding-top: calc(42px + env(safe-area-inset-top, 0px)); }
+#reelsReelsTab { background: #000; padding-top: 0; }
+.similar-card { flex: 0 0 150px; cursor: pointer; }
+.similar-thumb { width: 150px; height: 84px; border-radius: 10px; overflow: hidden; background: #111; position: relative; }
+.similar-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.similar-title { color: var(--text-main); font-size: 11px; font-weight: 600; line-height: 1.3; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.subscribe-btn { padding: 6px 14px; border-radius: 16px; background: var(--primary-accent); color: #fff; border: none; font-size: 12px; font-weight: 600; cursor: pointer; }
+.subscribe-btn.subscribed { background: #191c2b; color: var(--text-muted); border: 1px solid var(--border-color); }
+
+/* ===== videos.css 1:1 ===== */
+/* TANHO — videos.css */
+.yt-feed .yt-card:last-child { border-bottom: none; margin-bottom: 0; }
+
+    /* --- ЭКРАН 2: РИЛСЫ --- */
+    .reels-screen-container {
+      position: absolute; inset: 0; bottom: 0; width: 100%; height: 100%;
+      background: var(--bg-dark); z-index: 40; display: none; flex-direction: column; overflow: hidden;
+    }
+    .reels-screen-container.active { display: flex; }
+
+    .reels-vertical-feed { width: 100%; height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; }
+    .reels-vertical-feed::-webkit-scrollbar { display: none; }
+
+    .reel-card {
+      width: 100%; height: 100%; scroll-snap-align: start; position: relative;
+      background-size: cover; background-position: center; display: flex; flex-direction: column;
+      justify-content: space-between; padding: 16px 16px 20px 16px;
+    }
+
+    .reels-tabs-header {
+      position: absolute; top: env(safe-area-inset-top, 0px); left: 0; right: 0; height: 42px; display: flex; align-items: center; justify-content: center; gap: 36px;
+      background: transparent !important; border-bottom: none !important; flex-shrink: 0; z-index: 5;
+      box-shadow: none !important; pointer-events: auto;
+    }
+    /* container already defined above */
+    .reels-tab-content { padding-top: calc(42px + env(safe-area-inset-top, 0px)); }
+    .seg-btn {
+      position: relative; background: none; border: none; padding: 10px 2px; cursor: pointer;
+      color: var(--text-muted); font-size: 14px; font-weight: 500; transition: color 0.2s ease;
+    }
+    .seg-btn.active { color: var(--text-main); font-weight: 700; }
+    .seg-btn .seg-underline {
+      position: absolute; left: 0; right: 0; bottom: -1px; height: 2.5px;
+      background: var(--primary-accent); border-radius: 999px;
+      transform: scaleX(0); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    .seg-btn.active .seg-underline { transform: scaleX(1); }
+
+    .reels-tab-content { display: none; flex: 1; overflow-y: auto; scrollbar-width: none; flex-direction: column; padding-top: 0; }
+    .reels-tab-content.active { display: flex; }
+    .reels-tab-content::-webkit-scrollbar { display: none; }
+
+    /* YouTube feed — без белого фона над капсулой */
+    .yt-feed { display: flex; flex-direction: column; gap: 0; background: transparent; padding-bottom: 86px; }
+    .yt-card { background: var(--bg-main); border-bottom: 1px solid var(--border-color); padding-bottom: 8px; cursor: pointer; }
+    .yt-thumb { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; }
+    .yt-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .yt-duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.85); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 6px; border-radius: 6px; }
+    .yt-info { display: flex; gap: 10px; padding: 10px 12px 2px 12px; align-items: flex-start; }
+    .yt-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+    .yt-meta { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+    .yt-title { font-size: 14.5px; font-weight: 700; line-height: 1.35; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .yt-channel { font-size: 12.5px; color: var(--text-muted); }
+    .yt-stats { font-size: 11.5px; color: var(--text-muted); display: flex; gap: 6px; align-items: center; }
+    .yt-more-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; flex-shrink: 0; }
+    .yt-card { position: relative; }
+    .yt-menu-wrap { position: relative; flex-shrink: 0; }
+    .yt-menu-dropdown { position: absolute; top: 30px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 30; min-width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+    .yt-menu-dropdown.active { display: flex; }
+    .yt-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .yt-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
+    .reel-menu-wrap { position: relative; }
+    .reel-menu-btn { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; background: none; border: none; }
+    .reel-menu-dropdown { position: absolute; bottom: calc(100% + 8px); right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; display: none; flex-direction: column; gap: 2px; z-index: 30; min-width: 170px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+    .reel-menu-dropdown.active { display: flex; }
+    .reel-menu-dropdown button { background: none; border: none; color: var(--text-main); padding: 10px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .reel-menu-dropdown button:hover { background: rgba(255,255,255,0.06); }
+    /* 🎬 Просмотр видео из Ленты — в стиле Reels (без перехода) */
+    .video-viewer { position: absolute; inset: 0; z-index: 120; display: none; flex-direction: column; background: var(--bg-dark); overflow: hidden; }
+    .video-viewer.active { display: flex; }
+    .video-viewer-scroll { flex: 1; overflow-y: auto; scrollbar-width: none; padding-bottom: 90px; }
+    .video-viewer-scroll::-webkit-scrollbar { display: none; }
+    .video-viewer-top { display: flex; align-items: center; gap: 10px; padding: calc(12px + env(safe-area-inset-top, 0px)) 12px 12px 12px; }
+    .video-viewer-close { width: 36px; height: 36px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); font-size: 18px; cursor: pointer; flex-shrink: 0; }
+    .video-viewer-title { flex: 1; color: var(--text-main); font-size: 14px; font-weight: 700; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .video-viewer-player { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; }
+    .video-viewer-player img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .video-viewer-actions-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px 2px 12px; }
+    .viewer-action-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: rgba(255,255,255,0.06); border: none; color: var(--text-main); font-size: 13px; font-weight: 600; cursor: pointer; }
+    .viewer-action-btn:active { transform: scale(0.94); }
+    .video-viewer-author { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+    .video-viewer-avatar { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; cursor: pointer; }
+    .video-viewer-meta { flex: 1; min-width: 0; cursor: pointer; }
+    .video-viewer-channel { color: var(--text-main); font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .video-viewer-sub { color: var(--text-muted); font-size: 11px; margin-top: 1px; }
+    .video-viewer-divider { height: 1px; background: var(--border-color); margin: 4px 0 0 0; }
+    .video-viewer-divider { height: 1px; background: var(--border-color); margin: 6px 0 0 0; }
+    .video-viewer-similar-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px 0 12px; }
+    .video-viewer-similar-title { color: var(--text-main); font-size: 13px; font-weight: 700; }
+    .video-viewer-similar-toggle { width: 34px; height: 34px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .video-viewer-similar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 12px 16px 12px; scrollbar-width: none; }
+    .video-viewer-similar::-webkit-scrollbar { display: none; }
+    .video-viewer-similar.hidden { display: none; }
+
+    .reel-top-bar { display: flex; justify-content: space-between; align-items: center; z-index: 10; padding-top: 8px; }
+    .reel-icon-btn {
+      width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+
+    /* reel-center-action / use-idea-btn removed */
+
+    .reel-bottom-content { display: flex; flex-direction: column; gap: 12px; z-index: 10; margin-top: auto; padding-bottom: 100px; }
+    .reel-timeline { position: absolute; bottom: 78px; left: 0; right: 0; height: 36px; display: flex; align-items: center; gap: 10px; z-index: 11; pointer-events: none; padding: 0 16px; background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%); }
+    .reel-timeline-track { flex: 1; height: 3px; background: rgba(255,255,255,0.25); border-radius: 999px; overflow: hidden; position: relative; }
+    .reel-timeline-progress { position: absolute; left: 0; top: 0; bottom: 0; width: 42%; background: #fff; border-radius: 999px; }
+    .reel-timeline-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+    .reel-timeline-username { font-size: 11px; font-weight: 700; color: #fff; line-height: 1; }
+    .reel-timeline-desc { font-size: 11px; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
+    .reel-actions-row { display: flex; align-items: center; gap: 14px; }
+    .reel-action-chip { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+    .reel-author-info { display: flex; flex-direction: column; gap: 4px; }
+    .reel-author-handle { font-size: 14px; font-weight: 700; color: #fff; }
+    .reel-caption-text { font-size: 13px; color: rgba(255, 255, 255, 0.88); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Перехватчик тапов по VK-iframe: клики внутри iframe не всплывают наружу,
+       поэтому первый тап гасит всё остальное и запускает это видео через VK API */
+    .vk-tap-catcher { position: absolute; inset: 0; z-index: 5; cursor: pointer; background: transparent; }
+    .vk-tap-catcher.hidden { display: none; }
+
+</style>
+</head>
+<body>
+<div class="standalone-shell">
+  <!-- Вкладка 2: ИНТЕРЕСНОЕ (Лента + Reels) -->
+  <div class="reels-screen-container" id="pageReels" ondblclick="handleDoubleTapRefresh(event, 'pageReels')">
+    <div class="refresh-indicator" id="refreshReels"><div class="refresh-spinner"></div> Обновление...</div>
+    <div class="reels-tabs-header">
+      <button class="seg-btn active" id="segFeedBtn" onclick="switchReelsTab('feed')">Лента<span class="seg-underline"></span></button>
+      <button class="seg-btn" id="segReelsBtn" onclick="switchReelsTab('reels')">Reels<span class="seg-underline"></span></button>
+    </div>
+    <!-- ЛЕНТА - YouTube стиль -->
+    <div class="reels-tab-content active" id="reelsFeedTab">
+      <div class="yt-feed" id="ytFeed"></div>
+    </div>
+    <!-- REELS - вертикальная лента -->
+    <div class="reels-tab-content" id="reelsReelsTab">
+      <div class="reels-vertical-feed" id="reelsVerticalFeed">
+        <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800');">
+          <div class="reel-timeline">
+            <div class="reel-timeline-track"><div class="reel-timeline-progress" style="width: 38%;"></div></div>
+          </div>
+          <div class="reel-bottom-content">
+            <div class="reel-actions-row">
+              <div class="reel-action-chip" onclick="toggleReelLike(this)">
+                <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span class="reel-likes-val">2.4K</span>
+              </div>
+              <div class="reel-action-chip" onclick="sharePost(this)" title="Репост"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Репост</span></div>
+              <div class="reel-menu-wrap">
+                <button class="reel-menu-btn" onclick="event.stopPropagation(); toggleReelMenu(this)">⋮</button>
+                <div class="reel-menu-dropdown">
+                  <button onclick="handleReelMenuAction('interesting', this)">Интересно</button>
+                  <button onclick="handleReelMenuAction('report', this)">Пожаловаться</button>
+                  <button onclick="handleReelMenuAction('share', this)">Поделиться</button>
+                </div>
+              </div>
+            </div>
+            <div class="reel-author-info" onclick="openUserProfile('caliraval')">
+              <div class="reel-author-handle">@CaliraVal</div>
+              <div class="reel-caption-text">Летнее видео у моря • TANHO Reels 🌊#travel</div>
+            </div>
+          </div>
+        </div>
+        <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800');">
+          <div class="reel-timeline">
+            <div class="reel-timeline-track"><div class="reel-timeline-progress" style="width: 62%;"></div></div>
+          </div>
+          <div class="reel-bottom-content">
+            <div class="reel-actions-row">
+              <div class="reel-action-chip" onclick="toggleReelLike(this)">
+                <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span class="reel-likes-val">8.1K</span>
+              </div>
+              <div class="reel-action-chip" onclick="sharePost(this)" title="Репост"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Репост</span></div>
+              <div class="reel-menu-wrap">
+                <button class="reel-menu-btn" onclick="event.stopPropagation(); toggleReelMenu(this)">⋮</button>
+                <div class="reel-menu-dropdown">
+                  <button onclick="handleReelMenuAction('interesting', this)">Интересно</button>
+                  <button onclick="handleReelMenuAction('report', this)">Пожаловаться</button>
+                  <button onclick="handleReelMenuAction('share', this)">Поделиться</button>
+                </div>
+              </div>
+            </div>
+            <div class="reel-author-info" onclick="openUserProfile('urbancore')">
+              <div class="reel-author-handle">@urbancore</div>
+              <div class="reel-caption-text">Ночной город не спит • time-lapse 4K 🌃</div>
+            </div>
+          </div>
+        </div>
+        <div class="reel-card" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%), url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800');">
+          <div class="reel-timeline">
+            <div class="reel-timeline-track"><div class="reel-timeline-progress" style="width: 15%;"></div></div>
+          </div>
+          <div class="reel-bottom-content">
+            <div class="reel-actions-row">
+              <div class="reel-action-chip" onclick="toggleReelLike(this)">
+                <svg class="reel-heart-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span class="reel-likes-val">312</span>
+              </div>
+              <div class="reel-action-chip" onclick="sharePost(this)" title="Репост"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Репост</span></div>
+              <div class="reel-menu-wrap">
+                <button class="reel-menu-btn" onclick="event.stopPropagation(); toggleReelMenu(this)">⋮</button>
+                <div class="reel-menu-dropdown">
+                  <button onclick="handleReelMenuAction('interesting', this)">Интересно</button>
+                  <button onclick="handleReelMenuAction('report', this)">Пожаловаться</button>
+                  <button onclick="handleReelMenuAction('share', this)">Поделиться</button>
+                </div>
+              </div>
+            </div>
+            <div class="reel-author-info" onclick="openUserProfile('naturevibe')">
+              <div class="reel-author-handle">@naturevibe</div>
+              <div class="reel-caption-text">Утро в горах • дыхание природы 🏔️</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 🎬 Просмотр видео из Ленты — вертикальный экран -->
+    <div class="video-viewer" id="videoViewer">
+      <div class="video-viewer-scroll">
+        <div class="video-viewer-top">
+          <button class="video-viewer-close" onclick="closeVideoViewer()">←</button>
+          <div class="video-viewer-title" id="videoViewerTitle"></div>
+        </div>
+        <div class="video-viewer-player">
+          <img id="videoViewerThumb" src="" alt="">
+        </div>
+        <div class="video-viewer-actions-row">
+          <button class="viewer-action-btn" onclick="toggleViewerLike(this)">
+            <svg class="reel-heart-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span id="videoViewerLikes">0</span>
+          </button>
+          <button class="viewer-action-btn" onclick="toggleViewerComments(this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            <span id="videoViewerComments">0</span>
+          </button>
+          <button class="viewer-action-btn" onclick="shareViewerVideo()" title="Поделиться">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span>Поделиться</span>
+          </button>
+          <button class="viewer-action-btn" onclick="viewerReportVideo()" title="Пожаловаться">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            <span>Жалоба</span>
+          </button>
+        </div>
+        <div class="video-viewer-author">
+          <div class="video-viewer-avatar" id="videoViewerAvatar" onclick="viewerAuthorProfile()"></div>
+          <div class="video-viewer-meta" onclick="viewerAuthorProfile()">
+            <div class="video-viewer-channel" id="videoViewerChannel"></div>
+            <div class="video-viewer-sub" id="videoViewerSub"></div>
+          </div>
+          <button class="subscribe-btn" id="videoViewerSubBtn" onclick="toggleViewerSubscribe()">Подписаться</button>
+        </div>
+        <div class="video-viewer-divider"></div>
+        <div class="video-viewer-similar-header">
+          <div class="video-viewer-similar-title">Похожие видео</div>
+          <button class="video-viewer-similar-toggle" id="similarToggleBtn" onclick="toggleSimilarPanel(event)" title="Показать/скрыть">›</button>
+        </div>
+        <div class="video-viewer-similar" id="videoViewerSimilar"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+/* ===== videos.js 1:1 (без restoreTanhoPage — он от приложения) ===== */
+/* TANHO — js/videos.js */
+
+
+  function switchReelsTab(tab, skipPersist) {
+    const feedTab = document.getElementById('reelsFeedTab');
+    const reelsTab = document.getElementById('reelsReelsTab');
+    const feedBtn = document.getElementById('segFeedBtn');
+    const reelsBtn = document.getElementById('segReelsBtn');
+    const header = document.querySelector('.reels-tabs-header');
+    if (!feedTab || !reelsTab) return;
+        if (tab === 'feed') {
+      feedTab.classList.add('active'); reelsTab.classList.remove('active');
+      if (feedBtn) feedBtn.classList.add('active'); if (reelsBtn) reelsBtn.classList.remove('active');
+      if (header) header.style.display = 'flex';
+      feedTab.style.paddingTop = 'calc(42px + env(safe-area-inset-top, 0px))';
+      reelsTab.style.paddingTop = 'calc(42px + env(safe-area-inset-top, 0px))';
+    } else {
+      reelsTab.classList.add('active'); feedTab.classList.remove('active');
+      if (header) header.style.display = 'flex';
+      if (reelsBtn) reelsBtn.classList.add('active'); if (feedBtn) feedBtn.classList.remove('active');
+      reelsTab.style.paddingTop = '0';
+      feedTab.style.paddingTop = 'calc(42px + env(safe-area-inset-top, 0px))';
+    }
+    if (!skipPersist) {
+      try { localStorage.setItem('tanho_reels_tab', tab); localStorage.setItem('tanho_page', 'pageReels'); } catch(e){}
+      const hash='reels-'+tab;
+      if (location.hash.slice(1)!==hash) history.replaceState(null,'','#'+hash);
+    }
+  }
+
+  const ytVideosData = [
+    { id:1, title: 'Обзор нового TANHO — как работает лента и чат', channel: 'TANHO Official', avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100', thumb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800', duration: '8:42', views: '124K', time: '3 дня назад' },
+    { id:2, title: 'Ташкент с высоты: дрон 4K • красивый закат над городом', channel: '@urbancore', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100', thumb: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800', duration: '3:12', views: '89K', time: '5 дней назад' },
+    { id:3, title: 'Утро в горах Чимгана — релакс, природа, тишина', channel: '@naturevibe', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100', thumb: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800', duration: '12:05', views: '45K', time: '1 неделю назад' },
+    { id:4, title: 'Как собрать идеальный Reels за 60 сек — монтаж в телефоне', channel: '@CaliraVal', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100', thumb: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800', duration: '5:33', views: '210K', time: '2 дня назад' },
+    { id:5, title: 'Готовим плов по-узбекски: пошаговый рецепт от шефа', channel: '@tasty.uz', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100', thumb: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800', duration: '14:22', views: '312K', time: '4 дня назад' },
+  ];
+
+  function renderYtFeed() {
+    const container = document.getElementById('ytFeed');
+    if (!container) return;
+    container.innerHTML = ytVideosData.map(v => {
+      var uid = (typeof channelToUserId==='function') ? channelToUserId(v.channel) : 'tanho_official';
+      return `
+      <div class="yt-card" onclick="openVideoViewer(${v.id})">
+        <div class="yt-thumb"><img src="${v.thumb}" alt="" loading="lazy"><span class="yt-duration">${v.duration}</span></div>
+        <div class="yt-info">
+          <div class="yt-avatar" style="background-image:url('${v.avatar}')" onclick="event.stopPropagation(); openUserProfile('${uid}')"></div>
+          <div class="yt-meta" onclick="event.stopPropagation(); openUserProfile('${uid}')">
+            <div class="yt-title">${v.title}</div>
+            <div class="yt-channel">${v.channel}</div>
+            <div class="yt-stats"><span>${v.views} просмотров</span><span>•</span><span>${v.time}</span></div>
+          </div>
+          <div class="yt-menu-wrap">
+            <button class="yt-more-btn" onclick="event.stopPropagation(); toggleYtMenu(this)">⋮</button>
+            <div class="yt-menu-dropdown">
+              <button onclick="handleYtMenuAction('interesting', ${v.id}, this)">Интересно</button>
+              <button onclick="handleYtMenuAction('report', ${v.id}, this)">Пожаловаться</button>
+              <button onclick="handleYtMenuAction('share', ${v.id}, this)">Поделиться</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `; }).join('');
+  }
+  function toggleYtMenu(btn){
+    var dd = btn.nextElementSibling;
+    if(!dd) return;
+    var wasActive = dd.classList.contains('active');
+    document.querySelectorAll('.yt-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    document.querySelectorAll('.reel-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    if(!wasActive) dd.classList.add('active');
+    if(event) event.stopPropagation();
+  }
+  function handleYtMenuAction(action, id, btn){
+    var dd = btn.closest('.yt-menu-dropdown');
+    if(dd) dd.classList.remove('active');
+    if(event) event.stopPropagation();
+    if(action==='interesting'){ if(navigator.vibrate) navigator.vibrate(20); }
+    else if(action==='report'){ alert('Жалоба отправлена ✓'); }
+    else if(action==='share'){
+      var v = ytVideosData.find(function(x){ return x.id===id; });
+      var title = v ? v.title : 'TANHO видео';
+      if(navigator.share){ navigator.share({title: title, text: title, url: location.href}).catch(function(){}); }
+      else if(navigator.clipboard){ navigator.clipboard.writeText(location.href + '#video-' + id); alert('Ссылка скопирована ✓'); }
+    }
+  }
+  function toggleReelMenu(btn){
+    var dd = btn.nextElementSibling;
+    if(!dd) return;
+    var wasActive = dd.classList.contains('active');
+    document.querySelectorAll('.reel-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    document.querySelectorAll('.yt-menu-dropdown.active').forEach(function(d){ d.classList.remove('active'); });
+    if(!wasActive) dd.classList.add('active');
+  }
+  function handleReelMenuAction(action, btn){
+    var dd = btn.closest('.reel-menu-dropdown');
+    if(dd) dd.classList.remove('active');
+    if(event) event.stopPropagation();
+    if(action==='interesting'){ if(navigator.vibrate) navigator.vibrate(20); }
+    else if(action==='report'){ alert('Жалоба отправлена ✓'); }
+    else if(action==='share'){
+      if(navigator.share){ navigator.share({title: 'TANHO Reels', text: 'Смотри Reels в TANHO', url: location.href}).catch(function(){}); }
+      else alert('Ссылка скопирована ✓');
+    }
+  }
+  var currentViewerVideoId = null;
+  var viewerLiked = {}
+  var viewerCommentsCount = {}
+  var viewerCommented = {}
+  function openVideoViewer(id){
+    var v = ytVideosData.find(function(x){ return x.id===id; });
+    if(!v) return;
+    currentViewerVideoId = id;
+    document.getElementById('videoViewerTitle').textContent = v.title;
+    document.getElementById('videoViewerThumb').src = v.thumb;
+    document.getElementById('videoViewerAvatar').style.backgroundImage = "url('" + v.avatar + "')";
+    document.getElementById('videoViewerChannel').textContent = v.channel;
+    document.getElementById('videoViewerSub').textContent = v.views + ' просмотров • ' + v.time;
+    document.getElementById('videoViewerLikes').textContent = viewerLiked[id] ? '1' : '0';
+    document.getElementById('videoViewerComments').textContent = (viewerCommentsCount[id] !== undefined) ? viewerCommentsCount[id] : (12 + ((id * 29) % 90));
+    var likeIcon = document.querySelector('#videoViewer .reel-heart-icon');
+    if(likeIcon){ likeIcon.setAttribute('fill', viewerLiked[id] ? 'var(--like-red)' : 'none'); likeIcon.setAttribute('stroke', viewerLiked[id] ? 'var(--like-red)' : 'currentColor'); }
+    // подписка автора
+    var subBtn = document.getElementById('videoViewerSubBtn');
+    if(subBtn){
+      var uid = (typeof channelToUserId==='function') ? channelToUserId(v.channel) : 'tanho_official';
+      var u = (typeof TANHO_USERS!=='undefined' && TANHO_USERS[uid]) ? TANHO_USERS[uid] : null;
+      var isOwn = (u && u.isOwn) || uid === getCurrentUserId();
+      if(isOwn){ subBtn.style.display = 'none'; }
+      else {
+        subBtn.style.display = '';
+        var sub = u ? !!u.isSubscribed : false;
+        subBtn.textContent = sub ? 'Подписан ✓' : 'Подписаться';
+        subBtn.classList.toggle('subscribed', sub);
+      }
+    }
+    var sim = document.getElementById('videoViewerSimilar');
+    sim.classList.remove('hidden');
+    document.getElementById('similarToggleBtn').textContent = '›';
+    sim.innerHTML = ytVideosData.filter(function(x){ return x.id!==id; }).map(function(x){
+      return `<div class="similar-card" onclick="openVideoViewer(${x.id})"><div class="similar-thumb"><img src="${x.thumb}" alt="" loading="lazy"></div><div class="similar-title">${x.title}</div></div>`;
+    }).join('');
+    document.getElementById('videoViewer').classList.add('active');
+    var scroller = document.querySelector('#videoViewer .video-viewer-scroll');
+    if(scroller) scroller.scrollTop = 0;
+    if(navigator.vibrate) navigator.vibrate(15);
+  }
+  function closeVideoViewer(){
+    document.getElementById('videoViewer').classList.remove('active');
+    currentViewerVideoId = null;
+  }
+  function toggleSimilarPanel(e){
+    if(e) e.stopPropagation();
+    var sim = document.getElementById('videoViewerSimilar');
+    var btn = document.getElementById('similarToggleBtn');
+    if(!sim || !btn) return;
+    sim.classList.toggle('hidden');
+    btn.textContent = sim.classList.contains('hidden') ? '‹' : '›';
+  }
+  function viewerAuthorProfile(){
+    var v = ytVideosData.find(function(x){ return x.id===currentViewerVideoId; });
+    if(!v) return;
+    var uid = (typeof channelToUserId==='function') ? channelToUserId(v.channel) : 'tanho_official';
+    closeVideoViewer();
+    setTimeout(function(){ openUserProfile(uid); }, 50);
+  }
+  function toggleViewerLike(btn){
+    if(!currentViewerVideoId) return;
+    var on = !viewerLiked[currentViewerVideoId];
+    viewerLiked[currentViewerVideoId] = on;
+    document.getElementById('videoViewerLikes').textContent = on ? '1' : '0';
+    var svg = btn.querySelector('.reel-heart-icon');
+    if(svg){ svg.setAttribute('fill', on ? 'var(--like-red)' : 'none'); svg.setAttribute('stroke', on ? 'var(--like-red)' : 'currentColor'); }
+    if(navigator.vibrate) navigator.vibrate(20);
+  }
+  function shareViewerVideo(){
+    var v = ytVideosData.find(function(x){ return x.id===currentViewerVideoId; });
+    var title = v ? v.title : 'TANHO видео';
+    if(navigator.share){ navigator.share({title: title, text: title, url: location.href + '#video-' + currentViewerVideoId}).catch(function(){}); }
+    else if(navigator.clipboard){ navigator.clipboard.writeText(location.href); alert('Ссылка скопирована ✓'); }
+  }
+  function toggleViewerComments(btn){
+    if(!currentViewerVideoId) return;
+    if(viewerCommented[currentViewerVideoId]){
+      viewerCommented[currentViewerVideoId] = false;
+      viewerCommentsCount[currentViewerVideoId] = Math.max(0, (viewerCommentsCount[currentViewerVideoId] !== undefined ? viewerCommentsCount[currentViewerVideoId] : 0) - 1);
+    } else {
+      var txt = prompt('Напиши комментарий:');
+      if(!txt || !txt.trim()) return;
+      viewerCommented[currentViewerVideoId] = true;
+      var base = (viewerCommentsCount[currentViewerVideoId] !== undefined) ? viewerCommentsCount[currentViewerVideoId] : 0;
+      viewerCommentsCount[currentViewerVideoId] = base + 1;
+      if(navigator.vibrate) navigator.vibrate(20);
+    }
+    document.getElementById('videoViewerComments').textContent = viewerCommentsCount[currentViewerVideoId];
+  }
+  function toggleViewerSubscribe(){
+    var v = ytVideosData.find(function(x){ return x.id===currentViewerVideoId; });
+    if(!v) return;
+    var uid = (typeof channelToUserId==='function') ? channelToUserId(v.channel) : 'tanho_official';
+    var u = (typeof TANHO_USERS!=='undefined') ? TANHO_USERS[uid] : null;
+    if(!u || u.isOwn) return;
+    u.isSubscribed = !u.isSubscribed;
+    try {
+      if(typeof persistUserState==='function') persistUserState();
+    } catch(e){}
+    var subBtn = document.getElementById('videoViewerSubBtn');
+    if(subBtn){
+      subBtn.textContent = u.isSubscribed ? 'Подписан ✓' : 'Подписаться';
+      subBtn.classList.toggle('subscribed', u.isSubscribed);
+    }
+    if(navigator.vibrate) navigator.vibrate(20);
+  }
+  function viewerReportVideo(){ alert('Жалоба отправлена ✓'); }
+
+
+  function toggleReelLike(chip) {
+    const svg = chip.querySelector('.reel-heart-icon');
+    const valSpan = chip.querySelector('.reel-likes-val');
+    let count = parseInt(valSpan.textContent) || 0;
+    if (svg.getAttribute('fill') === 'none') {
+      svg.setAttribute('fill', 'var(--like-red)'); svg.setAttribute('stroke', 'var(--like-red)'); count++;
+    } else {
+      svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor'); count--;
+    }
+    valSpan.textContent = count;
+  }
+
+/* ===== заглушки ===== */
+
+/* Заглушки связей с приложением (в полной версии их даёт TANHO) */
+var TANHO_USERS = {};
+function getCurrentUserId(){ return 'me'; }
+function channelToUserId(ch){ return 'tanho_official'; }
+function openUserProfile(uid){ alert('Профиль: ' + uid); }
+function sharePost(el){ if (navigator.share) { navigator.share({title:'TANHO', text:'Смотри в TANHO', url:location.href}).catch(function(){}); } else { alert('Ссылка скопирована'); } }
+function handleDoubleTapRefresh(){}
+document.addEventListener('DOMContentLoaded', function(){ try { renderYtFeed(); } catch(e){} });
+
+</script>
+</body>
+</html>
