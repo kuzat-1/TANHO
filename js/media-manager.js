@@ -22,9 +22,6 @@ var TANHO_MEDIA = {
           TANHO_VIDEO_PLAYER.activeVideo = null;
           TANHO_VIDEO_PLAYER.hideMiniPlayer();
         }
-      } else if (entry.element instanceof HTMLIFrameElement) {
-        // VK-плеер (в т.ч. развёрнутый во вьювере): программная пауза
-        try { entry.element.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }), '*'); } catch (e) {}
       } else if (entry.element instanceof HTMLMediaElement) {
         try { entry.element.pause(); } catch (e) {}
         if (entry.element.tagName.toLowerCase() === 'audio') {

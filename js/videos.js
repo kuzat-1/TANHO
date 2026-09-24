@@ -147,108 +147,9 @@
     if(navigator.vibrate) navigator.vibrate(15);
   }
   function closeVideoViewer(){
-    var needBack = postViewerPushed;
-    postViewerPushed = false;
-    try {
-      var host = document.getElementById('videoViewerPlayerHost');
-      if (host) { host.innerHTML = ''; host.classList.remove('active'); }
-      var thumb = document.getElementById('videoViewerThumb');
-      if (thumb) thumb.style.display = '';
-      if (typeof TANHO_MEDIA !== 'undefined' && TANHO_MEDIA.active && TANHO_MEDIA.active.isViewer) TANHO_MEDIA.active = null;
-    } catch (e) {}
     document.getElementById('videoViewer').classList.remove('active');
     currentViewerVideoId = null;
-    postViewerUid = null;
-    if (needBack) { try { history.back(); } catch (e) {} }
   }
-  var postViewerUid = null;
-  var postViewerPushed = false;
-  /* Развёрнутый просмотр видео из поста ленты: настоящий плеер с автоплеем */
-  function openPostVideoViewer(postId){
-    var art = null;
-    try { art = document.querySelector('.post-card[data-post-id="' + postId + '"]'); } catch (e) {}
-    if (!art) return;
-    var frame = null, mp4 = null;
-    try { frame = art.querySelector('iframe[src*="video_ext"]'); } catch (e) {}
-    try { mp4 = art.querySelector('video[src]'); } catch (e) {}
-    if (!frame && !mp4) return;
-    // остановить всё остальное и убрать предыдущий плеер вьювера
-    try { closeVideoViewer(); } catch (e) {}
-    try { if (typeof TANHO_MEDIA !== 'undefined') TANHO_MEDIA.stopAll(); } catch (e) {}
-    try { document.querySelectorAll('video, audio').forEach(function(m){ try { if (!m.paused) m.pause(); } catch (e) {} }); } catch (e) {}
-    try { if (typeof TANHO_VIDEO_PLAYER !== 'undefined' && TANHO_VIDEO_PLAYER.pauseAllVkExcept) TANHO_VIDEO_PLAYER.pauseAllVkExcept(null); } catch (e) {}
-    var title = 'Video', author = '', avatarBg = '', likes = '', comments = '', uid = null;
-    try { var t = art.querySelector('.post-title-text'); if (t && t.textContent) title = t.textContent.trim(); } catch (e) {}
-    try { var an = art.querySelector('.author-name'); if (an && an.textContent) author = an.textContent.trim(); } catch (e) {}
-    try { var av = art.querySelector('.author-avatar'); if (av) avatarBg = av.style.backgroundImage || ''; } catch (e) {}
-    try { var lk = art.querySelector('.likes-count'); if (lk) likes = lk.textContent.trim(); } catch (e) {}
-    try { var cm = art.querySelector('.comments-count'); if (cm) comments = cm.textContent.trim(); } catch (e) {}
-    try { uid = art.getAttribute('data-user-id'); } catch (e) {}
-    postViewerUid = uid;
-    currentViewerVideoId = null;
-    document.getElementById('videoViewerTitle').textContent = title;
-    var thumb = document.getElementById('videoViewerThumb');
-    var host = document.getElementById('videoViewerPlayerHost');
-    var playerEl = null;
-    try {
-      if (frame && frame.getAttribute('src')) {
-        var src = frame.getAttribute('src');
-        src = src.replace(/autoplay=\d+/i, 'autoplay=1');
-        if (!/autoplay=/i.test(src)) src += (src.indexOf('?') === -1 ? '?' : '&') + 'autoplay=1';
-        host.innerHTML = '<iframe src="' + src + '" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
-        playerEl = host.querySelector('iframe');
-      } else if (mp4 && mp4.getAttribute('src')) {
-        host.innerHTML = '<video src="' + mp4.getAttribute('src') + '" controls autoplay playsinline style="object-fit:contain;"></video>';
-        playerEl = host.querySelector('video');
-        try { var pr = playerEl.play(); if (pr && pr.catch) pr.catch(function(){}); } catch (e) {}
-      }
-    } catch (e) {}
-    if (!playerEl) return;
-    host.classList.add('active');
-    if (thumb) thumb.style.display = 'none';
-    document.getElementById('videoViewerAvatar').style.backgroundImage = avatarBg;
-    document.getElementById('videoViewerChannel').textContent = author || 'TANHO';
-    document.getElementById('videoViewerSub').textContent = '';
-    if (likes !== '') document.getElementById('videoViewerLikes').textContent = likes;
-    if (comments !== '') document.getElementById('videoViewerComments').textContent = comments;
-    var likeIcon2 = document.querySelector('#videoViewer .reel-heart-icon');
-    if (likeIcon2) { likeIcon2.setAttribute('fill', 'none'); likeIcon2.setAttribute('stroke', 'currentColor'); }
-    var subBtn2 = document.getElementById('videoViewerSubBtn');
-    if (subBtn2) {
-      var ownId = (typeof getCurrentUserId === 'function') ? getCurrentUserId() : null;
-      if (uid && uid === ownId) { subBtn2.style.display = 'none'; }
-      else {
-        subBtn2.style.display = '';
-        var uu = (typeof TANHO_USERS !== 'undefined' && uid && TANHO_USERS[uid]) ? TANHO_USERS[uid] : null;
-        var sub2 = uu ? !!uu.isSubscribed : false;
-        subBtn2.textContent = sub2 ? 'Подписан ✓' : 'Подписаться';
-        subBtn2.classList.toggle('subscribed', sub2);
-      }
-    }
-    var sim2 = document.getElementById('videoViewerSimilar');
-    if (sim2) { sim2.innerHTML = ''; sim2.classList.add('hidden'); }
-    var sToggle = document.getElementById('similarToggleBtn');
-    if (sToggle) sToggle.textContent = '‹';
-    try {
-      if (typeof TANHO_MEDIA !== 'undefined') {
-        TANHO_MEDIA.active = { element: playerEl, type: frame ? 'vk' : 'video', postId: postId, title: title, isViewer: true };
-      }
-    } catch (e) {}
-    document.getElementById('videoViewer').classList.add('active');
-    var scroller2 = document.querySelector('#videoViewer .video-viewer-scroll');
-    if (scroller2) scroller2.scrollTop = 0;
-    try { postViewerPushed = true; history.pushState({ tanhoVideoViewer: true }, ''); } catch (e) { postViewerPushed = false; }
-    if (navigator.vibrate) navigator.vibrate(15);
-  }
-  // жест Назад закрывает развёрнутый просмотр
-  try {
-    window.addEventListener('popstate', function(){
-      try {
-        var v = document.getElementById('videoViewer');
-        if (v && v.classList.contains('active')) closeVideoViewer();
-      } catch (e) {}
-    });
-  } catch (e) {}
   function toggleSimilarPanel(e){
     if(e) e.stopPropagation();
     var sim = document.getElementById('videoViewerSimilar');
@@ -258,12 +159,6 @@
     btn.textContent = sim.classList.contains('hidden') ? '‹' : '›';
   }
   function viewerAuthorProfile(){
-    if (postViewerUid) {
-      var puid = postViewerUid;
-      closeVideoViewer();
-      setTimeout(function(){ if (typeof openUserProfile === 'function') openUserProfile(puid); }, 50);
-      return;
-    }
     var v = ytVideosData.find(function(x){ return x.id===currentViewerVideoId; });
     if(!v) return;
     var uid = (typeof channelToUserId==='function') ? channelToUserId(v.channel) : 'tanho_official';

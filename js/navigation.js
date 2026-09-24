@@ -92,7 +92,6 @@
       // 1) close topmost overlay/screen first (those already use pushState)
       try {
         if (document.getElementById('editorModal')?.classList.contains('open')) { if(typeof closeEditor==='function') closeEditor(); return true; }
-        if (document.getElementById('videoViewer')?.classList.contains('active')) { if(typeof closeVideoViewer==='function') closeVideoViewer(); return true; }
         if (document.querySelector('.screen-overlay.active')) { if(typeof closeScreen==='function') closeScreen(); else if(typeof goBackScreen==='function') goBackScreen(); return true; }
         if (document.getElementById('drawerOverlay')?.classList.contains('active')) { if(typeof closeBurgerDrawer==='function') closeBurgerDrawer(); return true; }
         if (isModalOverlayActive()) { if(typeof closeInfoModal==='function') closeInfoModal(); try{ document.querySelectorAll('.modal-overlay.active').forEach(function(m){m.classList.remove('active');}); }catch(e){} return true; }
